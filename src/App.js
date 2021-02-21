@@ -14,7 +14,6 @@ function App() {
   var s = new Spotify();
   s.setAccessToken(accessToken)
 
-
   const clicked = () => {
     var prev = s.searchTracks('Kanye', { limit: 5 });
     prev.then(
