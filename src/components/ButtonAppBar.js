@@ -1,10 +1,10 @@
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles} from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
+import LoginButton from './LoginButton'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -18,20 +18,22 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ButtonAppBar() {
+
+
+export default function ButtonAppBar({loggedIn}) {
   const classes = useStyles();
 
   return (
     <div className={classes.root}>
-      <AppBar position="static">
+      <AppBar position="sticky" style={{backgroundColor:"#F5AB35"}}>
         <Toolbar>
           <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" className={classes.title}>
-            News
+          <Typography variant="h5" className={classes.title}>
+            Spotify Yellow
           </Typography>
-          {window.location.hash ? <Button color="inherit">Logout</Button> : <a href="localhost:8888/login"><Button color="inherit">Login</Button></a>}
+          <LoginButton loggedIn={loggedIn}/>
         </Toolbar>
       </AppBar>
     </div>

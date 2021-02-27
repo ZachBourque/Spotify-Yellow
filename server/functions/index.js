@@ -3,7 +3,6 @@ const admin = require('firebase-admin');
 var cors = require("cors")
 var querystring = require('querystring');
 const bodyParser = require('body-parser')
-var cookieParser = require('cookie-parser');
 var info = require('./things.json')
 var request = require('request')
 
@@ -14,7 +13,6 @@ var redirect_uri = 'http://localhost:5000/spotify-yellow-282e0/us-central1/api/c
 const express = require('express');
 const app = express();
 app.use(cors())
-app.use(cookieParser())
 app.use(bodyParser.json());
 // Support URL-encoded bodies.
 app.use(bodyParser.urlencoded({
