@@ -7,6 +7,7 @@ import { ThemeProvider, createMuiTheme } from "@material-ui/core/styles"
 import { Container, Paper } from '@material-ui/core';
 import ButtonAppBar from './components/ButtonAppBar';
 import Spotify from 'spotify-web-api-js';
+import SignUp from './components/SignUp'
 
 class Router extends React.Component {
     state = {
@@ -15,7 +16,6 @@ class Router extends React.Component {
         redirect: null,
         userData: null,
         isLoading: true,
-    
       }
     
       componentDidMount() {
@@ -45,12 +45,15 @@ class Router extends React.Component {
             <Paper style={{ height: "100vh" }}>
             <BrowserRouter>
             <Route path="/" >
-                <App token={this.state.isLoading ? '' : this.state.accessToken} />
+                <App token={this.state.isLoading ? null : this.state.accessToken} />
             </Route>
             <Switch>
             <Route path="/profile" >
                 <Profile
                 userData={this.state.userData} />
+            </Route>
+            <Route path="/sign-up" >
+                {this.state.userData ? <SignUp userData={this.state.userData} /> : ''}
             </Route>
             <Route path='/temp' component={temp}/>
             </Switch>

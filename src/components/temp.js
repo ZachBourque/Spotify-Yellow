@@ -26,7 +26,7 @@ export default class loggedin extends React.Component{
 
     render(){
         return(
-            <div><h1>this is workign</h1></div>
+            <div><h1>this is working</h1></div>
         )
     }
 }

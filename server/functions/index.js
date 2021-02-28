@@ -115,5 +115,4 @@ app.get('/login', function(req, res) {
     });
   })
 
-
 exports.api = functions.https.onRequest(app)

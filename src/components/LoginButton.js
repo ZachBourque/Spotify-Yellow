@@ -4,11 +4,6 @@ import axios from 'axios'
 
 export default class LoginButton extends Component {
 
-    state = {
-        buttonText: ''
-    }
-
-
 
     click = () => {
         if(!this.props.loggedIn){
