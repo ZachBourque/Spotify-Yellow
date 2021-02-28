@@ -17,7 +17,9 @@ export default class loggedin extends React.Component{
         if(state === localState){
             axios.get(`http://localhost:5000/spotify-yellow-282e0/us-central1/api/getUserData/${code}`).then(res => {
                 window.localStorage.setItem("spotifyData", JSON.stringify(res.data))
+                window.localStorage.removeItem("state")
                 this.props.history.push('/')
+                window.location.reload()
             })
         }
     }

@@ -10,12 +10,16 @@ export default class LoginButton extends Component {
 
 
 
-    click() {
-    axios.get('http://localhost:5000/spotify-yellow-282e0/us-central1/api/login').then(res => {
-        console.log(window)
-      window.localStorage.setItem("state",res.data.state)
-      window.location.href = res.data.url
-    })
+    click = () => {
+        if(!this.props.loggedIn){
+            axios.get('http://localhost:5000/spotify-yellow-282e0/us-central1/api/login').then(res => {
+                window.localStorage.setItem("state",res.data.state)
+                window.location.href = res.data.url
+            })
+        }else{
+            window.localStorage.removeItem("spotifyData")
+            window.location.reload()
+        }
     }
 
     render() {

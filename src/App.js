@@ -19,12 +19,12 @@ class App extends React.Component {
 
   render() {
     return (
-      <ThemeProvider theme={this.theme}>
-          <ButtonAppBar loggedIn={this.props.userData.token} />
+      <div>
+          <ButtonAppBar loggedIn={this.props.token} />
           <Container>
 
           </Container>
-      </ThemeProvider>
+      </div>
     );
   }
 

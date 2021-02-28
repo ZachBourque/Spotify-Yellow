@@ -37,7 +37,7 @@ const Profile = ({ userData }) => {
 
                     <Grid item xs={12}>
                         <ButtonBase className={classes.image}>
-                            <img className={classes.img} alt="complex" src={userData ? userData.images[0].url : ''} style={{ borderRadius: '10%' }} />
+                            <img className={classes.img} alt="complex" src={userData ? (userData.images.length > 0 ? userData.images[0].url: '') : ''} style={{ borderRadius: '10%' }} />
                         </ButtonBase>
                     </Grid>
                     

@@ -13,11 +13,6 @@ var redirect_uri = 'http://localhost:5000/spotify-yellow-282e0/us-central1/api/c
 const express = require('express');
 const app = express();
 app.use(cors())
-app.use(bodyParser.json());
-// Support URL-encoded bodies.
-app.use(bodyParser.urlencoded({
-  extended: true
-}));
 
 admin.initializeApp()
 
@@ -53,8 +48,6 @@ app.get('/login', function(req, res) {
   
     // your application requests refresh and access tokens
     // after checking the state parameter
-  
-    console.log(req.cookies)
 
     var code = req.query.code || null;
     var state = req.query.state || null;
@@ -96,7 +89,19 @@ app.get('/login', function(req, res) {
               token: access_token,
               data: body
           }
-          console.log("here")
+          admin.firestore().collection('users').where('email', "==", body.email).get().then(snap => {
+            if(snap.size === 0){
+              const newUser = {
+                email: body.email,
+                bio: '',
+                favAlbums: [],
+                favArtists: [],
+                favSongs: []
+              }
+              admin.firestore().collection('users').add(newUser)
+            }
+
+          })
           return res.json(websitedata)
         });
 

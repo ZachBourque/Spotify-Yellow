@@ -45,13 +45,14 @@ class Router extends React.Component {
             <Paper style={{ height: "100vh" }}>
             <BrowserRouter>
             <Route path="/" >
-                <App userData={this.state.isLoading ? '' : this.state.userData} />
+                <App token={this.state.isLoading ? '' : this.state.accessToken} />
             </Route>
             <Switch>
             <Route path="/profile" >
                 <Profile
                 userData={this.state.userData} />
             </Route>
+            <Route path='/temp' component={temp}/>
             </Switch>
             </BrowserRouter>
             </Paper>
