@@ -56,6 +56,36 @@ app.get('/login', function(req, res) {
 
   });
 
+  app.post('/createUser', (req, res) => {
+    let newUser = {
+      id: req.body.id,
+      username: req.body.username,
+      profilepic: req.body.profilepic,
+      bio: "",
+      favArtists: [],
+      favSongs: [],
+      favAlbums: []
+    }
+
+    admin.firestore().collection('users').add(newUser).then(doc => {
+      newUser.firebaseID = doc.id 
+      return res.json({user: newUser})
+    }).catch((err) =>{
+      res.status(500).json({error: 'something went wrong'})
+      console.error(err)
+    })
+
+  })
+
+  app.post('/uploadpic', (req,res) => {
+    admin.storage().bucket().upload(URL.createObjectURL(req.body.image)).then(() => {
+      return res.json({success: "success"})
+    }).catch(err => {
+      console.error(err)
+      return res.status(400).json({error: err})
+    })
+  })
+
   app.get('/getUserData/:code', (req, res) => {
     const code = req.params.code
     var authOptions = {
@@ -89,20 +119,19 @@ app.get('/login', function(req, res) {
               token: access_token,
               data: body
           }
-          admin.firestore().collection('users').where('email', "==", body.email).get().then(snap => {
+          console.log(body)
+          admin.firestore().collection('users').where('id', "==", body.id).get().then(snap => {
             if(snap.size === 0){
-              const newUser = {
-                email: body.email,
-                bio: '',
-                favAlbums: [],
-                favArtists: [],
-                favSongs: []
-              }
-              admin.firestore().collection('users').add(newUser)
+              websitedata.hasAccount = false
             }
-
+            else{
+              snap.forEach(snapshot => {
+                websitedata.firebaseID = snapshot.id
+                websitedata.hasAccount = true
+              })
+            }
+            return res.json(websitedata)
           })
-          return res.json(websitedata)
         });
 
         // we can also pass the token to the browser to make requests from there
