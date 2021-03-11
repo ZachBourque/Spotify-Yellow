@@ -15,6 +15,8 @@ import Container from '@material-ui/core/Container';
 import IconButton from '@material-ui/core/IconButton';
 import PhotoCamera from '@material-ui/icons/PhotoCamera';
 import $ from 'jquery';
+import axios from 'axios'
+import { useHistory } from "react-router-dom";
 
 function Copyright() {
     return (
@@ -60,6 +62,7 @@ const useStyles = makeStyles((theme) => ({
 export default function SignUp( {userData} ) {
     const [selectedFile, setFile] = useState(userData.images[0])
     const classes = useStyles();
+    const history = useHistory();
 
 
     const fileSelectedHandler = event => {
@@ -70,8 +73,28 @@ export default function SignUp( {userData} ) {
 
     }
 
-    const fileUploadHander = () => {
-        const dataToSend = {id: userData.id, username: $("#firstName").val(), profilepic: selectedFile};
+    const fileUploadHander = (e) => {
+        e.preventDefault()
+        if(!$('#fileinput').prop('files')[0]){
+            let image = "https://firebasestorage.googleapis.com/v0/b/spotify-yellow-282e0.appspot.com/o/images.png?alt=media&token=3e1714f4-9ccb-41dc-9e4a-da198e92dec7"
+            axios.post("http://localhost:5000/spotify-yellow-282e0/us-central1/api/createUser", {id: userData.id, username: $("#firstName").val(), profilepic: image})
+            return
+        }
+        var image = $('#fileinput').prop('files')[0]
+        const formData = new FormData()
+        formData.append('image', image, image.name)
+        axios.post("http://localhost:5000/spotify-yellow-282e0/us-central1/api/uploadpic", formData).then(res => {
+            axios.post("http://localhost:5000/spotify-yellow-282e0/us-central1/api/createUser", {id: userData.id, username: $("#firstName").val(), profilepic: res.data.url}).then(res => {
+                let sd = JSON.parse(window.localStorage.getItem("spotifyData"));
+                sd.id = res.data.user.firebaseID
+                window.localStorage.setItem("spotifyData", JSON.stringify(sd))
+                history.push({
+                    pathname:  "/profile"
+                 });
+                //window.history.push("/profile")
+                window.location.reload()
+            })
+        })
         
     }
 
