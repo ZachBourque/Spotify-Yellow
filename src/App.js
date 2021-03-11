@@ -11,16 +11,11 @@ import { ThemeProvider, createMuiTheme } from "@material-ui/core/styles"
 class App extends React.Component {
 
 
-  theme = createMuiTheme({
-    palette: {
-      type: "dark",
-    },
-  });
 
   render() {
     return (
       <div>
-          <ButtonAppBar loggedIn={this.props.token} />
+          <ButtonAppBar loggedIn={this.props.token} userData={this.props.userData} />
           <Container>
 
           </Container>

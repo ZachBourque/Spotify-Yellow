@@ -58,7 +58,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function SignUp( {userData} ) {
-    const [selectedFile, setFile] = useState(userData.images[0])
+    const [selectedFile, setFile] = useState(userData.images[0].url)
     const classes = useStyles();
 
 

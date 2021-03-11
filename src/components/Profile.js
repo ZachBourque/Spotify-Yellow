@@ -4,6 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import ButtonBase from '@material-ui/core/ButtonBase';
 
 
+import MakePost from './MakePost'
 
 
 const useStyles = makeStyles((theme) => ({
@@ -13,7 +14,8 @@ const useStyles = makeStyles((theme) => ({
     paper: {
         padding: theme.spacing(2),
         margin: 'auto',
-        maxWidth: 500,
+        maxWidth: 1000,
+        textAlign: 'center',
     },
     image: {
         width: 128,
@@ -27,33 +29,42 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const Profile = ({ userData }) => {
+const Profile = ({ userData, token }) => {
+    ;
+    //State and Globals for the Profile
     const classes = useStyles();
+    
+
+
+
+
 
     return (
-        <div>
-            <Paper className={classes.paper}>
-                <Grid container spacing={3}>
+        <div name={classes.root}>
 
-                    <Grid item xs={12}>
+            <Grid container spacing={3}>
+
+                <Grid item xs={12}>
+                    <Paper className={classes.paper}>
                         <ButtonBase className={classes.image}>
-                            <img className={classes.img} alt="complex" src={userData ? (userData.images.length > 0 ? userData.images[0].url: '') : ''} style={{ borderRadius: '10%' }} />
+                            <img className={classes.img} alt="complex" src={userData ? (userData.images.length > 0 ? userData.images[0].url : '') : ''} style={{ borderRadius: '10%' }} />
                         </ButtonBase>
-                    </Grid>
-                    
-                    <Grid item xs={12} sm container>
-                        <Grid item xs container direction="column" spacing={2}>
-                            <Grid item xs>
-                                <Typography gutterBottom variant="h4">
-                                    {userData?.display_name}
-                                </Typography>
+                        <Grid item xs={12} sm container>
+                            <Grid item xs container direction="column" spacing={2}>
+                                <Grid item xs>
+                                    <Typography gutterBottom variant="h4">
+                                        {userData?.display_name}
+                                    </Typography>
+                                </Grid>
                             </Grid>
+
                         </Grid>
-                    </Grid>
-
+                    </Paper>
                 </Grid>
-            </Paper>
 
+            </Grid>
+
+        <MakePost userData={userData} token={token}/>
         </div>
     )
 }

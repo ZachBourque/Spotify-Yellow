@@ -42,15 +42,15 @@ class Router extends React.Component {
       render() {
         return (
             <ThemeProvider theme={this.theme}>
-            <Paper style={{ height: "100vh" }}>
+            <Paper style={{ height: "auto", minHeight: '100vh'}}>
             <BrowserRouter>
             <Route path="/" >
-                <App token={this.state.isLoading ? null : this.state.accessToken} />
+                <App token={this.state.isLoading ? null : this.state.accessToken} userData={this.state.isLoading ? null : this.state.userData} />
             </Route>
             <Switch>
             <Route path="/profile" >
                 <Profile
-                userData={this.state.userData} />
+                token={this.state.isLoading ? 'aaa' : this.state.accessToken} userData={this.state.isLoading ? null : this.state.userData}/>
             </Route>
             <Route path="/sign-up" >
                 {this.state.userData ? <SignUp userData={this.state.userData} /> : ''}
