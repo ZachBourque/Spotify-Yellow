@@ -16,7 +16,6 @@ var client_secret = info.secret; // Your secret
 var redirect_uri = 'http://localhost:5000/spotify-yellow-282e0/us-central1/api/callback'; // Your redirect uri
 
 const express = require('express');
-const { ref } = require('firebase-functions/lib/providers/database');
 const app = express();
 app.use(cors())
 
@@ -83,7 +82,83 @@ app.get('/login', function(req, res) {
 
   })
 
+  app.post('/createPost', (req,res) => {
+    let newPost = {
+      author: req.body.id,
+      pfp: req.body.pfp,
+      type: req.body.type,
+      body: req.body.body,
+      album: req.body.album,
+      artist: req.body.artist,
+      song: req.body.song,
+      title: req.body.title,
+      topic: req.body.topic,
+      pic: req.body.pic
+    }
+    admin.firestore().collection('posts').add(newPost).then(doc => {
+      newPost.firebaseID = doc.id 
+      return res.json({post: newPost})
+    }).catch((err) =>{
+      res.status(500).json({error: 'something went wrong'})
+      console.error(err)
+    })
+  })
 
+  app.get('/postsByType/:type', (req,res) => {
+    const type = req.params.type 
+    admin.firestore().collection('posts').where("type", "==", type).get().then(snap => {
+      let posts = []
+      snap.forEach(post => {
+        posts.push(post)
+      })
+      return res.json({posts: posts})
+    }).catch((err) => {
+      console.error(err);
+      return res.status(500).json({ error: "something went wrong" });
+    });
+  })
+
+  app.get('/postsByTopic/:topic', (req,res) => {
+    const topic = req.params.topic 
+    admin.firestore().collection('posts').where("topic", "==", topic).get().then(snap => {
+      let posts = []
+      snap.forEach(post => {
+        posts.push(post)
+      })
+      return res.json({posts: posts})
+    }).catch((err) => {
+      console.error(err);
+      return res.status(500).json({ error: "something went wrong" });
+    });
+  })
+
+  app.get('/getUser/:id', (req,res) => {
+    const id = req.params.id 
+    admin.firestore().collection('users').where('id', "==", id).get().then(snap => {
+      let user
+      snap.forEach(obj => {
+        user = obj
+      })
+      return res.json({user: user})
+    }).catch((err) => {
+      console.error(err);
+      return res.status(500).json({ error: "something went wrong" });
+    });
+  })
+
+  app.get('/postsByUser/:user', (req,res) => {
+    const user = req.params.user 
+    admin.firestore().collection('posts').where("id", "==", user).get().then(snap => {
+      let posts = []
+      snap.forEach(post => {
+        posts.push(post)
+      })
+      return res.json({posts: posts})
+    }).catch((err) => {
+      console.error(err);
+      return res.status(500).json({ error: "something went wrong" });
+    });
+  })
 
   app.post('/uploadpic', (req,res) => {
     
@@ -94,7 +169,6 @@ app.get('/login', function(req, res) {
     let generatedToken = uuid();
 
     busboy.on("file", (fieldname, file, filename, encoding, mimetype) => {
-      console.log(fieldname, file, filename, encoding, mimetype);
       if (mimetype !== "image/jpeg" && mimetype !== "image/png") {
         return res.status(400).json({ error: "Wrong file type submitted" });
       }
@@ -161,7 +235,6 @@ app.get('/login', function(req, res) {
               token: access_token,
               data: body
           }
-          console.log(body)
           admin.firestore().collection('users').where('id', "==", body.id).get().then(snap => {
             if(snap.size === 0){
               websitedata.hasAccount = false
@@ -170,6 +243,7 @@ app.get('/login', function(req, res) {
               snap.forEach(snapshot => {
                 websitedata.firebaseID = snapshot.id
                 websitedata.hasAccount = true
+                websitedata.pfp = snapshot.profilepic
               })
             }
             return res.json(websitedata)

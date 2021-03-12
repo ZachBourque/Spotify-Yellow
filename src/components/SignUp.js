@@ -87,6 +87,7 @@ export default function SignUp( {userData} ) {
             axios.post("http://localhost:5000/spotify-yellow-282e0/us-central1/api/createUser", {id: userData.id, username: $("#firstName").val(), profilepic: res.data.url}).then(res => {
                 let sd = JSON.parse(window.localStorage.getItem("spotifyData"));
                 sd.id = res.data.user.firebaseID
+                sd.pfp = res.data.user.profilepic
                 window.localStorage.setItem("spotifyData", JSON.stringify(sd))
                 history.push({
                     pathname:  "/profile"
