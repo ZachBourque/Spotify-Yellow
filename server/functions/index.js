@@ -69,7 +69,8 @@ app.get('/login', function(req, res) {
       bio: "",
       favArtists: [],
       favSongs: [],
-      favAlbums: []
+      favAlbums: [],
+      createdAt: new Date().toISOString()
     }
 
     admin.firestore().collection('users').add(newUser).then(doc => {
@@ -84,7 +85,8 @@ app.get('/login', function(req, res) {
 
   app.post('/createPost', (req,res) => {
     let newPost = {
-      author: req.body.id,
+      author: req.body.author,
+      authorid: req.body.authorid,
       pfp: req.body.pfp,
       type: req.body.type,
       body: req.body.body,
@@ -93,7 +95,9 @@ app.get('/login', function(req, res) {
       song: req.body.song,
       title: req.body.title,
       topic: req.body.topic,
-      pic: req.body.pic
+      pic: req.body.pic,
+      createdAt: new Date().toISOString(),
+      rating: req.body.rating
     }
     admin.firestore().collection('posts').add(newPost).then(doc => {
       newPost.firebaseID = doc.id 
