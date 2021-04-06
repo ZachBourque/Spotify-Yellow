@@ -1,5 +1,5 @@
 import React, { Component, useState, useEffect } from 'react'
-import {TextField, Radio, RadioGroup, FormControlLabel, FormControl, FormLabel, makeStyles} from '@material-ui/core';
+import { TextField, Radio, RadioGroup, FormControlLabel, FormControl, FormLabel, makeStyles, Switch } from '@material-ui/core';
 import Spotify from 'spotify-web-api-js';
 import { Container, Avatar, Grid, Paper, Typography } from '@material-ui/core'
 import DisplayData from './DisplayData'
@@ -31,8 +31,16 @@ const useStyles = makeStyles((theme) => ({
 const MakePost = ({ userData, token }) => {
     const classes = useStyles();
     const [value, setValue] = useState('artist');
+    //Data returned from the Spotify API
     const [returnedData, setReturnedData] = useState(null);
-    const [dataArray, setDataArray] = useState(null)
+    //Parsed data that is displayed to the user
+    const [dataArray, setDataArray] = useState(null);
+    //Scene for the post making process
+    const [scene, setScene] = useState(-1);
+    //An object from the dataArray that is the topic of the post
+    const [selectedTopic, setSelectedTopic] = useState(undefined);
+
+    const [checked, setChecked] = React.useState(false);
     const s = new Spotify();
     s.setAccessToken(token)
 
@@ -44,29 +52,39 @@ const MakePost = ({ userData, token }) => {
     }, [value])
 
     useEffect(() => {
-        console.log(returnedData)
-    }, [returnedData])
+        console.log(scene)
+    }, [scene])
+
+    useEffect(() => {
+        incrementScene(scene + 1)
+        console.log("urmom!!")
+    }, [selectedTopic])
+
 
     const searchTextChanged = (event) => {
         //if the event is empty, dont display anything for search results
-        if (event == '' || event?.target?.value == '') {setDataArray(null);setReturnedData(null);return}
+        if (event == '' || event?.target?.value == '') { setDataArray(null); setReturnedData(null); return }
         //rather a string or an event is passed in, this just makes temp = the string
-        let temp = typeof event == 'string' ? event : event.target.value; 
-    
-        if(value == 'artist') {
+        let temp = typeof event == 'string' ? event : event?.target?.value;
+
+        if (value == 'artist') {
             searchArtists(temp);
-        }else if(value =='album') {
+        } else if (value == 'album') {
             searchAlbums(temp);
-        }else if (value == 'song'){
+        } else if (value == 'song') {
             searchSongs(temp);
         }
 
-        
+
     }
 
     const radioChanged = (event) => {
         setValue(event.target.value);
     };
+
+    const incrementScene = () => {
+        setScene(scene + 1);
+    }
 
     //Searches Spotify API for Artist
     const searchArtists = (query) => {
@@ -103,7 +121,7 @@ const MakePost = ({ userData, token }) => {
         const limit = 5;
         const result = await fetch(`https://api.spotify.com/v1/search?q=${query}&type=album&market=US&limit=${limit}`, {
             method: 'GET',
-            headers: {'Authorization' : 'Bearer ' + token}
+            headers: { 'Authorization': 'Bearer ' + token }
         });
         const data = await result.json();
         console.log(data)
@@ -124,7 +142,7 @@ const MakePost = ({ userData, token }) => {
             setDataArray(tempArray)
         }
     }
-    
+
     //Searches Spotify API for song 
     const searchSongs = (query) => {
         let prev = s.searchTracks(query, { limit: 5 });
@@ -156,26 +174,62 @@ const MakePost = ({ userData, token }) => {
         );
     }
 
+    const handleChange = (e) => {
+        setChecked(!checked)
+    }
 
     return (
         <div>
-                <Paper className={classes.paper}>
-                    <h3>Make Post</h3>
-                    <FormControl component="fieldset">
+            <Paper className={classes.paper}>
+                <h3>Make Post</h3>
+                {
+                    scene == 0 &&
+                    (<FormControl component="fieldset">
                         <Grid container wrap="nowrap" spacing={2}>
-                    <RadioGroup aria-label="gender" name="gender1" value={value} onChange={radioChanged}>
-                            <FormControlLabel value="artist" control={<Radio />} label="Artist" />
-                            <FormControlLabel value="album" control={<Radio />} label="Album/EP"/>
-                            <FormControlLabel value="song" control={<Radio />} label="Song" />
-                        </RadioGroup>
-                        <TextField variant="filled" id="searchText"  onChange={searchTextChanged} />
+                            <RadioGroup aria-label="gender" name="gender1" value={value} onChange={radioChanged}>
+                                <FormControlLabel value="artist" control={<Radio />} label="Artist" />
+                                <FormControlLabel value="album" control={<Radio />} label="Album/EP" />
+                                <FormControlLabel value="song" control={<Radio />} label="Song" />
+                            </RadioGroup>
+                            <TextField variant="filled" id="searchText" onChange={searchTextChanged} />
                         </Grid>
                         {dataArray?.map((element, index) => {
-               return <DisplayData element={element} index={index} />
-            })}
-                    </FormControl>
+                            return <DisplayData element={element} id={index} onClick={(e) => { setSelectedTopic(dataArray[e.target.id]); console.log(e) }} />
+                        })}
+                    </FormControl>)
+                }
+                {
+                    scene == 1 && (
+                        <div>
+                            <DisplayData element={selectedTopic} />
+                            <form>
+                                <TextField
+                                    id="outlined-multiline-static"
+                                    label="Post Body"
+                                    multiline
+                                    rows={4}
+                                    defaultValue="Default Value"
+                                    variant="outlined"
+                                />
+                                <TextField
+                                    id="postNumber"
+                                    label="Number"
+                                    type="number"
+                                    InputLabelProps={{
+                                        shrink: true,
+                                    }}
+                                    variant="filled"
+                                    disabled={checked}
+                                    
+                                />
+                                <Switch checked={checked} onChange={handleChange} />
+                            </form>
+                        </div>
 
-                </Paper>
+                    )
+
+                }
+            </Paper>
         </div>
     )
 }
