@@ -48,8 +48,7 @@ class Router extends React.Component {
                 <Profile
                 token={this.state.isLoading ? 'aaa' : this.state.accessToken} userData={this.state.isLoading ? null : this.state.userData}/>
             </Route>
-            <Route path="/sign-up" >
-                {this.state.userData ? <SignUp userData={this.state.userData} /> : ''}
+            <Route path="/sign-up" component={SignUp}>
             </Route>
             <Route path='/temp' component={temp}/>
             </Switch>
@@ -62,9 +61,9 @@ class Router extends React.Component {
 
 }
 
-const mapStateToProps = (state) => {
-
-}
+const mapStateToProps = (state) => ({
+  user: state.user
+})
 
 const mapActionsToProps = {
   loadDataIntoState

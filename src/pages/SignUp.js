@@ -16,7 +16,6 @@ import IconButton from '@material-ui/core/IconButton';
 import PhotoCamera from '@material-ui/icons/PhotoCamera';
 import $ from 'jquery';
 import axios from 'axios'
-import { useHistory } from "react-router-dom";
 import { connect } from 'react-redux'
 import { signUpUser } from "../redux/actions/userActions"
 import withStyles from '@material-ui/core/styles/withStyles'
@@ -57,11 +56,16 @@ class SignUp extends React.Component{
 
     componentDidMount() {
         console.log(this.props)
+        console.log(this.context)
         if(!this.props.user){
             this.props.history.push("/")
         }
     }
 
+    componentWillReceiveProps(nextProps) {
+
+        console.log(nextProps);
+       }
 
     fileSelectedHandler = event => {
         var reader = new FileReader();
@@ -77,7 +81,7 @@ class SignUp extends React.Component{
         e.preventDefault()
 
         let signUpData = {
-            id: this.props.USERCHANGEid,
+            id: this.props.user.spotifyData.id,
             username: $("#firstName").val()
         }
 
@@ -89,13 +93,15 @@ class SignUp extends React.Component{
             formData.append('image', image, image.name)
             signUpData.formData = formData
         }
+        this.props.signUpUser(signUpData, this.props.history)
         
         
     }
     render() {
         const { classes } = this.props
     return (
-        <Container component="main" maxWidth="xs">
+        <div>
+        {this.props.user.spotifyData ? (<Container component="main" maxWidth="xs">
             <CssBaseline />
             <div className={classes.paper}>
                 <Avatar className={classes.avatar}>
@@ -118,7 +124,7 @@ class SignUp extends React.Component{
                                 id="firstName"
                                 label="Username"
                                 autoFocus
-                                defaultValue={this.props.USERCHANGEdisplay_name}
+                                defaultValue={this.props.user.spotifyData.display_name }
                             />
                         </Grid>
 
@@ -151,7 +157,9 @@ class SignUp extends React.Component{
             {'.'}
         </Typography>
             </Box>
-        </Container>
+        </Container>) : (<div></div>)}
+        </div>
+    
     );
     }
 }

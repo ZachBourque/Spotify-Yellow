@@ -4,7 +4,8 @@ const initialState = {
     token: null,
     hasAccount: false,
     spotifyData: null,
-    firebaseData: null
+    pfp: null,
+    id: null
 }
 
 export default function(state = initialState, action){
