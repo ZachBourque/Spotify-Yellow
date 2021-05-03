@@ -245,6 +245,7 @@ app.get('/login', function(req, res) {
             }
             else{
               snap.forEach(snapshot => {
+                websitedata.firebaseData = snapshot.data()
                 websitedata.firebaseID = snapshot.id
                 websitedata.hasAccount = true
                 websitedata.pfp = snapshot.profilepic

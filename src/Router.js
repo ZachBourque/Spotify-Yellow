@@ -1,13 +1,15 @@
 import React from 'react'
 import {BrowserRouter, Switch, Route, Redirect} from "react-router-dom"
 import App from "./App"
-import temp from "./components/temp"
-import Profile from "./components/Profile"
+import temp from "./pages/temp"
+import Profile from "./pages/Profile"
 import { ThemeProvider, createMuiTheme } from "@material-ui/core/styles"
 import { Container, Paper } from '@material-ui/core';
 import ButtonAppBar from './components/ButtonAppBar';
 import Spotify from 'spotify-web-api-js';
-import SignUp from './components/SignUp'
+import SignUp from './pages/SignUp'
+import { connect } from "react-redux"
+import { loadDataIntoState } from './redux/actions/userActions'
 
 class Router extends React.Component {
     state = {
@@ -23,14 +25,8 @@ class Router extends React.Component {
         if (!a) {
           return
         }
-        a = JSON.parse(a);
-        console.log(a);
-        this.setState({
-          accessToken: a.token, 
-          s: Spotify(), 
-          userData: a.data,
-          isLoading: false
-        })
+        console.log("this")
+        this.props.loadDataIntoState()
       }
 
     theme = createMuiTheme({
@@ -66,4 +62,12 @@ class Router extends React.Component {
 
 }
 
-export default Router
+const mapStateToProps = (state) => {
+
+}
+
+const mapActionsToProps = {
+  loadDataIntoState
+}
+
+export default connect(mapStateToProps, mapActionsToProps)(Router)
