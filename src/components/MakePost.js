@@ -36,9 +36,9 @@ const MakePost = ({ userData, token }) => {
     //Parsed data that is displayed to the user
     const [dataArray, setDataArray] = useState(null);
     //Scene for the post making process
-    const [scene, setScene] = useState(-1);
+    const [scene, setScene] = useState(0);
     //An object from the dataArray that is the topic of the post
-    const [selectedTopic, setSelectedTopic] = useState(undefined);
+    const [selectedTopic, setSelectedTopic] = useState(null);
 
     const [checked, setChecked] = React.useState(false);
     const s = new Spotify();
@@ -55,10 +55,6 @@ const MakePost = ({ userData, token }) => {
         console.log(scene)
     }, [scene])
 
-    useEffect(() => {
-        incrementScene(scene + 1)
-        console.log("urmom!!")
-    }, [selectedTopic])
 
 
     const searchTextChanged = (event) => {
@@ -194,24 +190,16 @@ const MakePost = ({ userData, token }) => {
                             <TextField variant="filled" id="searchText" onChange={searchTextChanged} />
                         </Grid>
                         {dataArray?.map((element, index) => {
-                            return <DisplayData element={element} id={index} onClick={(e) => { setSelectedTopic(dataArray[e.target.id]); console.log(e) }} />
+                            return <DisplayData element={element} id={index} maxHeight={'200px'} maxWidth={'200px'} onClick={(e) => { setSelectedTopic(dataArray[e.target.id]); setScene(1)}} />
                         })}
                     </FormControl>)
                 }
                 {
                     scene == 1 && (
                         <div>
-                            <DisplayData element={selectedTopic} />
-                            <form>
-                                <TextField
-                                    id="outlined-multiline-static"
-                                    label="Post Body"
-                                    multiline
-                                    rows={4}
-                                    defaultValue="Default Value"
-                                    variant="outlined"
-                                />
-                                <TextField
+                            <DisplayData element={selectedTopic} maxHeight={200} />
+                            <form id="contactForm">
+                            <TextField
                                     id="postNumber"
                                     label="Number"
                                     type="number"
@@ -220,9 +208,17 @@ const MakePost = ({ userData, token }) => {
                                     }}
                                     variant="filled"
                                     disabled={checked}
-                                    
+                                    InputProps={{ inputProps: { min: 0, max: 10 } }}
                                 />
                                 <Switch checked={checked} onChange={handleChange} />
+                                <TextField
+                                    id="postBody"
+                                    label="Post Body"
+                                    multiline
+                                    rows={6}
+                                    variant="outlined"
+                                />
+                                
                             </form>
                         </div>
 

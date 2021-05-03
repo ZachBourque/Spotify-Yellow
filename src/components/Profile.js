@@ -42,7 +42,7 @@ const Profile = ({ userData, token }) => {
     return (
         <div name={classes.root}>
 
-            <Grid container spacing={3}>
+            <Grid container>
 
                 <Grid item xs={12}>
                     <Paper className={classes.paper}>
