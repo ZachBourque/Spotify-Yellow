@@ -16,22 +16,11 @@ import IconButton from '@material-ui/core/IconButton';
 import PhotoCamera from '@material-ui/icons/PhotoCamera';
 import $ from 'jquery';
 import axios from 'axios'
-import { useHistory } from "react-router-dom";
+import { connect } from 'react-redux'
+import { signUpUser } from "../redux/actions/userActions"
+import withStyles from '@material-ui/core/styles/withStyles'
 
-function Copyright() {
-    return (
-        <Typography variant="body2" color="textSecondary" align="center">
-            {'Copyright © '}
-            <Link color="inherit" href="https://material-ui.com/">
-                Your Website
-      </Link>{' '}
-            {new Date().getFullYear()}
-            {'.'}
-        </Typography>
-    );
-}
-
-const useStyles = makeStyles((theme) => ({
+const styles = makeStyles(theme =>  ({
     root: {
         '& > *': {
             margin: theme.spacing(1),
@@ -56,51 +45,63 @@ const useStyles = makeStyles((theme) => ({
     },
     submit: {
         margin: theme.spacing(3, 0, 2),
-    },
-}));
+    }
+}))
 
-export default function SignUp( {userData} ) {
-    const [selectedFile, setFile] = useState(userData.images[0].url)
-    const classes = useStyles();
-    const history = useHistory();
+class SignUp extends React.Component{
 
+    state = {
+        file: null
+    }
 
-    const fileSelectedHandler = event => {
+    componentDidMount() {
+        console.log(this.props)
+        console.log(this.context)
+        if(!this.props.user){
+            this.props.history.push("/")
+        }
+    }
+
+    componentWillReceiveProps(nextProps) {
+
+        console.log(nextProps);
+       }
+
+    fileSelectedHandler = event => {
         var reader = new FileReader();
         var file = $('#fileinput').prop('files')[0];
         var url = URL.createObjectURL(file);
-        setFile(url)
+        this.setState({
+            file: url
+        })
 
     }
 
-    const fileUploadHander = (e) => {
+    fileUploadHander = (e) => {
         e.preventDefault()
-        if(!$('#fileinput').prop('files')[0]){
-            let image = "https://firebasestorage.googleapis.com/v0/b/spotify-yellow-282e0.appspot.com/o/images.png?alt=media&token=3e1714f4-9ccb-41dc-9e4a-da198e92dec7"
-            axios.post("http://localhost:5000/spotify-yellow-282e0/us-central1/api/createUser", {id: userData.id, username: $("#firstName").val(), profilepic: image})
-            return
+
+        let signUpData = {
+            id: this.props.user.spotifyData.id,
+            username: $("#firstName").val()
         }
-        var image = $('#fileinput').prop('files')[0]
-        const formData = new FormData()
-        formData.append('image', image, image.name)
-        axios.post("http://localhost:5000/spotify-yellow-282e0/us-central1/api/uploadpic", formData).then(res => {
-            axios.post("http://localhost:5000/spotify-yellow-282e0/us-central1/api/createUser", {id: userData.id, username: $("#firstName").val(), profilepic: res.data.url}).then(res => {
-                let sd = JSON.parse(window.localStorage.getItem("spotifyData"));
-                sd.id = res.data.user.firebaseID
-                sd.pfp = res.data.user.profilepic
-                window.localStorage.setItem("spotifyData", JSON.stringify(sd))
-                history.push({
-                    pathname:  "/profile"
-                 });
-                //window.history.push("/profile")
-                window.location.reload()
-            })
-        })
+
+        if(!$('#fileinput').prop('files')[0]){
+            signUpData.profilepic = "https://firebasestorage.googleapis.com/v0/b/spotify-yellow-282e0.appspot.com/o/images.png?alt=media&token=3e1714f4-9ccb-41dc-9e4a-da198e92dec7"
+        } else {
+            var image = $('#fileinput').prop('files')[0]
+            const formData = new FormData()
+            formData.append('image', image, image.name)
+            signUpData.formData = formData
+        }
+        this.props.signUpUser(signUpData, this.props.history)
+        
         
     }
-
+    render() {
+        const { classes } = this.props
     return (
-        <Container component="main" maxWidth="xs">
+        <div>
+        {this.props.user.spotifyData ? (<Container component="main" maxWidth="xs">
             <CssBaseline />
             <div className={classes.paper}>
                 <Avatar className={classes.avatar}>
@@ -123,14 +124,14 @@ export default function SignUp( {userData} ) {
                                 id="firstName"
                                 label="Username"
                                 autoFocus
-                                defaultValue={userData.display_name}
+                                defaultValue={this.props.user.spotifyData.display_name }
                             />
                         </Grid>
 
                         <Grid item xs={12} sm={12}>
                             <label htmlFor="fileInput">Profile Picture:</label><br></br>
-                            <input type="file" id="fileinput" onChange={fileSelectedHandler}/>
-                            <img id="img-display" src={selectedFile} style={{height: '50%', width: '50%'}}></img>
+                            <input type="file" id="fileinput" onChange={this.fileSelectedHandler}/>
+                            <img id="img-display" src={this.state.file ? this.state.file : null} style={{height: '50%', width: '50%'}}></img>
                         </Grid>
                     </Grid>
                     <Button
@@ -139,7 +140,7 @@ export default function SignUp( {userData} ) {
                         variant="contained"
                         color="primary"
                         className={classes.submit}
-                        onClick={fileUploadHander}
+                        onClick={this.fileUploadHander}
                     >
                         Make Profile
           </Button>
@@ -147,8 +148,28 @@ export default function SignUp( {userData} ) {
                 </form>
             </div>
             <Box mt={5}>
-                <Copyright />
+            <Typography variant="body2" color="textSecondary" align="center">
+            {'Copyright © '}
+            <Link color="inherit" href="https://material-ui.com/">
+                Your Website
+      </Link>{' '}
+            {new Date().getFullYear()}
+            {'.'}
+        </Typography>
             </Box>
-        </Container>
+        </Container>) : (<div></div>)}
+        </div>
+    
     );
+    }
 }
+
+const mapStateToProps = (state) => ({
+    user: state.user
+})
+
+const mapActionsToProps = {
+    signUpUser
+}
+
+export default connect(mapStateToProps, mapActionsToProps)(withStyles(styles)(SignUp))

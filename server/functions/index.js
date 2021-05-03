@@ -69,12 +69,13 @@ app.get('/login', function(req, res) {
       bio: "",
       favArtists: [],
       favSongs: [],
-      favAlbums: []
+      favAlbums: [],
+      createdAt: new Date().toISOString()
     }
 
     admin.firestore().collection('users').add(newUser).then(doc => {
       newUser.firebaseID = doc.id 
-      return res.json({user: newUser})
+      return res.json(newUser)
     }).catch((err) =>{
       res.status(500).json({error: 'something went wrong'})
       console.error(err)
@@ -84,7 +85,8 @@ app.get('/login', function(req, res) {
 
   app.post('/createPost', (req,res) => {
     let newPost = {
-      author: req.body.id,
+      author: req.body.author,
+      authorid: req.body.authorid,
       pfp: req.body.pfp,
       type: req.body.type,
       body: req.body.body,
@@ -93,7 +95,9 @@ app.get('/login', function(req, res) {
       song: req.body.song,
       title: req.body.title,
       topic: req.body.topic,
-      pic: req.body.pic
+      pic: req.body.pic,
+      createdAt: new Date().toISOString(),
+      rating: req.body.rating
     }
     admin.firestore().collection('posts').add(newPost).then(doc => {
       newPost.firebaseID = doc.id 
@@ -233,7 +237,7 @@ app.get('/login', function(req, res) {
         request.get(options, function(error, response, body) {
           let websitedata = {
               token: access_token,
-              data: body
+              spotifyData: body
           }
           admin.firestore().collection('users').where('id', "==", body.id).get().then(snap => {
             if(snap.size === 0){
@@ -241,6 +245,7 @@ app.get('/login', function(req, res) {
             }
             else{
               snap.forEach(snapshot => {
+                websitedata.firebaseData = snapshot.data()
                 websitedata.firebaseID = snapshot.id
                 websitedata.hasAccount = true
                 websitedata.pfp = snapshot.profilepic

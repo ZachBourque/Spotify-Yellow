@@ -2,7 +2,7 @@ import React, { Component, useState, useEffect } from 'react'
 import { TextField, Radio, RadioGroup, FormControlLabel, FormControl, FormLabel, makeStyles, Switch } from '@material-ui/core';
 import Spotify from 'spotify-web-api-js';
 import { Container, Avatar, Grid, Paper, Typography } from '@material-ui/core'
-import DisplayData from './DisplayData'
+import DisplayData from '../components/DisplayData'
 import $ from 'jquery'
 
 

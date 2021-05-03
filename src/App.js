@@ -2,7 +2,7 @@ import React from 'react'
 import { useState } from 'react';
 import Spotify from 'spotify-web-api-js';
 import ButtonAppBar from './components/ButtonAppBar';
-import Profile from './components/Profile';
+import Profile from './pages/Profile';
 import { Container, Paper } from '@material-ui/core';
 import axios from 'axios'
 import { ThemeProvider, createMuiTheme } from "@material-ui/core/styles"
