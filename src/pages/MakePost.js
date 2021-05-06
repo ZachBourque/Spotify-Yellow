@@ -4,6 +4,7 @@ import Spotify from 'spotify-web-api-js';
 import { Container, Avatar, Grid, Paper, Typography } from '@material-ui/core'
 import DisplayData from '../components/DisplayData'
 import $ from 'jquery'
+import { connect } from 'react-redux' 
 
 
 const useStyles = makeStyles((theme) => ({
@@ -221,13 +222,19 @@ const MakePost = ({ userData, token }) => {
                                 
                             </form>
                         </div>
-
                     )
-
                 }
             </Paper>
         </div>
     )
 }
 
-export default MakePost
+const mapStateToProps = (state) => ({
+    user: state.user
+})
+
+const mapActionsToProps = {
+
+}
+
+export default connect(mapStateToProps, mapActionsToProps)(MakePost)
