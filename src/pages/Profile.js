@@ -2,9 +2,10 @@ import React, { Component, useState } from 'react'
 import { Container, Avatar, Grid, Paper, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles';
 import ButtonBase from '@material-ui/core/ButtonBase';
+import { connect } from 'react-redux'
 
 
-import MakePost from './MakePost'
+import MakePost from '../components/MakePost'
 
 
 const useStyles = makeStyles((theme) => ({
@@ -23,22 +24,16 @@ const useStyles = makeStyles((theme) => ({
     },
     img: {
         margin: 'auto',
-        display: 'block',
-        maxWidth: '100%',
-        maxHeight: '100%',
+        maxWidth: '200px',
+        maxHeight: '200px',
     },
 }));
 
-const Profile = ({ userData, token }) => {
-    ;
+const Profile = (props) => {
+    
     //State and Globals for the Profile
     const classes = useStyles();
-    
-
-
-
-
-
+    if (!props.user?.firebaseData?.profilepic) {window.location.href = 'localhost:3000'}
     return (
         <div name={classes.root}>
 
@@ -46,15 +41,12 @@ const Profile = ({ userData, token }) => {
 
                 <Grid item xs={12}>
                     <Paper className={classes.paper}>
-                        <ButtonBase className={classes.image}>
-                            <img className={classes.img} alt="complex" src={userData ? (userData.images.length > 0 ? userData.images[0].url : '') : ''} style={{ borderRadius: '10%' }} />
-                        </ButtonBase>
+                            <img className={classes.img} alt="urmom" src={props.user?.firebaseData?.profilepic} />
+
                         <Grid item xs={12} sm container>
                             <Grid item xs container direction="column" spacing={2}>
                                 <Grid item xs>
-                                    <Typography gutterBottom variant="h4">
-                                        {userData?.display_name}
-                                    </Typography>
+
                                 </Grid>
                             </Grid>
 
@@ -64,9 +56,18 @@ const Profile = ({ userData, token }) => {
 
             </Grid>
 
-        <MakePost userData={userData} token={token}/>
+        <MakePost />
         </div>
     )
 }
 
-export default Profile
+
+const mapStateToProps = (state) => ({
+    user: state.user
+})
+
+const mapActionsToProps = {
+
+}
+
+export default connect(mapStateToProps, mapActionsToProps)(Profile)

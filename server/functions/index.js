@@ -97,7 +97,8 @@ app.get('/login', function(req, res) {
       topic: req.body.topic,
       pic: req.body.pic,
       createdAt: new Date().toISOString(),
-      rating: req.body.rating
+      rating: req.body.rating,
+      spotifyID: req.body.spotifyID,
     }
     admin.firestore().collection('posts').add(newPost).then(doc => {
       newPost.firebaseID = doc.id 
