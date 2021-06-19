@@ -124,7 +124,7 @@ app.get('/login', function(req, res) {
 
     admin.firestore().collection('users').add(newUser).then(doc => {
       newUser.firebaseID = doc.id 
-      return res.json({user: newUser})
+      return res.json(newUser)
     }).catch((err) =>{
       res.status(500).json({error: 'something went wrong'})
       console.error(err)
@@ -287,7 +287,7 @@ app.get('/login', function(req, res) {
         request.get(options, function(error, response, body) {
           let websitedata = {
               token: access_token,
-              data: body
+              spotifyData: body
           }
           admin.firestore().collection('users').where('id', "==", body.id).get().then(snap => {
             if(snap.size === 0){
