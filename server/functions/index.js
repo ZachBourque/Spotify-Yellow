@@ -218,6 +218,19 @@ app.get('/login', function(req, res) {
     });
   })
 
+  app.get('/allPosts', (req,res) => {
+    admin.firestore().collection('posts').get().then(snap => {
+      let posts = []
+      snap.forEach(post => {
+        posts.push(post.data())
+      })
+      return res.json(posts)
+    }).catch((err) => {
+      console.error(err);
+      return res.status(500).json({ error: "something went wrong" });
+    });
+  })
+
   app.get('/postsByTopic/:topic', (req,res) => {
     const topic = req.params.topic 
     admin.firestore().collection('posts').where("topic", "==", topic).get().then(snap => {

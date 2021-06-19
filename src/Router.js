@@ -1,5 +1,6 @@
 import React from 'react'
 import {BrowserRouter, Switch, Route, Redirect} from "react-router-dom"
+import Homepage from './pages/Homepage'
 import Home from './pages/Home' 
 import Temp from "./pages/temp"
 import Profile from "./pages/Profile"
@@ -21,6 +22,8 @@ class Router extends React.Component {
         if(a.pfp && a.expires && a.token && a.rtoken ){
           console.log("loading")
           this.props.loadDataIntoState()
+          $("body").css("margin", 0)
+          $("body").css("overflow-x", "hidden")
         } else {
           localStorage.removeItem("data")
         }
@@ -40,6 +43,7 @@ class Router extends React.Component {
             <Route path="/" component={Home} />
             <Switch>
             <Route path={["/profile", "/profile=:id"]} component={Profile}/>
+            <Route path="/" component={Homepage} exact/>
             <Route path="/signup" component={SignUp}/>
             <Route path='/temp' component={Temp}/>
             </Switch>
