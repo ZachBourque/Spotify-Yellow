@@ -19,6 +19,7 @@ import Ten from '../assets/10.png'
 import AddIcon from '@material-ui/icons/Add'
 import RemoveIcon from '@material-ui/icons/Remove';
 import IconButton from '@material-ui/core/IconButton';
+import { refreshToken } from '../redux/actions/userActions'
 import axios from 'axios';
 
 
@@ -194,22 +195,30 @@ const MakePost = (props) => {
 
     const sendPost = () => {
         let newPost = {
+            token: props.user.token,
+            rtoken: props.user.rtoken,
+            expires: props.user.expires,
             album: selectedTopic.albumName ? selectedTopic.albumName : null,
             artist: selectedTopic.artistName ? selectedTopic.artistName : null,
-            author: props.user.userName ? props.user.userName : null,
-            authorid: props.user.id ? props.user.id : null,
             body: postBody,
-            pfp: null,
             pic: selectedTopic.image,
             rating: switchState ? postRating : null,
             song: selectedTopic.songName ? selectedTopic.songName : null,
             title: postTitle,
             topic: selectedTopic.type,
             type: value,
-            spotifyID: selectedTopic.id
+            spotifyid: selectedTopic.id
         }
         axios.post("http://localhost:5000/spotify-yellow-282e0/us-central1/api/createPost", newPost)
             .then(res => {
+                console.log(res.data)
+                if(res.data.refreshed){
+                    let data = JSON.parse(localStorage.getItem("data"))
+                    data.token = res.data.token 
+                    data.expires = res.data.expires
+                    localStorage.setItem("data", JSON.stringify(data))
+                    props.refreshToken(data)
+                }
                 window.location.reload()
             })
             .catch (err => console.error(err))
@@ -295,7 +304,7 @@ const mapStateToProps = (state) => ({
 })
 
 const mapActionsToProps = {
-
+    refreshToken
 }
 
 export default connect(mapStateToProps, mapActionsToProps)(MakePost)

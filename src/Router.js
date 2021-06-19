@@ -8,10 +8,12 @@ import { Container, Paper } from '@material-ui/core';
 import SignUp from './pages/SignUp'
 import { connect } from "react-redux"
 import { loadDataIntoState } from './redux/actions/userActions'
+import $ from "jquery"
 
 class Router extends React.Component {
 
       componentDidMount() {
+        $("body").css("margin", 0)
         var a = JSON.parse(window.localStorage.getItem("data"));
         if (!a) {
           return
@@ -35,9 +37,9 @@ class Router extends React.Component {
             <ThemeProvider theme={this.theme}>
             <Paper style={{ height: "auto", minHeight: '100vh'}}>
             <BrowserRouter>
-            <Route path="/" component={Home}/>
+            <Route path="/" component={Home} />
             <Switch>
-            <Route path="/profile" component={Profile}/>
+            <Route path={["/profile", "/profile=:id"]} component={Profile}/>
             <Route path="/signup" component={SignUp}/>
             <Route path='/temp' component={Temp}/>
             </Switch>

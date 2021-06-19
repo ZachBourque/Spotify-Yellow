@@ -16,6 +16,7 @@ var client_secret = info.secret; // Your secret
 var redirect_uri = 'http://localhost:5000/spotify-yellow-282e0/us-central1/api/callback'; // Your redirect uri
 
 const express = require('express');
+const { _onRequestWithOptions } = require('firebase-functions/lib/providers/https');
 const app = express();
 app.use(cors())
 
@@ -119,7 +120,8 @@ app.get('/login', function(req, res) {
       favArtists: [],
       favSongs: [],
       favAlbums: [],
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      posts: []
     }
 
     admin.firestore().collection('users').add(newUser).then(doc => {
@@ -134,9 +136,6 @@ app.get('/login', function(req, res) {
 
   app.post('/createPost', (req,res) => {
     let newPost = {
-      author: req.body.author,
-      authorid: req.body.authorid,
-      pfp: req.body.pfp,
       type: req.body.type,
       body: req.body.body,
       album: req.body.album,
@@ -147,16 +146,63 @@ app.get('/login', function(req, res) {
       pic: req.body.pic,
       createdAt: new Date().toISOString(),
       rating: req.body.rating,
-	  spotifyid: req.body.spotifyid
+      spotifyid: req.body.spotifyid
     }
-    admin.firestore().collection('posts').add(newPost).then(doc => {
-      newPost.firebaseID = doc.id 
-      return res.json({post: newPost})
-    }).catch((err) =>{
-      res.status(500).json({error: 'something went wrong'})
-      console.error(err)
-    })
+    testToken(req.body.token, req.body.rtoken, req.body.expires, createPost, res, newPost) 
   })
+
+  function createPost(data){
+    let { token, refreshed, expires, res } = data
+    let newPost = data.data
+    var options = {
+      url: 'https://api.spotify.com/v1/me',
+      headers: { 'Authorization': 'Bearer ' + token },
+      json: true
+    };
+ 
+    request.get(options, function(error, response, body){
+      if(error || response.statusCode !== 200){
+        error ? console.error(error) : null
+        return res.status(401).json({error: "Error getting access token, LOGOUT"})
+      } else {
+        let id = body.id 
+        admin.firestore().collection("users").where("id", "==", id).get().then(snap => {
+          if(snap.size === 1){
+            snap.forEach(user => {
+              newPost.authorid = id
+              newPost.pfp = user.data().profilepic
+              newPost.username = user.data().username
+              admin.firestore().collection("posts").add(newPost).then(post => {
+                newPost.id = post.id
+                user.ref.update({
+                  posts: admin.firestore.FieldValue.arrayUnion(newPost)
+                }).then(() => {
+                  if(refreshed){
+                    return res.json({success: "Successfully created post!", refreshed: true, expires, token})
+                  } else {
+                    return res.json({success: "Successfully created post!", refreshed: false})
+                  }
+                }).catch(err => {
+                  console.error(err)
+                  return res.status(500).json({error: "Error updating user posts array."})
+                })
+              }).catch(err => {
+                console.error(err)
+                return res.status(500).json({error: "Error adding post."})
+              })
+            })
+
+          } else {
+            return res.status(401).json({error: "Could not find user."})
+          }
+        }).catch(err => {
+          console.error(err)
+          return res.status(500).json({error: "Error getting user."})
+        })
+      }
+    })
+
+  }
 
   app.get('/postsByType/:type', (req,res) => {
     const type = req.params.type 
@@ -191,9 +237,9 @@ app.get('/login', function(req, res) {
     admin.firestore().collection('users').where('id', "==", id).get().then(snap => {
       let user
       snap.forEach(obj => {
-        user = obj
+        user = obj.data()
       })
-      return res.json({user: user})
+      return res.json(user)
     }).catch((err) => {
       console.error(err);
       return res.status(500).json({ error: "something went wrong" });
@@ -212,6 +258,26 @@ app.get('/login', function(req, res) {
       console.error(err);
       return res.status(500).json({ error: "something went wrong" });
     });
+  })
+
+  app.get('/refreshtoken/:token', (req,res) => {
+    var authOptions = {
+    url: 'https://accounts.spotify.com/api/token',
+    headers: { 'Authorization': 'Basic ' + (new Buffer(client_id + ':' + client_secret).toString('base64')) },
+    form: {
+      grant_type: 'refresh_token',
+      refresh_token: req.params.token
+    },
+    json: true
+  };
+  request.post(authOptions, function(error, response, body){
+    if(error || response.statusCode !== 200){
+      error ? console.error(err) : null 
+      res.status(401).json({error: "Could not refresh token, LOGOUT"})
+    } else {
+      res.json(body)
+    }
+  })
   })
 
   app.post('/uploadpic', (req,res) => {
@@ -314,5 +380,32 @@ app.get('/login', function(req, res) {
       }
     });
   })
+
+function testToken(token, rtoken, expires, callback, res, data){
+  let now = new Date().getTime()
+  if(now < expires){
+    callback({token, refreshed: false, expires, res, data})
+  } else {
+  var authOptions = {
+    url: 'https://accounts.spotify.com/api/token',
+    headers: { 'Authorization': 'Basic ' + (new Buffer(client_id + ':' + client_secret).toString('base64')) },
+    form: {
+      grant_type: 'refresh_token',
+      refresh_token: rtoken
+    },
+    json: true
+  };
+  request.post(authOptions, function(error, response, body){
+    if(error || response.statusCode !== 200){
+      error ? console.error(error) : null
+      return res.status(401).json({error: "Error getting refresh token, LOGOUT"})
+    } else {
+      let atoken = body.access_token
+      let exp = new Date(new Date().getTime() + ((body.expires_in * 1000)-60000)).getTime()
+      callback({token: atoken, refreshed: true, expires: exp, res, data})
+    }
+  })
+  }
+}
 
 exports.api = functions.https.onRequest(app)

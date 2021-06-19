@@ -1,4 +1,4 @@
-import { LOGOUT, SETUSERDATA, REFRESH_TOKEN } from '../types'
+import { LOGOUT, SETUSERDATA } from '../types'
 
 const initialState = {
     token: null,
@@ -14,11 +14,6 @@ export default function(state = initialState, action){
             return initialState
         case SETUSERDATA:
             return {...action.payload, loggedIn: true}
-        case REFRESH_TOKEN:
-            return {
-                ...state,
-                ...action.payload
-            }
         default:
             return state
     }

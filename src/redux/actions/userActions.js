@@ -23,3 +23,7 @@ export const signUpUser = (data, history, window ) => (dispatch) => {
             })
     }
 }
+
+export const refreshToken = (data) => (dispatch) => {
+    dispatch({type: SETUSERDATA, payload: data})
+}
