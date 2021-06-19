@@ -4,7 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import ButtonBase from '@material-ui/core/ButtonBase';
 
 
-import MakePost from './MakePost'
+import MakePost from 'C:\\Users\\3tern\\code\\spotify-yellow\\src\\components\\MakePost'
 
 
 const useStyles = makeStyles((theme) => ({
@@ -30,15 +30,9 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Profile = ({ userData, token }) => {
-    ;
     //State and Globals for the Profile
     const classes = useStyles();
     
-
-
-
-
-
     return (
         <div name={classes.root}>
 
