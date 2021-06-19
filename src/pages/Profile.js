@@ -2,12 +2,14 @@ import React, { Component, useState } from 'react'
 import { Container, Avatar, Grid, Paper, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles';
 import ButtonBase from '@material-ui/core/ButtonBase';
+import ProfileSkeleton from "../Skeletons/ProfileSkeleton"
+import { getProfileData, getUserProfileData } from "../redux/actions/profileActions"
+import { connect } from 'react-redux'
+import withStyles from '@material-ui/core/styles/withStyles'
+import queryString from "query-string"
 
 
-import MakePost from 'C:\\Users\\3tern\\code\\spotify-yellow\\src\\components\\MakePost'
-
-
-const useStyles = makeStyles((theme) => ({
+const styles = makeStyles((theme) => ({
     root: {
         flexGrow: 1,
     },
@@ -29,25 +31,45 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const Profile = ({ userData, token }) => {
-    //State and Globals for the Profile
-    const classes = useStyles();
+class Profile extends Component {
+    componentDidMount() {
+        if(this.props.user.token && !this.props.profile.id){
+            if(queryString.parse(this.props.location.pathname)['/profile'] && (queryString.parse(this.props.location.pathname)['/profile'] !== this.props.profile.id) ){
+                this.props.getProfileData(queryString.parse(this.props.location.pathname)['/profile'])
+            } else {
+                console.log(this.props.user.rtoken)
+                this.props.getUserProfileData(this.props.user.token, this.props.user.expires, this.props.user.rtoken, this.props.history)
+            }
+        }
+    }
+
+    componentWillReceiveProps(props) {
+        if(props.user.token && !props.profile.id){
+            if(queryString.parse(props.location.pathname)['/profile']){
+                props.getProfileData(queryString.parse(props.location.pathname)['/profile'])
+            } else {
+                props.getUserProfileData(props.user.token, props.user.expires, props.user.rtoken, props.history)
+            }
+        }
+    }
     
+    render(){
+    const { classes } = this.props
     return (
         <div name={classes.root}>
-
-            <Grid container>
+            {this.props.profile.loading ? <ProfileSkeleton/> : (
+                <Grid container>
 
                 <Grid item xs={12}>
                     <Paper className={classes.paper}>
                         <ButtonBase className={classes.image}>
-                            <img className={classes.img} alt="complex" src={userData ? (userData.images.length > 0 ? userData.images[0].url : '') : ''} style={{ borderRadius: '10%' }} />
+                            <img alt='nope' src={this.props.profile.pfp} style={{ borderRadius: '10%' }} />
                         </ButtonBase>
                         <Grid item xs={12} sm container>
                             <Grid item xs container direction="column" spacing={2}>
                                 <Grid item xs>
                                     <Typography gutterBottom variant="h4">
-                                        {userData?.display_name}
+                                        {this.props.profile.username}
                                     </Typography>
                                 </Grid>
                             </Grid>
@@ -57,10 +79,24 @@ const Profile = ({ userData, token }) => {
                 </Grid>
 
             </Grid>
+            )}
 
-        <MakePost userData={userData} token={token}/>
         </div>
     )
+    }
 }
 
-export default Profile
+
+const mapStateToProps = (state) => ({
+    user: state.user,
+    profile: state.profile
+})
+
+const mapActionsToProps = {
+    getUserProfileData,
+    getProfileData
+}
+
+export default connect(mapStateToProps, mapActionsToProps)(withStyles(styles)(Profile))
+
+

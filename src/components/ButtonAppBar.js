@@ -1,4 +1,5 @@
 import React from 'react';
+import { connect } from 'react-redux'
 import { fade, makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -83,16 +84,15 @@ function PrimarySearchAppBar(props) {
     scope: 'user-read-private user-read-email user-read-playback-state',
     redirect_uri: 'http://localhost:5000/spotify-yellow-282e0/us-central1/api/callback'
   })
-  const login = () => {
-    props.history.push(url)
-  }
 
   return (
     <div className={classes.grow}>
       <AppBar position="static">
         <Toolbar>
           <Typography className={classes.title} variant="h6" noWrap>
+            <button type="button" onClick={() => props.history.push("/")}>
             Spotify Yellow
+            </button>
           </Typography>
           <div className={classes.search}>
             <div className={classes.searchIcon}>
@@ -109,9 +109,16 @@ function PrimarySearchAppBar(props) {
           </div>
           <div className={classes.grow}/>
             <div className={classes.sectionMobile}>
-              <a href={url}>
+              {props.user.loggedIn ? (
+                <button type="button" style={{background: 'transparent', border: 'none'}} onClick={() => {props.history.push('/profile')}}>
+                <img src={props.user.pfp} width="50" />
+                </button>
+              ) : 
+              (<a href={url}>
            <Button variant="contained" type="button" >Login</Button>
-           </a>
+           </a>)
+              }
+
           </div>
   
         </Toolbar>
@@ -120,4 +127,12 @@ function PrimarySearchAppBar(props) {
   );
 }
 
-export default PrimarySearchAppBar
+const mapStateToProps = (state) => ({
+    user: state.user
+})
+
+const mapActionsToProps = {
+    
+}
+
+export default connect(mapStateToProps, mapActionsToProps)(PrimarySearchAppBar)

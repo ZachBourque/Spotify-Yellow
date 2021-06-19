@@ -5,7 +5,7 @@ import ButtonAppBar from '../components/ButtonAppBar';
 import { Container, Paper } from '@material-ui/core';
 import axios from 'axios'
 import { ThemeProvider, createMuiTheme } from "@material-ui/core/styles"
-
+import MakePost from "../components/MakePost"
 
 class Home extends React.Component {
 
@@ -14,10 +14,7 @@ class Home extends React.Component {
   render() {
     return (
       <div>
-          <ButtonAppBar loggedIn={this.props.token} userData={this.props.userData} history={this.props.history} />
-          <Container>
-
-          </Container>
+          <ButtonAppBar history={this.props.history}/>
       </div>
     );
   }
