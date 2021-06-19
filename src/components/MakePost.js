@@ -1,10 +1,25 @@
 import React, { Component, useState, useEffect } from 'react'
-import { TextField, Radio, RadioGroup, FormControlLabel, FormControl, FormLabel, makeStyles, Switch } from '@material-ui/core';
+import { TextField, Radio, RadioGroup, FormControlLabel, FormControl, FormLabel, makeStyles, Switch, TextareaAutosize } from '@material-ui/core';
 import Spotify from 'spotify-web-api-js';
 import { Container, Avatar, Grid, Paper, Typography } from '@material-ui/core'
-import DisplayData from '../components/DisplayData'
+import DisplayData from './DisplayData'
 import $ from 'jquery'
-import { connect } from 'react-redux' 
+import { connect } from 'react-redux'
+import Zero from '../assets/0.png'
+import One from '../assets/1.png'
+import Two from '../assets/2.png'
+import Three from '../assets/3.png'
+import Four from '../assets/4.png'
+import Five from '../assets/5.png'
+import Six from '../assets/6.png'
+import Seven from '../assets/7.png'
+import Eight from '../assets/8.png'
+import Nine from '../assets/9.png'
+import Ten from '../assets/10.png'
+import AddIcon from '@material-ui/icons/Add'
+import RemoveIcon from '@material-ui/icons/Remove';
+import IconButton from '@material-ui/core/IconButton';
+import axios from 'axios';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -27,9 +42,15 @@ const useStyles = makeStyles((theme) => ({
         maxWidth: '100%',
         maxHeight: '100%',
     },
+    rating: {
+        margin: 'auto',
+        display: 'block',
+        maxWidth: '100px',
+        maxHeight: '100px',
+    }
 }));
 
-const MakePost = ({ userData, token }) => {
+const MakePost = (props) => {
     const classes = useStyles();
     const [value, setValue] = useState('artist');
     //Data returned from the Spotify API
@@ -41,9 +62,16 @@ const MakePost = ({ userData, token }) => {
     //An object from the dataArray that is the topic of the post
     const [selectedTopic, setSelectedTopic] = useState(null);
 
-    const [checked, setChecked] = React.useState(false);
+    const [postRating, setRating] = useState(5);
+    const [postTitle, setTitle] = useState('');
+    const [postBody, setBody] = useState('');
+
+    const [imagesArray, setImagesArray] = useState([Zero, One, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten]);
+    const [switchState, setSwitchState] = useState(false);
+
     const s = new Spotify();
-    s.setAccessToken(token)
+    const token = props.user.token;
+    s.setAccessToken(token);
 
 
     //functions
@@ -52,9 +80,6 @@ const MakePost = ({ userData, token }) => {
         searchTextChanged($("#searchText").val())
     }, [value])
 
-    useEffect(() => {
-        console.log(scene)
-    }, [scene])
 
 
 
@@ -71,7 +96,6 @@ const MakePost = ({ userData, token }) => {
         } else if (value == 'song') {
             searchSongs(temp);
         }
-
 
     }
 
@@ -91,7 +115,6 @@ const MakePost = ({ userData, token }) => {
                 prev = null;
                 if (data) {
                     setReturnedData(data.artists.items)
-                    console.log(data)
                     var tempArray = []
                     for (var i = 0; i < data.artists.items.length; i++) {
                         var urMom = data.artists.items[i]
@@ -121,7 +144,6 @@ const MakePost = ({ userData, token }) => {
             headers: { 'Authorization': 'Bearer ' + token }
         });
         const data = await result.json();
-        console.log(data)
         if (data.albums) {
             setReturnedData(data.albums.items)
             var tempArray = []
@@ -147,7 +169,6 @@ const MakePost = ({ userData, token }) => {
             function (data) {
                 // clean the promise so it doesn't call abort
                 prev = null;
-                console.log(data)
                 if (data) {
                     setReturnedData(data.tracks.items)
                     var tempArray = []
@@ -171,8 +192,32 @@ const MakePost = ({ userData, token }) => {
         );
     }
 
-    const handleChange = (e) => {
-        setChecked(!checked)
+    const sendPost = () => {
+        let newPost = {
+            album: selectedTopic.albumName ? selectedTopic.albumName : null,
+            artist: selectedTopic.artistName ? selectedTopic.artistName : null,
+            author: props.user.userName ? props.user.userName : null,
+            authorid: props.user.id ? props.user.id : null,
+            body: postBody,
+            pfp: null,
+            pic: selectedTopic.image,
+            rating: switchState ? postRating : null,
+            song: selectedTopic.songName ? selectedTopic.songName : null,
+            title: postTitle,
+            topic: selectedTopic.type,
+            type: value,
+            spotifyID: selectedTopic.id
+        }
+        axios.post("http://localhost:5000/spotify-yellow-282e0/us-central1/api/createPost", newPost)
+            .then(res => {
+                window.location.reload()
+            })
+            .catch (err => console.error(err))
+
+    }
+
+    const handleSwitchChange = (event) => {
+        setSwitchState(!switchState);
     }
 
     return (
@@ -191,7 +236,7 @@ const MakePost = ({ userData, token }) => {
                             <TextField variant="filled" id="searchText" onChange={searchTextChanged} />
                         </Grid>
                         {dataArray?.map((element, index) => {
-                            return <DisplayData element={element} id={index} maxHeight={'200px'} maxWidth={'200px'} onClick={(e) => { setSelectedTopic(dataArray[e.target.id]); setScene(1)}} />
+                            return <DisplayData element={element} id={index} maxHeight={'200px'} maxWidth={'200px'} onClick={(e) => { setSelectedTopic(dataArray[e.target.id]); setScene(1);}} />
                         })}
                     </FormControl>)
                 }
@@ -200,27 +245,43 @@ const MakePost = ({ userData, token }) => {
                         <div>
                             <DisplayData element={selectedTopic} maxHeight={200} />
                             <form id="contactForm">
-                            <TextField
-                                    id="postNumber"
-                                    label="Number"
-                                    type="number"
-                                    InputLabelProps={{
-                                        shrink: true,
-                                    }}
-                                    variant="filled"
-                                    disabled={checked}
-                                    InputProps={{ inputProps: { min: 0, max: 10 } }}
-                                />
-                                <Switch checked={checked} onChange={handleChange} />
+                                <div>
+                                    <Switch
+                                        checked={switchState}
+                                        onChange={handleSwitchChange}
+                                        name="useNumber"
+                                        inputProps={{ 'aria-label': 'secondary checkbox' }}
+                                    />
+                                    {!switchState ? '' : (<div>
+                                        <img className={classes.rating} src={imagesArray[postRating]} />
+                                        <IconButton aria-label="minus" onClick={() => setRating(!(postRating == 0) ? postRating - 1 : postRating)}>
+                                            <RemoveIcon />
+                                        </IconButton>
+                                        <IconButton aria-label="plus" onClick={() => setRating(!(postRating == 10) ? postRating + 1 : postRating)}>
+                                            <AddIcon />
+                                        </IconButton>
+                                    </div>)}
+                                </div>
+                                <TextField
+                                    id="postTitle"
+                                    label="Post Title"
+                                    rows={1}
+                                    variant="outlined"
+                                    value={postTitle}
+                                    onChange={(e) => setTitle(e.target.value)}
+                                /><br />
                                 <TextField
                                     id="postBody"
                                     label="Post Body"
                                     multiline
                                     rows={6}
                                     variant="outlined"
+                                    value={postBody}
+                                    onChange={(e) => setBody(e.target.value)}
                                 />
-                                
+
                             </form>
+                            <button type="button" onClick={() => sendPost()} >Make Post</button>
                         </div>
                     )
                 }
