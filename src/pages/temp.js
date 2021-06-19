@@ -1,51 +1,43 @@
-import React from 'react'
-import axios from 'axios'
 import queryString from 'query-string'
+import { Redirect } from "react-router-dom";
 
 
 
 
-export default class loggedin extends React.Component{
+const Temp = (props) => {
+    console.log("here1")
 
-    state = {
-        error: null
-    }
-
-    componentDidMount() {
-        const code = queryString.parse(this.props.location.search)['code']
-        const state = queryString.parse(this.props.location.search)['state']
-        const localState = window.localStorage.getItem('state')
-        if(!code || !state || !localState){
-            this.props.history.push('/')
-            return
+        const token = queryString.parse(props.location.search)['t']
+        const rtoken = queryString.parse(props.location.search)['rt']
+        const expires = queryString.parse(props.location.search)['ex']
+        const pfp = queryString.parse(props.location.search)['p']
+        const hasAccount = queryString.parse(props.location.search)['a']
+        const id = queryString.parse(props.location.search)['id']
+        if(hasAccount == "true"){
+            localStorage.setItem("data",JSON.stringify(
+                {token, rtoken, expires, pfp}
+            ))
+            return <Redirect to="/"/>
         }
-        console.log(state, localState)
-        if(state === localState){
-            axios.get(`http://localhost:5000/spotify-yellow-282e0/us-central1/api/getUserData/${code}`).then(res => {
-                window.localStorage.setItem("spotifyData", JSON.stringify(res.data))
-                window.localStorage.removeItem("state")
-
-                if(res.data.hasAccount){
-                    this.props.history.push(`/profile/${res.data.firebaseID}`)
-                    window.location.reload()
-                } else {
-                    this.props.history.push('/sign-up')
-                    window.location.reload()
+        if(!token || !rtoken || !expires){
+            console.error("Uh oh")
+            return <Redirect to="/"/>
+        } else {
+            props.history.push({
+                pathname: "/signup",
+                state: {
+                    isAuthed: true,
+                    token,
+                    rtoken,
+                    expires,
+                    id
                 }
             })
-        } else {
-            this.setState({
-                error: true
-            })
-            this.props.history.push('/temp')
         }
+        return <div></div>
+        
+
     }
 
-    render(){
-        return(
-            <div>
-                {this.state.error ? <h1>State doesn't match I give up.</h1> : <h1>Logging you in.</h1>}
-            </div>
-        )
-    }
-}
+
+export default Temp

@@ -13,10 +13,7 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import IconButton from '@material-ui/core/IconButton';
-import PhotoCamera from '@material-ui/icons/PhotoCamera';
 import $ from 'jquery';
-import axios from 'axios'
-import { useHistory } from "react-router-dom";
 import { connect } from 'react-redux'
 import { signUpUser } from "../redux/actions/userActions"
 import withStyles from '@material-ui/core/styles/withStyles'
@@ -52,24 +49,45 @@ const styles = makeStyles(theme =>  ({
 class SignUp extends React.Component{
 
     state = {
-        file: null
+        file: null,
+        pfp: null,
+        token: null,
+        rtoken: null,
+        expires: null,
+        id: null
     }
 
     componentDidMount() {
-        console.log(this.props)
-        if(!this.props.user){
+        console.log("mounted")
+        const { state } = this.props.location
+        if(state && state.isAuthed){
+            this.setState({
+                token: state.token,
+                rtoken: state.rtoken,
+                expires: state.expires,
+                id: state.id
+            })
+        } else {
             this.props.history.push("/")
         }
     }
 
 
     fileSelectedHandler = event => {
-        var reader = new FileReader();
         var file = $('#fileinput').prop('files')[0];
-        var url = URL.createObjectURL(file);
-        this.setState({
-            file: url
-        })
+        console.log("file",file)
+        if(file.type.includes("image")){
+            var url = URL.createObjectURL(file);
+            this.setState({
+                file: url,
+                pfp: null
+            })
+        } else {
+            this.setState({
+                file: null
+            })
+        }
+
 
     }
 
@@ -77,19 +95,22 @@ class SignUp extends React.Component{
         e.preventDefault()
 
         let signUpData = {
-            id: this.props.USERCHANGEid,
-            username: $("#firstName").val()
+            id: this.state.id,
+            username: $("#firstName").val(),
+            expires: this.state.expires,
+            token: this.state.token,
+            rtoken: this.state.rtoken
         }
 
         if(!$('#fileinput').prop('files')[0]){
-            signUpData.profilepic = "https://firebasestorage.googleapis.com/v0/b/spotify-yellow-282e0.appspot.com/o/images.png?alt=media&token=3e1714f4-9ccb-41dc-9e4a-da198e92dec7"
+            signUpData.pfp = "https://firebasestorage.googleapis.com/v0/b/spotify-yellow-282e0.appspot.com/o/images.png?alt=media&token=3e1714f4-9ccb-41dc-9e4a-da198e92dec7"
         } else {
             var image = $('#fileinput').prop('files')[0]
             const formData = new FormData()
             formData.append('image', image, image.name)
             signUpData.formData = formData
         }
-        
+        this.props.signUpUser(signUpData, this.props.history, window) 
         
     }
     render() {
@@ -118,14 +139,13 @@ class SignUp extends React.Component{
                                 id="firstName"
                                 label="Username"
                                 autoFocus
-                                defaultValue={this.props.USERCHANGEdisplay_name}
                             />
                         </Grid>
 
                         <Grid item xs={12} sm={12}>
                             <label htmlFor="fileInput">Profile Picture:</label><br></br>
                             <input type="file" id="fileinput" onChange={this.fileSelectedHandler}/>
-                            <img id="img-display" src={this.state.file ? this.state.file : null} style={{height: '50%', width: '50%'}}></img>
+                            <img id="img-display" src={this.state.file ? this.state.file : "https://firebasestorage.googleapis.com/v0/b/spotify-yellow-282e0.appspot.com/o/images.png?alt=media&token=3e1714f4-9ccb-41dc-9e4a-da198e92dec7"} style={{height: '50%', width: '50%'}}></img>
                         </Grid>
                     </Grid>
                     <Button
