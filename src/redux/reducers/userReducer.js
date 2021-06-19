@@ -2,10 +2,10 @@ import { LOGOUT, SETUSERDATA, REFRESH_TOKEN } from '../types'
 
 const initialState = {
     token: null,
-    hasAccount: false,
-    spotifyData: null,
+    rtoken: null,
+    expires: null,
     pfp: null,
-    id: null
+    loggedIn: false
 }
 
 export default function(state = initialState, action){
@@ -13,7 +13,7 @@ export default function(state = initialState, action){
         case LOGOUT:
             return initialState
         case SETUSERDATA:
-            return {...action.payload}
+            return {...action.payload, loggedIn: true}
         case REFRESH_TOKEN:
             return {
                 ...state,
