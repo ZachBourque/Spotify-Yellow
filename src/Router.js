@@ -1,32 +1,27 @@
 import React from 'react'
 import {BrowserRouter, Switch, Route, Redirect} from "react-router-dom"
-import App from "./App"
-import temp from "./pages/temp"
+import Home from './pages/Home' 
+import Temp from "./pages/temp"
 import Profile from "./pages/Profile"
 import { ThemeProvider, createMuiTheme } from "@material-ui/core/styles"
 import { Container, Paper } from '@material-ui/core';
-import ButtonAppBar from './components/ButtonAppBar';
-import Spotify from 'spotify-web-api-js';
 import SignUp from './pages/SignUp'
 import { connect } from "react-redux"
 import { loadDataIntoState } from './redux/actions/userActions'
 
 class Router extends React.Component {
-    state = {
-        accessToken: null,
-        s: null,
-        redirect: null,
-        userData: null,
-        isLoading: true,
-      }
-    
+
       componentDidMount() {
-        var a = window.localStorage.getItem("spotifyData");
+        var a = JSON.parse(window.localStorage.getItem("data"));
         if (!a) {
           return
         }
-        console.log("this")
-        this.props.loadDataIntoState()
+        if(a.pfp && a.expires && a.token && a.rtoken ){
+          console.log("loading")
+          this.props.loadDataIntoState()
+        } else {
+          localStorage.removeItem("data")
+        }
       }
 
     theme = createMuiTheme({
@@ -40,17 +35,11 @@ class Router extends React.Component {
             <ThemeProvider theme={this.theme}>
             <Paper style={{ height: "auto", minHeight: '100vh'}}>
             <BrowserRouter>
-            <Route path="/" >
-                <App token={this.state.isLoading ? null : this.state.accessToken} userData={this.state.isLoading ? null : this.state.userData} />
-            </Route>
+            <Route path="/" component={Home}/>
             <Switch>
-            <Route path="/profile" >
-                <Profile
-                token={this.state.isLoading ? 'aaa' : this.state.accessToken} userData={this.state.isLoading ? null : this.state.userData}/>
-            </Route>
-            <Route path="/sign-up" component={SignUp}>
-            </Route>
-            <Route path='/temp' component={temp}/>
+            <Route path="/profile" component={Profile}/>
+            <Route path="/signup" component={SignUp}/>
+            <Route path='/temp' component={Temp}/>
             </Switch>
             </BrowserRouter>
             </Paper>
@@ -61,9 +50,9 @@ class Router extends React.Component {
 
 }
 
-const mapStateToProps = (state) => ({
-  user: state.user
-})
+const mapStateToProps = (state) => {
+
+}
 
 const mapActionsToProps = {
   loadDataIntoState

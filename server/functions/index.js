@@ -55,9 +55,58 @@ app.get('/login', function(req, res) {
     // after checking the state parameter
 
     var code = req.query.code || null;
-    var state = req.query.state || null;
+    var authOptions = {
+      url: 'https://accounts.spotify.com/api/token',
+      form: {
+        code: code,
+        redirect_uri: redirect_uri,
+        grant_type: 'authorization_code'
+      },
+      headers: {
+        'Authorization': 'Basic ' + (new Buffer(client_id + ':' + client_secret).toString('base64'))
+      },
+      json: true
+    };
 
-    res.redirect("http://localhost:3000/temp?" + querystring.stringify({code: code, state: state}))
+    request.post(authOptions, function(error, response, body) {
+      if (!error && response.statusCode === 200) {
+
+        var access_token = body.access_token,
+            refresh_token = body.refresh_token,
+            expires_in = body.expires_in;
+
+        var options = {
+          url: 'https://api.spotify.com/v1/me',
+          headers: { 'Authorization': 'Bearer ' + access_token },
+          json: true
+        };
+
+        // use the access token to access the Spotify Web API
+        request.get(options, function(error, response, body) {
+          let websitedata = {
+              t: access_token,
+              rt: refresh_token,
+              ex: new Date(new Date().getTime() + ((expires_in * 1000)-60000)).getTime(),
+              id: body.id
+          }
+          admin.firestore().collection('users').where('id', "==", body.id).get().then(snap => {
+            if(snap.size === 0){
+              websitedata.a = false
+            }
+            else{
+              snap.forEach(snapshot => {
+                websitedata.a = true
+                websitedata.p = snapshot.data().profilepic
+              })
+            }
+          res.redirect("http://localhost:3000/temp?"+querystring.stringify(websitedata))
+          })
+        });
+      } else {
+        console.log(error)
+        res.status(500).json({error: "Something went wrong."})
+      }
+    });
 
   });
 
@@ -97,7 +146,8 @@ app.get('/login', function(req, res) {
       topic: req.body.topic,
       pic: req.body.pic,
       createdAt: new Date().toISOString(),
-      rating: req.body.rating
+      rating: req.body.rating,
+	  spotifyid: req.body.spotifyid
     }
     admin.firestore().collection('posts').add(newPost).then(doc => {
       newPost.firebaseID = doc.id 
