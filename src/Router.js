@@ -1,5 +1,6 @@
 import React from 'react'
 import {BrowserRouter, Switch, Route, Redirect} from "react-router-dom"
+import Homepage from './pages/Homepage'
 import Home from './pages/Home' 
 import Temp from "./pages/temp"
 import Profile from "./pages/Profile"
@@ -8,6 +9,7 @@ import { Container, Paper } from '@material-ui/core';
 import SignUp from './pages/SignUp'
 import { connect } from "react-redux"
 import { loadDataIntoState } from './redux/actions/userActions'
+import $ from "jquery"
 
 class Router extends React.Component {
 
@@ -19,6 +21,8 @@ class Router extends React.Component {
         if(a.pfp && a.expires && a.token && a.rtoken ){
           console.log("loading")
           this.props.loadDataIntoState()
+          $("body").css("margin", 0)
+          $("body").css("overflow-x", "hidden")
         } else {
           localStorage.removeItem("data")
         }
@@ -37,6 +41,7 @@ class Router extends React.Component {
             <BrowserRouter>
             <Route path="/" component={Home}/>
             <Switch>
+            <Route path="/" component={Homepage} exact/>
             <Route path="/profile" component={Profile}/>
             <Route path="/signup" component={SignUp}/>
             <Route path='/temp' component={Temp}/>
