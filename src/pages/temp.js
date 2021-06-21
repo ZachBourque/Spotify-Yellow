@@ -1,6 +1,8 @@
 import queryString from 'query-string'
 import { Redirect } from "react-router-dom";
-
+import { loadDataIntoState } from "../redux/actions/authActions"
+import { loadUser } from "../redux/actions/userActions"
+import { connect } from 'react-redux'
 
 
 
@@ -15,8 +17,11 @@ const Temp = (props) => {
         const id = queryString.parse(props.location.search)['id']
         if(hasAccount == "true"){
             localStorage.setItem("data",JSON.stringify(
-                {token, rtoken, expires, pfp}
+                {token, rtoken, expires}
             ))
+            localStorage.setItem("cachepfp", pfp)
+            props.loadDataIntoState()
+            props.loadUser(token, expires, rtoken)
             return <Redirect to="/"/>
         }
         if(!token || !rtoken || !expires){
@@ -40,4 +45,12 @@ const Temp = (props) => {
     }
 
 
-export default Temp
+const mapStateToProps = (state) => ({
+})
+
+const mapActionsToProps = {
+    loadUser,
+    loadDataIntoState
+}
+
+export default connect(mapStateToProps, mapActionsToProps)(Temp)

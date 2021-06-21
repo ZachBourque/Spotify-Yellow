@@ -1,4 +1,4 @@
-import React, { Component, useState } from 'react'
+import React, { Component } from 'react'
 import { Container, Avatar, Grid, Paper, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles';
 import ButtonBase from '@material-ui/core/ButtonBase';
@@ -7,6 +7,8 @@ import { getProfileData, getUserProfileData } from "../redux/actions/profileActi
 import { connect } from 'react-redux'
 import withStyles from '@material-ui/core/styles/withStyles'
 import queryString from "query-string"
+import { TimerSharp } from '@material-ui/icons';
+import PropTypes from "prop-types"
 
 
 const styles = makeStyles((theme) => ({
@@ -32,44 +34,62 @@ const styles = makeStyles((theme) => ({
 }));
 
 class Profile extends Component {
-    componentDidMount() {
-        if(this.props.user.token && !this.props.profile.id){
-            if(queryString.parse(this.props.location.pathname)['/profile'] && (queryString.parse(this.props.location.pathname)['/profile'] !== this.props.profile.id) ){
-                this.props.getProfileData(queryString.parse(this.props.location.pathname)['/profile'])
+
+    state = {
+        pfp: null,
+        posts: null,
+        favAlbums: null,
+        favSongs: null,
+        favArtists: null,
+        bio: null,
+        username: null,
+        id: null,
+        loading: true
+    }
+
+
+    componentDidMount () {
+        const { state } = this.props.location
+        if(state && state.setData){
+            this.setState({...state.user, loading: false})
+        } else {
+            let id = queryString.parse(this.props.location.pathname)['/profile']
+            if(!id){
+                this.props.history.push("/")
+            } else if(id === this.props.profile.id){
+                this.setState({...this.props.profile, loading: false })
             } else {
-                console.log(this.props.user.rtoken)
-                this.props.getUserProfileData(this.props.user.token, this.props.user.expires, this.props.user.rtoken, this.props.history)
+                this.props.getProfileData(id)
             }
+        }
+        
+    }
+
+    componentDidUpdate(){
+        if(this.state.loading && this.props.profile.loaded){
+            this.setState({
+                loading: false, ...this.props.profile
+            })
         }
     }
 
-    componentWillReceiveProps(props) {
-        if(props.user.token && !props.profile.id){
-            if(queryString.parse(props.location.pathname)['/profile']){
-                props.getProfileData(queryString.parse(props.location.pathname)['/profile'])
-            } else {
-                props.getUserProfileData(props.user.token, props.user.expires, props.user.rtoken, props.history)
-            }
-        }
-    }
-    
     render(){
     const { classes } = this.props
     return (
         <div name={classes.root}>
-            {this.props.profile.loading ? <ProfileSkeleton/> : (
+            {this.state.loading ? <ProfileSkeleton/> : (
                 <Grid container>
 
                 <Grid item xs={12}>
                     <Paper className={classes.paper}>
                         <ButtonBase className={classes.image}>
-                            <img alt='nope' src={this.props.profile.pfp} style={{ borderRadius: '10%' }} />
+                            <img alt='nope' src={this.state.pfp} width="100" style={{ borderRadius: '10%' }} />
                         </ButtonBase>
                         <Grid item xs={12} sm container>
                             <Grid item xs container direction="column" spacing={2}>
                                 <Grid item xs>
                                     <Typography gutterBottom variant="h4">
-                                        {this.props.profile.username}
+                                        {this.state.username}
                                     </Typography>
                                 </Grid>
                             </Grid>
@@ -86,14 +106,15 @@ class Profile extends Component {
     }
 }
 
+Profile.propTypes = {
+    profile: PropTypes.object.isRequired
+}
 
 const mapStateToProps = (state) => ({
-    user: state.user,
     profile: state.profile
 })
 
 const mapActionsToProps = {
-    getUserProfileData,
     getProfileData
 }
 

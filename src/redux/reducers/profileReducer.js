@@ -1,4 +1,4 @@
-import { SETPROFILEDATA, CLEARPROFILEDATA } from '../types'
+import { SETPROFILEDATA, CLEARPROFILEDATA, PROFILELOADING } from '../types'
 
 const initialState = {
     pfp: null,
@@ -9,16 +9,18 @@ const initialState = {
     bio: null,
     username: null,
     id: null,
-    self: false,
-    loading: true
+    loading: false,
+    loaded: false
 }
 
 export default function(state = initialState, action){
     switch(action.type){
         case CLEARPROFILEDATA:
             return initialState
+        case PROFILELOADING:
+            return {...state, loading: true, loaded: false}
         case SETPROFILEDATA:
-            return {...action.payload}
+            return {...action.payload, loading: false, loaded: true}
         default:
             return state
     }
