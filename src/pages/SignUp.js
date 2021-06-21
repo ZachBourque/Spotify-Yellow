@@ -15,7 +15,7 @@ import Container from '@material-ui/core/Container';
 import IconButton from '@material-ui/core/IconButton';
 import $ from 'jquery';
 import { connect } from 'react-redux'
-import { signUpUser } from "../redux/actions/userActions"
+import { signUpUser } from "../redux/actions/authActions"
 import withStyles from '@material-ui/core/styles/withStyles'
 
 const styles = makeStyles(theme =>  ({
@@ -110,7 +110,7 @@ class SignUp extends React.Component{
             formData.append('image', image, image.name)
             signUpData.formData = formData
         }
-        this.props.signUpUser(signUpData, this.props.history, window) 
+        this.props.signUpUser(signUpData, this.props.history) 
         
     }
     render() {

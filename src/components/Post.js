@@ -45,49 +45,51 @@ export class Post extends Component {
 
     imagesArray = [Zero, One, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten];
 
+    userRe = (id) => {
+        this.props.history.push(`/profile=${id}`)
+    }
 
     render() {
-        const { classes } = this.props
+        const { classes, element } = this.props
         return (
             <Grid item xs={12} style={{padding: 0}}>
             <Grid item xs={6} style={{margin: 'auto'}}>
-                <Card class={classes.card}>
+                <Card className={classes.card}>
                     <CardHeader
                         avatar={
-                            <Avatar src={this.props.element.pfp || 'https://cdn.discordapp.com/attachments/705520938921361411/855531857114038332/ABU1Xn6_d.png'} alt={this.props.element.username} class={classes.avatar} />
+                            <Avatar src={element.pfp} style={{cursor: "pointer"}} alt={element.username} className={classes.avatar} onClick={() => this.userRe(element.authorid)}/>
                         }
-                        title={this.props.element.username}
-                        subheader={this.props.element.createdAt}
+                        title={<a style={{cursor: "pointer"}} onClick={() => this.userRe(element.authorid)}>{element.username}</a>}
+                        subheader={element.createdAt}
                     />
                     <Grid
                         container
                         spacing={3}
-                        xs={12}
                     >
                         <Grid item xs={12}>
-                            <Grid container justify="center" spacing={16}>
-                                <img src={this.props.element.pic} style={{ maxHeight: 200 }} />
+                            <Grid container justify="center">
+                                <img src={element.pic} style={{ maxHeight: 200 }} />
                             </Grid>
                             <Grid container justify="center" spacing={3}>
-                                <Typography variant="h3" style={{ textShadow: '2px 2px #ff6961' }}>{this.props.element.artist}</Typography>
+                                <Typography variant="h3" style={{ textShadow: '2px 2px #ff6961' }}>{element.artist}</Typography>
                             </Grid>
                             <Grid container justify="center" spacing={3}>
-                                <Typography variant="h3" style={{ textShadow: '2px 2px #ffb347' }}>{this.props.element.album}</Typography>
+                                <Typography variant="h3" style={{ textShadow: '2px 2px #ffb347' }}>{element.album}</Typography>
                             </Grid>
                             <Grid container justify="center" spacing={3}>
-                                <Typography variant="h3" style={{ textShadow: '2px 2px #fdfd96' }}>{this.props.element.song}</Typography>
+                                <Typography variant="h3" style={{ textShadow: '2px 2px #fdfd96' }}>{element.song}</Typography>
                             </Grid>
 
                         </Grid>
                         <Grid item xs={12}>
                             <Grid container justify="center" spacing={3}>
-                                <img src={this.imagesArray[this.props.element.rating]} style={{ maxHeight: 100 }} />
+                                <img src={this.imagesArray[element.rating]} style={{ maxHeight: 100 }} />
                             </Grid>
                         </Grid>
                     </Grid>
                     <Divider style={{margin: '5vh'}} />
                     <Grid container justify="center" spacing={3}>
-                                <Typography variant="body1">{this.props.element.body}</Typography>
+                                <Typography variant="body1">{element.body}</Typography>
                             </Grid>
                     </Card>
                     
