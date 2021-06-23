@@ -7,7 +7,7 @@ import { getProfileData, getUserProfileData } from "../redux/actions/profileActi
 import { connect } from 'react-redux'
 import withStyles from '@material-ui/core/styles/withStyles'
 import queryString from "query-string"
-
+import MakePost from "../components/MakePost"
 
 const styles = makeStyles((theme) => ({
     root: {
@@ -77,7 +77,7 @@ class Profile extends Component {
                         </Grid>
                     </Paper>
                 </Grid>
-
+                <MakePost />
             </Grid>
             )}
 
