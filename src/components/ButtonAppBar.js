@@ -76,6 +76,10 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function PrimarySearchAppBar(props) {
+  let { user, auth } = props
+  const profileRe = () => {
+    props.history.push("/profile")
+  }
   const classes = useStyles();
   const url = 'https://accounts.spotify.com/authorize?' +
   queryString.stringify({
@@ -109,10 +113,10 @@ function PrimarySearchAppBar(props) {
           </div>
           <div className={classes.grow}/>
             <div className={classes.sectionMobile}>
-              {props.user.loggedIn ? (
-                <button type="button" style={{background: 'transparent', border: 'none'}} onClick={() => {props.history.push('/profile')}}>
-                <img src={props.user.pfp} width="50" />
-                </button>
+              {auth.loggedIn ? (
+                <a style={{cursor: "pointer"}} onClick={profileRe}>
+                {!user.loaded ? <img src={localStorage.getItem("cachepfp")} width="50" heigh="50"/> : <img src={user.pfp} width="50" heigh="50"/>}
+                </a>
               ) : 
               (<a href={url}>
            <Button variant="contained" type="button" >Login</Button>
@@ -128,6 +132,7 @@ function PrimarySearchAppBar(props) {
 }
 
 const mapStateToProps = (state) => ({
+    auth: state.auth,
     user: state.user
 })
 

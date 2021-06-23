@@ -19,7 +19,7 @@ import Ten from '../assets/10.png'
 import AddIcon from '@material-ui/icons/Add'
 import RemoveIcon from '@material-ui/icons/Remove';
 import IconButton from '@material-ui/core/IconButton';
-import { refreshToken } from '../redux/actions/userActions'
+import { refreshToken } from '../redux/actions/authActions'
 import axios from 'axios';
 
 
@@ -195,9 +195,9 @@ const MakePost = (props) => {
 
     const sendPost = () => {
         let newPost = {
-            token: props.user.token,
-            rtoken: props.user.rtoken,
-            expires: props.user.expires,
+            token: props.auth.token,
+            rtoken: props.auth.rtoken,
+            expires: props.auth.expires,
             album: selectedTopic.albumName ? selectedTopic.albumName : null,
             artist: selectedTopic.artistName ? selectedTopic.artistName : null,
             body: postBody,
@@ -217,7 +217,7 @@ const MakePost = (props) => {
                     data.token = res.data.token 
                     data.expires = res.data.expires
                     localStorage.setItem("data", JSON.stringify(data))
-                    props.refreshToken(data)
+                    props.refreshToken(res.data.token, res.data.expires)
                 }
                 window.location.reload()
             })
@@ -300,7 +300,7 @@ const MakePost = (props) => {
 }
 
 const mapStateToProps = (state) => ({
-    user: state.user
+    auth: state.auth
 })
 
 const mapActionsToProps = {

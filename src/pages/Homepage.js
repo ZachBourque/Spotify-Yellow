@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import axios from 'axios';
 import Post from '../components/Post'
 import {Grid} from '@material-ui/core';
+import { getFeedData } from "../redux/actions/dataActions"
 
 
 export class Homepage extends Component {
@@ -13,9 +14,23 @@ export class Homepage extends Component {
     }
 
     componentDidMount() {
-        axios.get('http://localhost:5000/spotify-yellow-282e0/us-central1/api/allPosts').then(
-            res => { this.setState({ postList: res.data, isLoading: false });}
-        )
+        if(!this.props.data.loaded || this.props.data.posts.length === 0){
+            this.props.getFeedData()
+        } else {
+            this.setState({
+                isLoading: false,
+                postList: this.props.data.posts
+            })
+        }
+    }
+
+    componentDidUpdate(){
+        if(this.state.isLoading && !this.props.data.loading){
+            this.setState({
+                postList: this.props.data.posts,
+                isLoading: false
+            })
+        }
     }
 
     render() {
@@ -26,10 +41,8 @@ export class Homepage extends Component {
             alignItems="center"
         >
                 {
-                !this.state.isLoading && this.state.postList?.map((element, index) => {
-                    console.log(element)
-                    return <Post element={element} key={index}/>
-                    
+                !this.state.isLoading && this.state.postList?.map(post => {
+                    return <Post element={post} history={this.props.history} key={post.postId}/>
                 })}
             </Grid>
         )
@@ -37,11 +50,11 @@ export class Homepage extends Component {
 }
 
 const mapStateToProps = (state) => ({
-
+    data: state.data
 })
 
-const mapDispatchToProps = {
-
+const mapActionsToProps = {
+    getFeedData
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Homepage)
+export default connect(mapStateToProps, mapActionsToProps)(Homepage)
