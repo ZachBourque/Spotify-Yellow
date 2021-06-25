@@ -10,12 +10,12 @@ function SelfProfile(props) {
 		if(!auth.loggedIn){
 			history.push("/")
 		}
-		if(props.user.loaded){
-			history.push({
+		if(user.loaded){
+			history.replace({
 				pathname: `/profile=${user.id}`,
 				state: {setData: true, user}
 			})
-		} else if(!props.user.loading){
+		} else if(!user.loading){
 			props.loadUser(auth.token, auth.expires, auth.rtoken)
 		}
 	})

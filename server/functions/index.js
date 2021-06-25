@@ -223,7 +223,7 @@ app.get('/postsByType/:type', (req,res) => {
 
 app.get('/allPosts', (req,res) => {
   console.log("/allPosts")
-  admin.firestore().collection('posts').get().then(snap => {
+  admin.firestore().collection('posts').orderBy('createdAt', 'desc').get().then(snap => {
     let posts = []
     snap.forEach(doc => {
       let post = {
@@ -274,9 +274,9 @@ app.get('/postsByUser/:user', (req,res) => {
   admin.firestore().collection('posts').where("id", "==", user).get().then(snap => {
     let posts = []
     snap.forEach(post => {
-      posts.push(post)
+      posts.push({...post.data(), postId: post.id})
     })
-    return res.json({posts: posts})
+    return res.json(posts)
   }).catch((err) => {
     console.error(err);
     return res.status(500).json({ error: "something went wrong" });

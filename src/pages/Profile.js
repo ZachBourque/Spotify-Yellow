@@ -9,7 +9,7 @@ import withStyles from '@material-ui/core/styles/withStyles'
 import queryString from "query-string"
 import { TimerSharp } from '@material-ui/icons';
 import PropTypes from "prop-types"
-
+import Post from "../components/Post"
 
 const styles = makeStyles((theme) => ({
     root: {
@@ -95,6 +95,16 @@ class Profile extends Component {
                             </Grid>
 
                         </Grid>
+            <Grid
+            container
+            spacing={3}
+            alignItems="center"
+        >
+                {
+                this.state.posts.reverse().map(post => {
+                    return <Post element={post} history={this.props.history} key={post.postId}/>
+                })}
+            </Grid>
                     </Paper>
                 </Grid>
 

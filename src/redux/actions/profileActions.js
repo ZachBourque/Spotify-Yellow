@@ -12,7 +12,7 @@ export const getProfileData = (id) => (dispatch) => {
 			favArtists: res.data.favArtists,
 			favSongs: res.data.favSongs,
 			id: res.data.id,
-			posts: res.data.post,
+			posts: res.data.posts,
 			username: res.data.username,
 		}
 		dispatch({type: SETPROFILEDATA, payload: data})

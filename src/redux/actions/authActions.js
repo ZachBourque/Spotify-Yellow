@@ -30,6 +30,7 @@ export const signUpUser = (data, history) => (dispatch) => {
 }
 
 export const logout = (history) => (dispatch) => {
+    localStorage.removeItem("data")
     dispatch({type: LOGOUT})
     dispatch({type: CLEARUSERDATA})
     history.push("/")
