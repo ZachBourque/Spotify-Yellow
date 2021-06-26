@@ -68,7 +68,7 @@ const MakePost = (props) => {
     const [postBody, setBody] = useState('');
 
     const [imagesArray, setImagesArray] = useState([Zero, One, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten]);
-    const [switchState, setSwitchState] = useState(false);
+    const [switchState, setSwitchState] = useState(true);
 
     const s = new Spotify();
     const token = props.auth.token;
@@ -94,7 +94,7 @@ const MakePost = (props) => {
             searchArtists(temp);
         } else if (value == 'album') {
             searchAlbums(temp);
-        } else if (value == 'song') {
+        } else if (value == 'track') {
             searchSongs(temp);
         }
 
@@ -176,7 +176,7 @@ const MakePost = (props) => {
                     for (var i = 0; i < data.tracks.items.length; i++) {
                         var urMom = data.tracks.items[i]
                         tempArray[i] = {
-                            type: 'song',
+                            type: 'track',
                             id: urMom.id,
                             artistName: urMom.artists[0].name,
                             albumName: urMom.album.name,
@@ -203,7 +203,7 @@ const MakePost = (props) => {
             body: postBody,
             pic: selectedTopic.image,
             rating: switchState ? postRating : null,
-            song: selectedTopic.songName ? selectedTopic.songName : null,
+            track: selectedTopic.songName ? selectedTopic.songName : null,
             title: postTitle,
             topic: selectedTopic.type,
             type: value,
@@ -240,7 +240,7 @@ const MakePost = (props) => {
                             <RadioGroup aria-label="gender" name="gender1" value={value} onChange={radioChanged}>
                                 <FormControlLabel value="artist" control={<Radio />} label="Artist" />
                                 <FormControlLabel value="album" control={<Radio />} label="Album/EP" />
-                                <FormControlLabel value="song" control={<Radio />} label="Song" />
+                                <FormControlLabel value="track" control={<Radio />} label="Track" />
                             </RadioGroup>
                             <TextField variant="filled" id="searchText" onChange={searchTextChanged} />
                         </Grid>

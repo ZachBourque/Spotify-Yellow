@@ -45,10 +45,10 @@ export class Post extends Component {
         const { classes, element } = this.props
         return (
 
-            <Card style={{backgroundColor: "#4d4d4d"}}>
-                <CardHeader 
+            <Card style={{ backgroundColor: "#4d4d4d" }}>
+                <CardHeader
                     avatar={
-                        <Avatar src={element.pfp} onClick={() => { this.userRe(element.authorid) }} />
+                        <Avatar src={element.pfp} style={{cursor: 'pointer'}} onClick={() => this.userRe(element.authorid)} />
                     }
                     title={
                         <Typography variant="h5">
@@ -61,20 +61,20 @@ export class Post extends Component {
                 />
                 <CardContent>
                     <Grid container justify="center">
-                        <CardMedia image={element.pic} component="img" style={{ maxWidth: "200px" }} />
-                        <img src={this.imagesArray[element.rating]} style={{ maxHeight: '100%', maxWidth: '100%',  width: 'auto', height: '10em', float: 'left', }}></img>
+                    <a href={`https://open.spotify.com/${element.type}/${element.spotifyid}`}><CardMedia image={element.pic} component="img" style={{ maxWidth: "200px" }} /></a>
+                        <img src={this.imagesArray[element.rating]} style={{ width: 'auto', height: '10em', float: 'left', }} />
                         <Grid item xs={12}>
-                            <Typography variant="h4" align="center">
+                            <Typography variant="h4" align="center" style={{backgroundColor: '#002984', width: 'fit-content', borderRadius: '5%'}}>
                                 {element.artist}
                             </Typography>
                             <Grid item xs={12}>
-                                <Typography variant="h4" align="center">
+                                <Typography variant="h4" align="center" style={{backgroundColor: '#3f51b5', width: 'fit-content', borderRadius: '5%'}}>
                                     {element.album}
                                 </Typography>
                             </Grid>
                             <Grid item xs={12}>
-                                <Typography variant="h4" align="center">
-                                    {element.song}
+                                <Typography variant="h4" align="center" style={{backgroundColor: '#757de8', width: 'fit-content', borderRadius: '5%'}}>
+                                    {element.track}
                                 </Typography>
                             </Grid>
                         </Grid>
@@ -88,7 +88,7 @@ export class Post extends Component {
                         </Grid>
                         <Box style={{ backgroundColor: "#363434", width: "80%", }} borderRadius={16}>
                             <Grid item xs={12} >
-                            {element.body.split("\n").map(line => {return <Typography variant="body1" align="center">{line}</Typography>})}
+                                {element.body.split("\n").map(line => { return <Typography variant="body1" align="center">{line}</Typography> })}
                             </Grid>
                         </Box>
 
