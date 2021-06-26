@@ -2,7 +2,7 @@ import React, { Component, useState, useEffect } from 'react'
 import { connect } from 'react-redux'
 import axios from 'axios';
 import Post from '../components/Post'
-import {Grid} from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 import { getFeedData } from "../redux/actions/dataActions"
 
 
@@ -14,7 +14,7 @@ export class Homepage extends Component {
     }
 
     componentDidMount() {
-        if(!this.props.data.loaded || this.props.data.posts.length === 0){
+        if (!this.props.data.loaded || this.props.data.posts.length === 0) {
             this.props.getFeedData()
         } else {
             this.setState({
@@ -24,8 +24,8 @@ export class Homepage extends Component {
         }
     }
 
-    componentDidUpdate(){
-        if(this.state.isLoading && !this.props.data.loading){
+    componentDidUpdate() {
+        if (this.state.isLoading && !this.props.data.loading) {
             this.setState({
                 postList: this.props.data.posts,
                 isLoading: false
@@ -36,15 +36,23 @@ export class Homepage extends Component {
     render() {
         return (
             <Grid
-            container
-            spacing={3}
-            alignItems="center"
-        >
+                container
+                spacing={3}
+                align="center"
+            >
                 {
-                !this.state.isLoading && this.state.postList?.map(post => {
-                    return <Post element={post} history={this.props.history} key={post.postId}/>
-                })}
+                    !this.state.isLoading && this.state.postList?.map(post => {
+                        return (
+                            <Grid item xs={12}>
+                                <Grid item xs={6}>
+                                    <Post element={post} history={this.props.history} key={post.postId} />
+                                </Grid>
+                            </Grid>
+                        )
+
+                    })}
             </Grid>
+            
         )
     }
 }

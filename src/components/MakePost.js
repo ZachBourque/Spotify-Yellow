@@ -71,7 +71,7 @@ const MakePost = (props) => {
     const [switchState, setSwitchState] = useState(false);
 
     const s = new Spotify();
-    const token = props.user.token;
+    const token = props.auth.token;
     s.setAccessToken(token);
 
 
@@ -232,7 +232,7 @@ const MakePost = (props) => {
     return (
         <div>
             <Paper className={classes.paper}>
-                <h3>Make Post</h3>
+                <Typography variant="h3">Make Post</Typography>
                 {
                     scene == 0 &&
                     (<FormControl component="fieldset">
