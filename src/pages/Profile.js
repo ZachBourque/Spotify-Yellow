@@ -7,6 +7,7 @@ import { getProfileData, getUserProfileData } from "../redux/actions/profileActi
 import { connect } from 'react-redux'
 import withStyles from '@material-ui/core/styles/withStyles'
 import queryString from "query-string"
+import MakePost from "../components/MakePost"
 import { TimerSharp } from '@material-ui/icons';
 import PropTypes from "prop-types"
 
@@ -97,7 +98,7 @@ class Profile extends Component {
                         </Grid>
                     </Paper>
                 </Grid>
-
+                <MakePost />
             </Grid>
             )}
 
