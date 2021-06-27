@@ -1,16 +1,19 @@
 import React, { Component } from 'react'
 import { Container, Avatar, Grid, Paper, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles';
-import ButtonBase from '@material-ui/core/ButtonBase';
+import Button from '@material-ui/core/ButtonBase';
 import ProfileSkeleton from "../Skeletons/ProfileSkeleton"
 import { getProfileData, getUserProfileData } from "../redux/actions/profileActions"
 import { connect } from 'react-redux'
 import withStyles from '@material-ui/core/styles/withStyles'
 import queryString from "query-string"
-import MakePost from "../components/MakePost"
-import { TimerSharp } from '@material-ui/icons';
+import { AlbumOutlined, TimerSharp } from '@material-ui/icons';
 import PropTypes from "prop-types"
-
+import Post from "../components/Post"
+import Card from '@material-ui/core/Card'
+import CardMedia from '@material-ui/core/CardMedia'
+import CardContent from '@material-ui/core/CardContent'
+import { sizing } from '@material-ui/system';
 
 const styles = makeStyles((theme) => ({
     root: {
@@ -32,6 +35,24 @@ const styles = makeStyles((theme) => ({
         maxWidth: '100%',
         maxHeight: '100%',
     },
+  card: {
+      width: 110,
+   },
+   song: {
+       width: 110
+   },
+   cardstyle:{
+       width: 200,
+       maxWidth: 200, 
+        margin:'auto',
+        flexDirection: 'column',
+    },
+    button: {
+        maxWidth: 200 
+    }
+
+
+
 }));
 
 class Profile extends Component {
@@ -79,27 +100,109 @@ class Profile extends Component {
     return (
         <div name={classes.root}>
             {this.state.loading ? <ProfileSkeleton/> : (
-                <Grid container>
-
-                <Grid item xs={12}>
-                    <Paper className={classes.paper}>
-                        <ButtonBase className={classes.image}>
+                <div style={{marginTop: 15}}>
+                    <Grid container direction="row" alignItems="center" justify="center" spacing={3}>
+                    <Grid item>
                             <img alt='nope' src={this.state.pfp} width="100" style={{ borderRadius: '10%' }} />
-                        </ButtonBase>
-                        <Grid item xs={12} sm container>
-                            <Grid item xs container direction="column" spacing={2}>
-                                <Grid item xs>
-                                    <Typography gutterBottom variant="h4">
+                        </Grid>
+                            <Typography gutterBottom variant="h3">
                                         {this.state.username}
                                     </Typography>
-                                </Grid>
-                            </Grid>
+                                    </Grid>
+                    {this.state.bio.length > 0 ? (
 
-                        </Grid>
-                    </Paper>
-                </Grid>
-                <MakePost />
-            </Grid>
+                    <Grid container alignItems="center" justify="center">
+                    {this.state.bio.split("\n").map((line, idx) => {
+                        return(
+                            <p key={idx}>{line}</p>
+                        )
+                    })}
+                    </Grid>
+                    ) : null}
+                    <Container>
+                    {this.state.favArtists.length > 0 ? (
+
+                    <Grid container direction="row" alignItems="center" spacing={3} xs={8} sm={12}>
+                        <Grid item>
+                            <Typography variant="h4">
+                                Favourite Artists:  
+                            </Typography>
+                            </Grid>
+                            <Grid item >
+                            {this.state.favArtists.map((artist,idx) => {
+                                return(
+                                    <Button href={artist.url} target="_blank" style={{margin: 5, maxWidth: 200}} className={classes.button}>
+                                       <Card className={classes.cardstyle}>
+                                        <img src={artist.pic} width="110" style={{display: "block", marginLeft: "auto", marginRight: "auto", minWidth: 150}}/>
+                                        <CardContent>
+                                            <Typography variant="body1">
+                                                {artist.name}
+                                            </Typography>
+                                        </CardContent>
+                                        </Card> 
+                                    </Button>
+                                )
+                            })}
+                            </Grid>
+                    </Grid>
+                    ) : <Typography variant="h4">User does not have any favorite artists.</Typography>}
+                    {this.state.favAlbums.length > 0 ? (
+<Grid container direction="row" alignItems="center" spacing={3} xs={8} sm={12}>
+                        <Grid item>
+                            <Typography variant="h4">
+                                Favourite Albums:  
+                            </Typography>
+                            </Grid>
+                            <Grid item >
+                            {this.state.favAlbums.map((album,idx) => {
+                                return(
+                                    <Button href={album.url} target="_blank" style={{margin: 5, maxWidth: 200 }} className={classes.button} >
+                                       <Card className={classes.cardstyle}>
+                                        <img src={album.pic} width="110" style={{display: "block", marginLeft: "auto", marginRight: "auto", minWidth: 150, maxWidth: 250, maxHeight: 215}}/>
+                                        <CardContent>
+                                            <Typography variant="body1">
+                                                {album.name}
+                                            </Typography>
+                                        </CardContent>
+                                        </Card> 
+                                    </Button>
+                                )
+                            })}
+                            </Grid>
+                    </Grid>
+                    ) : <Typography variant="h4">User does not have any favorite albums.</Typography>}
+                    {this.state.favSongs.length > 0 ? (
+
+<Grid container direction="row" alignItems="center" spacing={3} xs={8} sm={12}>
+                        <Grid item>
+                            <Typography variant="h4">
+                                Favourite Songs:  
+                            </Typography>
+                            </Grid>
+                            <Grid item >
+                            {this.state.favSongs.map((song,idx) => {
+                                return(
+                                    <Button href={song.url} target="_blank" style={{margin: 5, maxWidth: 200}} className={classes.button}>
+                                       <Card className={classes.cardstyle}>
+                                        <img src={song.pic} width="110" style={{display: "block", marginLeft: "auto", marginRight: "auto"}}/>
+                                        <CardContent>
+                                            <Typography variant="body1">
+                                                {song.name}
+                                            </Typography>
+                                        </CardContent>
+                                        </Card> 
+                                    </Button>
+                                )
+                            })}
+                            </Grid>
+                    </Grid>
+                    ) : <Typography variant="h4">User does not have any favorite songs.</Typography> }
+</Container>
+                {
+                this.state.posts.reverse().map(post => {
+                    return <Post element={post} history={this.props.history} key={post.postId}/>
+                })}
+</div>
             )}
 
         </div>
@@ -120,5 +223,6 @@ const mapActionsToProps = {
 }
 
 export default connect(mapStateToProps, mapActionsToProps)(withStyles(styles)(Profile))
+
 
 
