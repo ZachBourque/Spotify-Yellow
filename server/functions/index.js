@@ -143,7 +143,7 @@ app.post('/createPost', (req,res) => {
     body: req.body.body,
     album: req.body.album,
     artist: req.body.artist,
-    song: req.body.song,
+    track: req.body.track,
     title: req.body.title,
     topic: req.body.topic,
     pic: req.body.pic,

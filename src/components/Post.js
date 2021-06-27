@@ -1,13 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { Container, Avatar, Grid, Paper, Typography, Divider } from '@material-ui/core'
-import Card from '@material-ui/core/Card';
-import CardHeader from '@material-ui/core/CardHeader';
-import CardMedia from '@material-ui/core/CardMedia';
-import CardContent from '@material-ui/core/CardContent';
-import CardActions from '@material-ui/core/CardActions';
-import Collapse from '@material-ui/core/Collapse';
-import IconButton from '@material-ui/core/IconButton';
+import { Container, Avatar, Grid, Paper, Typography, Divider, Box, CardHeader, CardMedia, CardContent, CardActions, Collapse, IconButton, Card } from '@material-ui/core'
 import { red } from '@material-ui/core/colors';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import ShareIcon from '@material-ui/icons/Share';
@@ -26,21 +19,20 @@ import Eight from '../assets/8.png'
 import Nine from '../assets/9.png'
 import Ten from '../assets/10.png'
 import withStyles from '@material-ui/core/styles/withStyles'
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, createMuiTheme } from '@material-ui/core/styles';
 
 const styles = makeStyles(theme => ({
-    card: {
-        display: 'flex',
-        marginBottom: 20,
-        margin: 'auto',
-    },
+
+    header: {
+        backgroundColor: '#FFBB35',
+    }
 
 }))
 
 export class Post extends Component {
 
     state = {
-        
+        content: null,
     }
 
     imagesArray = [Zero, One, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten];
@@ -52,49 +44,94 @@ export class Post extends Component {
     render() {
         const { classes, element } = this.props
         return (
-            <Grid item xs={12} style={{padding: 0}}>
-            <Grid item xs={6} style={{margin: 'auto'}}>
-                <Card className={classes.card}>
-                    <CardHeader
-                        avatar={
-                            <Avatar src={element.pfp} style={{cursor: "pointer"}} alt={element.username} className={classes.avatar} onClick={() => this.userRe(element.authorid)}/>
-                        }
-                        title={<a style={{cursor: "pointer"}} onClick={() => this.userRe(element.authorid)}>{element.username}</a>}
-                        subheader={element.createdAt}
-                    />
-                    <Grid
-                        container
-                        spacing={3}
-                    >
-                        <Grid item xs={12}>
-                            <Grid container justify="center">
-                                <img src={element.pic} style={{ maxHeight: 200 }} />
-                            </Grid>
-                            <Grid container justify="center" spacing={3}>
-                                <Typography variant="h3" style={{ textShadow: '2px 2px #ff6961' }}>{element.artist}</Typography>
-                            </Grid>
-                            <Grid container justify="center" spacing={3}>
-                                <Typography variant="h3" style={{ textShadow: '2px 2px #ffb347' }}>{element.album}</Typography>
-                            </Grid>
-                            <Grid container justify="center" spacing={3}>
-                                <Typography variant="h3" style={{ textShadow: '2px 2px #fdfd96' }}>{element.song}</Typography>
-                            </Grid>
 
+            <Card style={{ backgroundColor: "#4d4d4d" }}>
+                <CardHeader
+                    avatar={
+                        <Avatar src={element.pfp} style={{cursor: 'pointer'}} onClick={() => this.userRe(element.authorid)} />
+                    }
+                    title={
+                        <Typography variant="h5">
+                            {element.username}
+                        </Typography>
+                    }
+                    style={
+                        { backgroundColor: "#D99E2A" }
+                    }
+                />
+                <CardContent>
+                    <Grid container justify="center">
+                    <a href={`https://open.spotify.com/${element.type}/${element.spotifyid}`}><CardMedia image={element.pic} component="img" style={{ maxWidth: "200px" }} /></a>
+                        <img src={this.imagesArray[element.rating]} style={{ width: 'auto', height: '10em', float: 'left', }} />
+                        <Grid item xs={12}>
+                            <Typography variant="h4" align="center" style={{backgroundColor: '#002984', width: 'fit-content', borderRadius: '5%'}}>
+                                {element.artist}
+                            </Typography>
+                            <Grid item xs={12}>
+                                <Typography variant="h4" align="center" style={{backgroundColor: '#3f51b5', width: 'fit-content', borderRadius: '5%'}}>
+                                    {element.album}
+                                </Typography>
+                            </Grid>
+                            <Grid item xs={12}>
+                                <Typography variant="h4" align="center" style={{backgroundColor: '#757de8', width: 'fit-content', borderRadius: '5%'}}>
+                                    {element.track}
+                                </Typography>
+                            </Grid>
                         </Grid>
                         <Grid item xs={12}>
-                            <Grid container justify="center" spacing={3}>
-                                <img src={this.imagesArray[element.rating]} style={{ maxHeight: 100 }} />
+                            <Divider style={{ marginTop: "10px", marginBottom: "10px" }} />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Typography variant="h3" align="center">
+                                {element.title}
+                            </Typography>
+                        </Grid>
+                        <Box style={{ backgroundColor: "#363434", width: "80%", }} borderRadius={16}>
+                            <Grid item xs={12} >
+                                {element.body.split("\n").map(line => { return <Typography variant="body1" align="center">{line}</Typography> })}
                             </Grid>
+                        </Box>
+
+                    </Grid>
+                </CardContent>
+
+
+            </Card>
+            /*<Container className={classes.postCard}>
+                <Box border={1} borderRadius={16}>
+
+                    <Grid container spacing={3}>
+                        <Grid item xs>
+                            <img src={element.pfp} style={{ maxHeight: '100%', maxWidth: '100%', display: 'block', height: '5em', float: 'left', borderRadius: '50%' }}></img>
+                            <Typography variant="h5" color="inherit">
+                                {element.username}
+                            </Typography>
+                        </Grid>
+
+                        <Grid item xs={6}>
+                            <Typography variant="h2" align="center" color="textPrimary">
+                                {element.title}
+                            </Typography>
+                        </Grid>
+                        <Grid item xs>
                         </Grid>
                     </Grid>
-                    <Divider style={{margin: '5vh'}} />
-                    <Grid container justify="center" spacing={3}>
-                                <Typography variant="body1">{element.body}</Typography>
-                            </Grid>
-                    </Card>
-                    
-            </Grid>
-            </Grid>
+
+                    <Divider />
+
+                    <Grid container spacing={3}>
+                        <Grid item xs={12}>
+                            <img src={element.pic} style={{ maxHeight: '200px' }}></img>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <Typography variant="h4">
+                                {element.artist}
+                            </Typography>
+                        </Grid>
+                    </Grid>
+
+                </Box>
+            </Container>*/
         )
     }
 }
