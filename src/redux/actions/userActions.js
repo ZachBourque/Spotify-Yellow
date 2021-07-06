@@ -3,11 +3,13 @@ import axios from "axios"
 
 const getData = (token, dispatch) => {
 	console.log("getting data")
+	console.log(token)
 	axios.get('https://api.spotify.com/v1/me',{
 		headers: { 'Authorization': 'Bearer ' + token },
 		json: true
 	}).then(res => {
 		let id = res.data.id 
+		console.log(id)
 		axios.get(`http://localhost:5000/spotify-yellow-282e0/us-central1/api/getUser/${id}`).then(res => {
 			let data = {
 				pfp: res.data.profilepic,
