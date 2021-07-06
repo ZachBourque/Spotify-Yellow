@@ -8,3 +8,11 @@ export const getFeedData = () => (dispatch) => {
 	})
   
 }
+
+export const getPostsBySpotifyid = () => (dispatch) => {
+	dispatch({type: DATALOADING})
+	axios.get('http://localhost:5000/spotify-yellow-282e0/us-central1/api/allPosts').then(res => { 
+		dispatch({type: SETFEEDDATA, payload: res.data})
+	})
+  
+}

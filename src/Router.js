@@ -14,6 +14,8 @@ import $ from "jquery"
 import { Provider } from 'react-redux'
 import store from './redux/store'
 import SelfProfile from "./components/SelfProfile"
+import SmallPost from "./components/SmallPost"
+import BigPost from "./components/BigPost"
 
 $("body").css("margin", 0)
 $("body").css("overflow-x", "hidden")
@@ -48,6 +50,7 @@ class Router extends React.Component {
             <Route path="/" component={Homepage} exact/>
             <Route path="/signup" component={SignUp}/>
             <Route path='/temp' component={Temp}/>
+            <Route path='/post/:postID' component={BigPost} />
             </Switch>
             </BrowserRouter>
             </Paper>

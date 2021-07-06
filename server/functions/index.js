@@ -45,4 +45,14 @@ app.get('/postsByUser/:user', getPostsByUser)
 app.get('/post/:postId', getPost)
 
 
+app.get('/postByID/:id', (req,res) => {
+  admin.firestore().doc(`/posts/${req.params.id}`).get().then(doc => {
+
+    return res.json({post: {...doc.data(), id: doc.id}})
+  }).catch((err) => {
+    console.error(err);
+    return res.status(500).json({ error: "something went wrong" });
+  });
+})
+
 exports.api = functions.https.onRequest(app)
