@@ -1,4 +1,5 @@
-import { Container, Avatar, Grid, Paper, Typography } from '@material-ui/core'
+import React, { Component, useState, useEffect } from 'react'
+import { Container, Avatar, Grid, Card, Typography, CardMedia, CardContent } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
@@ -24,24 +25,53 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const DisplayData = ({ element, id, onClick, maxHeight, maxWidth }) => {
+
     const classes = useStyles();
+
     return (
-        
-            <Paper syles={classes.paper} style={{ cursor: 'pointer' }} id={id} onClick={onClick}>
-                <img
-                    style={{
-                        maxHeight: maxHeight,
-                        maxWidth: maxWidth,
-                    }}
-                    src={element?.image ||
-                        'https://media.pitchfork.com/photos/5c7d4c1b4101df3df85c41e5/1:1/w_600/Dababy_BabyOnBaby.jpg'
-                    } id={id}>
-                </img>
-                {element?.artistName && <p style={{ margin: 0, padding: 0, fontSize: 25 }} id={id}> <b><code style={{fontSize: 30}}>Artist:</code></b> {element?.artistName}</p>}
-                {element?.albumName && <p style={{ margin: 0, padding: 0, fontSize: 25 }} id={id}><b><code style={{fontSize: 30}}>Album:</code></b> {element?.albumName}</p>}
-                {element?.songName && <p style={{ margin: 0, padding: 0, fontSize: 25 }} id={id}><b><code style={{fontSize: 30}}>Song:</code></b> {element?.songName}</p>}
-                <h5></h5>
-            </Paper>
+        <Card
+            onClick={onClick}
+            styles={classes.paper}
+            style={{ cursor: 'pointer', marginBottom: '10px',}}
+            id={id}
+        >
+            <CardMedia
+                style={{
+                    maxHeight: maxHeight,
+                    maxWidth: maxWidth,
+                }}
+                src={element?.image || 'https://media.pitchfork.com/photos/5c7d4c1b4101df3df85c41e5/1:1/w_600/Dababy_BabyOnBaby.jpg'}
+                id={id}
+                component="img" />
+            <CardContent>
+                {
+                    element?.artistName && (
+                        <>
+                            <Typography variant="h4" id={id}>Artist:</Typography>
+                            {element.artistName.map((e, i) => {
+                                return <Typography variant="body1" id={id}>{e}{i == element.artistName.length - 1 ? '' : ', '}</Typography>
+                            })}
+                        </>
+                    )
+                }
+                {
+                    element?.albumName && (
+                        <>
+                            <Typography variant="h4" id={id}>Album:</Typography>
+                            <Typography variant="body1" id={id}>{element.albumName}</Typography>
+                        </>
+                    )
+                }
+                {
+                    element?.songName && (
+                        <>
+                            <Typography variant="h4" id={id}>Track:</Typography>
+                            <Typography variant="body1" id={id}>{element.songName}</Typography>
+                        </>
+                    )
+                }
+            </CardContent>
+        </Card>
     )
 }
 

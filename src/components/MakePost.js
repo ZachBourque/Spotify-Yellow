@@ -1,7 +1,7 @@
 import React, { Component, useState, useEffect } from 'react'
 import { TextField, Radio, RadioGroup, FormControlLabel, FormControl, FormLabel, makeStyles, Switch, TextareaAutosize } from '@material-ui/core';
 import Spotify from 'spotify-web-api-js';
-import { Container, Avatar, Grid, Paper, Typography } from '@material-ui/core'
+import { Container, Avatar, Grid, Paper, Typography, Card, CardHeader, CardContent, Button } from '@material-ui/core'
 import DisplayData from './DisplayData'
 import $ from 'jquery'
 import { connect } from 'react-redux'
@@ -53,37 +53,37 @@ const useStyles = makeStyles((theme) => ({
 
 const MakePost = (props) => {
     const classes = useStyles();
+    //Scene 0:
+    //Radio Button Value
     const [value, setValue] = useState('artist');
     //Data returned from the Spotify API
     const [returnedData, setReturnedData] = useState(null);
     //Parsed data that is displayed to the user
     const [dataArray, setDataArray] = useState(null);
     //Scene for the post making process
-    const [scene, setScene] = useState(0);
-    //An object from the dataArray that is the topic of the post
-    const [selectedTopic, setSelectedTopic] = useState(null);
+    const [scene, setScene] = useState(props.selectedTopic ? 1 : 0);
 
+    //Scene 1:
+    //An object from the dataArray that is the topic of the post
+    const [selectedTopic, setSelectedTopic] = useState(props.selectedTopic);
+
+    //The user input for the post
     const [postRating, setRating] = useState(5);
     const [postTitle, setTitle] = useState('');
     const [postBody, setBody] = useState('');
+    //Toggles using the number rating
+    const [switchState, setSwitchState] = useState(true);
 
     const [imagesArray, setImagesArray] = useState([Zero, One, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten]);
-    const [switchState, setSwitchState] = useState(true);
 
     const s = new Spotify();
     const token = props.auth.token;
     s.setAccessToken(token);
 
 
-    //functions
-
     useEffect(() => {
         searchTextChanged($("#searchText").val())
     }, [value])
-
-
-
-
     const searchTextChanged = (event) => {
         //if the event is empty, dont display anything for search results
         if (event == '' || event?.target?.value == '') { setDataArray(null); setReturnedData(null); return }
@@ -97,7 +97,6 @@ const MakePost = (props) => {
         } else if (value == 'track') {
             searchSongs(temp);
         }
-
     }
 
     const radioChanged = (event) => {
@@ -122,7 +121,7 @@ const MakePost = (props) => {
                         tempArray[i] = {
                             type: 'artist',
                             id: urMom.id,
-                            artistName: urMom.name,
+                            artistName: [urMom.name],
                             albumName: null,
                             songName: null,
                             image: urMom.images[0]?.url,
@@ -153,7 +152,7 @@ const MakePost = (props) => {
                 tempArray[i] = {
                     type: 'album',
                     id: urMom.id,
-                    artistName: urMom.artists[0].name,
+                    artistName: urMom.artists.map((e => e.name)),
                     albumName: urMom.name,
                     songName: null,
                     image: urMom.images[0]?.url,
@@ -178,7 +177,7 @@ const MakePost = (props) => {
                         tempArray[i] = {
                             type: 'track',
                             id: urMom.id,
-                            artistName: urMom.artists[0].name,
+                            artistName: urMom.artists.map((e => e.name)),
                             albumName: urMom.album.name,
                             songName: urMom.name,
                             image: urMom.album.images[0]?.url,
@@ -205,23 +204,23 @@ const MakePost = (props) => {
             rating: switchState ? postRating : null,
             track: selectedTopic.songName ? selectedTopic.songName : null,
             title: postTitle,
-            topic: selectedTopic.type,
+            topic: selectedTopic.songName || selectedTopic.albumName || selectedTopic.artistName[0],
             type: value,
             spotifyid: selectedTopic.id
         }
         axios.post("http://localhost:5000/spotify-yellow-282e0/us-central1/api/createPost", newPost)
             .then(res => {
                 console.log(res.data)
-                if(res.data.refreshed){
+                if (res.data.refreshed) {
                     let data = JSON.parse(localStorage.getItem("data"))
-                    data.token = res.data.token 
+                    data.token = res.data.token
                     data.expires = res.data.expires
                     localStorage.setItem("data", JSON.stringify(data))
                     props.refreshToken(res.data.token, res.data.expires)
                 }
                 window.location.reload()
             })
-            .catch (err => console.error(err))
+            .catch(err => console.error(err))
 
     }
 
@@ -231,70 +230,88 @@ const MakePost = (props) => {
 
     return (
         <div>
-            <Paper className={classes.paper}>
-                <Typography variant="h3">Make Post</Typography>
-                {
-                    scene == 0 &&
-                    (<FormControl component="fieldset">
-                        <Grid container wrap="nowrap" spacing={2}>
-                            <RadioGroup aria-label="gender" name="gender1" value={value} onChange={radioChanged}>
-                                <FormControlLabel value="artist" control={<Radio />} label="Artist" />
-                                <FormControlLabel value="album" control={<Radio />} label="Album/EP" />
-                                <FormControlLabel value="track" control={<Radio />} label="Track" />
-                            </RadioGroup>
-                            <TextField variant="filled" id="searchText" onChange={searchTextChanged} />
-                        </Grid>
-                        {dataArray?.map((element, index) => {
-                            return <DisplayData element={element} id={index} maxHeight={'200px'} maxWidth={'200px'} onClick={(e) => { setSelectedTopic(dataArray[e.target.id]); setScene(1);}} />
-                        })}
-                    </FormControl>)
-                }
-                {
-                    scene == 1 && (
-                        <div>
-                            <DisplayData element={selectedTopic} maxHeight={200} />
-                            <form id="contactForm">
-                                <div>
-                                    <Switch
-                                        checked={switchState}
-                                        onChange={handleSwitchChange}
-                                        name="useNumber"
-                                        inputProps={{ 'aria-label': 'secondary checkbox' }}
-                                    />
-                                    {!switchState ? '' : (<div>
-                                        <img className={classes.rating} src={imagesArray[postRating]} />
-                                        <IconButton aria-label="minus" onClick={() => setRating(!(postRating == 0) ? postRating - 1 : postRating)}>
-                                            <RemoveIcon />
-                                        </IconButton>
-                                        <IconButton aria-label="plus" onClick={() => setRating(!(postRating == 10) ? postRating + 1 : postRating)}>
-                                            <AddIcon />
-                                        </IconButton>
-                                    </div>)}
-                                </div>
-                                <TextField
-                                    id="postTitle"
-                                    label="Post Title"
-                                    rows={1}
-                                    variant="outlined"
-                                    value={postTitle}
-                                    onChange={(e) => setTitle(e.target.value)}
-                                /><br />
-                                <TextField
-                                    id="postBody"
-                                    label="Post Body"
-                                    multiline
-                                    rows={6}
-                                    variant="outlined"
-                                    value={postBody}
-                                    onChange={(e) => setBody(e.target.value)}
-                                />
 
-                            </form>
-                            <button type="button" onClick={() => sendPost()} >Make Post</button>
-                        </div>
-                    )
-                }
-            </Paper>
+            <Grid item xs={7}>
+                <Card style={{ backgroundColor: "#4d4d4d" }} align="center">
+                    <CardHeader
+                        title={
+                            <Typography variant="h4">
+                                Make Post
+                            </Typography>
+                        }
+                        style={
+                            { backgroundColor: "#D99E2A" }
+                        }
+                    />
+                    <CardContent>
+                        {
+                            scene == 0 &&
+                            (<FormControl component="fieldset">
+                                <Grid container wrap="nowrap" spacing={2}>
+                                    <RadioGroup aria-label="gender" name="gender1" value={value} onChange={radioChanged}>
+                                        <FormControlLabel value="artist" control={<Radio />} label="Artist" />
+                                        <FormControlLabel value="album" control={<Radio />} label="Album/EP" />
+                                        <FormControlLabel value="track" control={<Radio />} label="Track" />
+                                    </RadioGroup>
+                                    <TextField variant="filled" id="searchText" onChange={searchTextChanged} />
+                                </Grid>
+                                {dataArray?.map((element, index) => {
+                                    return <DisplayData element={element} id={index} maxHeight={'200px'} maxWidth={'200px'} onClick={(e) => { setSelectedTopic(dataArray[e.target.id]); setScene(1); console.log(e.target) }} />
+                                })}
+                            </FormControl>)
+                        }
+                        {
+                            scene == 1 && (
+                                <div>
+                                    <DisplayData element={selectedTopic} maxHeight={200} />
+                                    <form id="contactForm">
+                                        <div>
+                                            <Switch
+                                                checked={switchState}
+                                                onChange={handleSwitchChange}
+                                                name="useNumber"
+                                                inputProps={{ 'aria-label': 'secondary checkbox' }}
+                                            />
+                                            {!switchState ? '' : (<div>
+                                                <img className={classes.rating} src={imagesArray[postRating]} />
+                                                <IconButton aria-label="minus" onClick={() => setRating(!(postRating == 0) ? postRating - 1 : postRating)}>
+                                                    <RemoveIcon />
+                                                </IconButton>
+                                                <IconButton aria-label="plus" onClick={() => setRating(!(postRating == 10) ? postRating + 1 : postRating)}>
+                                                    <AddIcon />
+                                                </IconButton>
+                                            </div>)}
+                                        </div>
+                                        <TextField
+                                            id="postTitle"
+                                            label="Post Title"
+                                            rows={1}
+                                            fullWidth
+                                            variant="outlined"
+                                            value={postTitle}
+                                            onChange={(e) => setTitle(e.target.value)}
+                                        /><br />
+                                        <TextField
+                                            id="postBody"
+                                            label="Post Body"
+                                            multiline
+                                            rows={6}
+                                            fullWidth
+                                            variant="outlined"
+                                            value={postBody}
+                                            margin="dense"
+                                            onChange={(e) => setBody(e.target.value)}
+                                        />
+
+                                    </form>
+                                    <Button color="primary" variant="contained" onClick={() => sendPost()} >Make Post</Button>
+                                </div>
+                            )
+                        }
+                    </CardContent>
+                </Card>
+
+            </Grid>
         </div>
     )
 }
