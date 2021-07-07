@@ -17,8 +17,8 @@ export default function(state = initialState, action){
     switch(action.type){
         case CLEARUSERDATA:
             return initialState
-	case USERLOADING:
-		return {...initialState, loading: true}
+        case USERLOADING:
+            return {...initialState, loading: true}
         case SETUSERDATA:
             return {...action.payload, loading: false, loaded: true}
         case UPDATEBIO: 

@@ -11,15 +11,15 @@ export const signUpUser = (data, history) => (dispatch) => {
         history.push("/")
     }
     if(data.pfp){
-        axios.post("http://localhost:5000/spotify-yellow-282e0/us-central1/api/createUser", {id: data.id, username: data.username, profilepic: data.pfp}).then(res => {
+        axios.post("/createUser", {id: data.id, username: data.username, profilepic: data.pfp}).then(res => {
             window.localStorage.setItem("data", JSON.stringify({token: data.token, expires: data.expires, rtoken: data.rtoken}))
             window.localStorage.setItem("cachepfp", data.pfp)
             dispatch({type: SETAUTHDATA, payload: JSON.parse(window.localStorage.getItem("data"))})
             history.push(`/profile=${data.id}`)
         })
     } else {
-        axios.post("http://localhost:5000/spotify-yellow-282e0/us-central1/api/uploadpic", data.formData).then(res => {
-            axios.post("http://localhost:5000/spotify-yellow-282e0/us-central1/api/createUser", {id: data.id, username: data.username, profilepic: res.data.url}).then(res2 => {
+        axios.post("/uploadpic", data.formData).then(res => {
+            axios.post("/createUser", {id: data.id, username: data.username, profilepic: res.data.url}).then(res2 => {
                 window.localStorage.setItem("data", JSON.stringify({token: data.token, expires: data.expires, rtoken: data.rtoken}))
                 window.localStorage.setItem("cachepfp", res.data.url)
                 dispatch({type: SETAUTHDATA, payload: JSON.parse(window.localStorage.getItem("data"))})

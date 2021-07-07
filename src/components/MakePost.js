@@ -194,9 +194,6 @@ const MakePost = (props) => {
 
     const sendPost = () => {
         let newPost = {
-            token: props.auth.token,
-            rtoken: props.auth.rtoken,
-            expires: props.auth.expires,
             album: selectedTopic.albumName ? selectedTopic.albumName : null,
             artist: selectedTopic.artistName ? selectedTopic.artistName : null,
             body: postBody,
@@ -208,7 +205,7 @@ const MakePost = (props) => {
             type: value,
             spotifyid: selectedTopic.id
         }
-        axios.post("http://localhost:5000/spotify-yellow-282e0/us-central1/api/createPost", newPost)
+        axios.post("/createPost", newPost, {headers: {token: props.auth.token, rtoken: props.auth.rtoken, expires: props.auth.expires}})
             .then(res => {
                 console.log(res.data)
                 if (res.data.refreshed) {

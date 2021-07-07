@@ -2,6 +2,7 @@
 export const SETAUTHDATA = "SETAUTHDATA"
 export const LOGOUT = "LOGOUT"
 export const REFRESH_TOKEN = "REFRESH_TOKEN"
+export const LOADTOKEN = "LOADTOKEN"
 
 // user types
 export const USERLOADING = "USERLOADING"

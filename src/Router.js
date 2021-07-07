@@ -17,7 +17,9 @@ import SelfProfile from "./components/SelfProfile"
 import SmallPost from "./components/SmallPost"
 import BigPost from "./components/BigPost"
 import Settings from "./pages/Settings"
+import axios from "axios"
 
+axios.defaults.baseURL = "http://localhost:5000/spotify-yellow-282e0/us-central1/api"
 $("body").css("margin", 0)
 $("body").css("overflow-x", "hidden")
 var a = JSON.parse(window.localStorage.getItem("data"));
