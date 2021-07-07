@@ -1,7 +1,7 @@
-import { USERLOADING, SETUSERDATA, CLEARUSERDATA } from '../types'
+import { USERLOADING, SETUSERDATA, CLEARUSERDATA, UPDATEBIO } from '../types'
 
 const initialState = {
-    pfp: null,
+    profilepic: null,
     posts: null,
     favAlbums: null,
     favSongs: null,
@@ -21,6 +21,8 @@ export default function(state = initialState, action){
 		return {...initialState, loading: true}
         case SETUSERDATA:
             return {...action.payload, loading: false, loaded: true}
+        case UPDATEBIO: 
+            return {...state, bio: action.payload.bio}
         default:
             return state
     }

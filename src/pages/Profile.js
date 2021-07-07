@@ -60,7 +60,7 @@ const styles = makeStyles((theme) => ({
 class Profile extends Component {
 
     state = {
-        pfp: null,
+        profilepic: null,
         posts: null,
         favAlbums: null,
         favSongs: null,
@@ -76,6 +76,7 @@ class Profile extends Component {
         const { state } = this.props.location
         if (state && state.setData) {
             this.setState({ ...state.user, loading: false })
+            console.log(state.user)
         } else {
             let id = queryString.parse(this.props.location.pathname)['/profile']
             if (!id) {
@@ -110,7 +111,7 @@ class Profile extends Component {
                         <div style={{ marginTop: 15 }}>
                             <Grid container direction="row" alignItems="center" justify="center" spacing={3}>
                                 <Grid item>
-                                    <img alt='nope' src={this.state.pfp} width="100" style={{ borderRadius: '10%' }} />
+                                    <img alt='nope' src={this.state.profilepic} width="100" style={{ borderRadius: '10%' }} />
                                 </Grid>
                                 <Typography gutterBottom variant="h3">
                                     {this.state.username}

@@ -16,6 +16,7 @@ import store from './redux/store'
 import SelfProfile from "./components/SelfProfile"
 import SmallPost from "./components/SmallPost"
 import BigPost from "./components/BigPost"
+import Settings from "./pages/Settings"
 
 $("body").css("margin", 0)
 $("body").css("overflow-x", "hidden")
@@ -24,6 +25,7 @@ if (a) {
   if(a.expires && a.token && a.rtoken && localStorage.getItem("cachepfp") ){
     console.log("loading")
     store.dispatch(loadDataIntoState())
+    store.dispatch(loadUser(a.token, a.expires, a.rtoken))
   } else {
     localStorage.removeItem("data")
   }
@@ -51,6 +53,7 @@ class Router extends React.Component {
             <Route path="/signup" component={SignUp}/>
             <Route path='/temp' component={Temp}/>
             <Route path='/post/:postID' component={BigPost} />
+            <Route path='/settings' component={Settings}/>
             </Switch>
             </BrowserRouter>
             </Paper>

@@ -18,8 +18,8 @@ exports.createPost = (req,res) => {
     username: req.user.username
   }
   db.collection('posts').add(newPost).then(() => {
-	  if(req.user.refreshed){
-		return res.json({success: "Successfully created post.", refreshed: true, expires: req.user.expires, token: req.user.token})
+	  if(req.auth.refreshed){
+		return res.json({success: "Successfully created post.", refreshed: true, expires: req.auth.expires, token: req.auth.token})
 	  } else {
 		return res.json({success: "Successfully created post."})
 	  }
@@ -97,5 +97,21 @@ exports.getPost = (req,res) => {
   }).catch(err => {
     console.error(err)
     return res.status(500).json({error: "Error getting post."})
+  })
+}
+
+exports.deletePost = (req,res) => {
+  db.doc(`/posts/${req.params.postId}`).get().then(doc => {
+    let post = doc.data()
+    if(post.authorid === req.user.id){
+      doc.delete().then(() => {
+        if(req.auth.refreshed){
+          return res.json({success: "Successfully deleted post", refreshed: true, token: req.auth.token, expires: req.auth.expires})
+        } else {
+          return res.json({success: "Successfully deleted post"})
+        }
+        // delete comments and likes and stuff
+      })
+    }
   })
 }
