@@ -32,7 +32,7 @@ const DisplayData = ({ element, id, onClick, maxHeight, maxWidth }) => {
         <Card
             onClick={onClick}
             styles={classes.paper}
-            style={{ cursor: 'pointer', marginBottom: '10px',}}
+            style={{ cursor: 'pointer', marginBottom: '10px'}}
             id={id}
         >
             <CardMedia
@@ -41,7 +41,6 @@ const DisplayData = ({ element, id, onClick, maxHeight, maxWidth }) => {
                     maxWidth: maxWidth,
                 }}
                 src={element?.image || 'https://media.pitchfork.com/photos/5c7d4c1b4101df3df85c41e5/1:1/w_600/Dababy_BabyOnBaby.jpg'}
-                id={id}
                 component="img" />
             <CardContent>
                 {
@@ -49,7 +48,7 @@ const DisplayData = ({ element, id, onClick, maxHeight, maxWidth }) => {
                         <>
                             <Typography variant="h4" id={id}>Artist:</Typography>
                             {element.artistName.map((e, i) => {
-                                return <Typography variant="body1" id={id}>{e}{i == element.artistName.length - 1 ? '' : ', '}</Typography>
+                                return <Typography variant="body1">{e}{i == element.artistName.length - 1 ? '' : ', '}</Typography>
                             })}
                         </>
                     )
@@ -58,7 +57,7 @@ const DisplayData = ({ element, id, onClick, maxHeight, maxWidth }) => {
                     element?.albumName && (
                         <>
                             <Typography variant="h4" id={id}>Album:</Typography>
-                            <Typography variant="body1" id={id}>{element.albumName}</Typography>
+                            <Typography variant="body1">{element.albumName}</Typography>
                         </>
                     )
                 }
@@ -66,7 +65,7 @@ const DisplayData = ({ element, id, onClick, maxHeight, maxWidth }) => {
                     element?.songName && (
                         <>
                             <Typography variant="h4" id={id}>Track:</Typography>
-                            <Typography variant="body1" id={id}>{element.songName}</Typography>
+                            <Typography variant="body1">{element.songName}</Typography>
                         </>
                     )
                 }
