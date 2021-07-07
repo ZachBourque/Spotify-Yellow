@@ -1,7 +1,7 @@
 import React, { Component, useState, useEffect } from 'react'
 import { TextField, Radio, RadioGroup, FormControlLabel, FormControl, FormLabel, makeStyles, Switch, TextareaAutosize } from '@material-ui/core';
 import Spotify from 'spotify-web-api-js';
-import { Container, Avatar, Grid, Paper, Typography, Card, CardHeader, CardContent, Button } from '@material-ui/core'
+import { Container, Avatar, Grid, Paper, Typography, Card, CardHeader, CardContent, Button, Divider } from '@material-ui/core'
 import DisplayData from './DisplayData'
 import $ from 'jquery'
 import { connect } from 'react-redux'
@@ -66,7 +66,6 @@ const MakePost = (props) => {
     //Scene 1:
     //An object from the dataArray that is the topic of the post
     const [selectedTopic, setSelectedTopic] = useState(props.selectedTopic);
-
     //The user input for the post
     const [postRating, setRating] = useState(5);
     const [postTitle, setTitle] = useState('');
@@ -74,6 +73,7 @@ const MakePost = (props) => {
     //Toggles using the number rating
     const [switchState, setSwitchState] = useState(true);
 
+    //Images array for the rating numbers
     const [imagesArray, setImagesArray] = useState([Zero, One, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten]);
 
     const s = new Spotify();
@@ -226,90 +226,97 @@ const MakePost = (props) => {
     }
 
     return (
-        <div>
-
-            <Grid item xs={7}>
-                <Card style={{ backgroundColor: "#4d4d4d" }} align="center">
-                    <CardHeader
-                        title={
-                            <Typography variant="h4">
-                                Make Post
-                            </Typography>
-                        }
-                        style={
-                            { backgroundColor: "#D99E2A" }
-                        }
-                    />
-                    <CardContent>
-                        {
-                            scene == 0 &&
-                            (<FormControl component="fieldset">
-                                <Grid container wrap="nowrap" spacing={2}>
-                                    <RadioGroup aria-label="gender" name="gender1" value={value} onChange={radioChanged}>
-                                        <FormControlLabel value="artist" control={<Radio />} label="Artist" />
-                                        <FormControlLabel value="album" control={<Radio />} label="Album/EP" />
-                                        <FormControlLabel value="track" control={<Radio />} label="Track" />
-                                    </RadioGroup>
-                                    <TextField variant="filled" id="searchText" onChange={searchTextChanged} />
+        <Card style={{ backgroundColor: "#4d4d4d" }} align="center">
+            <CardHeader
+                title={
+                    <Typography variant="h4">
+                        Make Post
+                    </Typography>
+                }
+                style={
+                    { backgroundColor: "#D99E2A" }
+                }
+            />
+            <CardContent>
+                {
+                    scene == 0 &&
+                    (<FormControl component="fieldset">
+                        <Grid container justify="center" alignItems="center">
+                            <RadioGroup aria-label="gender" name="gender1" value={value} onChange={radioChanged}>
+                                <FormControlLabel value="artist" control={<Radio />} label="Artist" />
+                                <FormControlLabel value="album" control={<Radio />} label="Album/EP" />
+                                <FormControlLabel value="track" control={<Radio />} label="Track" />
+                            </RadioGroup>
+                            <TextField variant="filled" id="searchText" onChange={searchTextChanged} />
+                        </Grid>
+                        <Divider style={{margin: '10px'}} />
+                        <Grid container justify="center" alignItems="space-evenly">
+                            {dataArray?.map((element, index) => {
+                                return <Grid item xs={6} sm={4} md={2}>
+                                    <DisplayData
+                                        element={element}
+                                        id={index} 
+                                        maxHeight='200px'
+                                        maxWidth='200px'
+                                        onClick={(e) => {
+                                            setSelectedTopic(dataArray[index]); setScene(1);
+                                        }}
+                                    />
                                 </Grid>
-                                {dataArray?.map((element, index) => {
-                                    return <DisplayData element={element} id={index} maxHeight={'200px'} maxWidth={'200px'} onClick={(e) => { setSelectedTopic(dataArray[e.target.id]); setScene(1); console.log(e.target) }} />
-                                })}
-                            </FormControl>)
-                        }
-                        {
-                            scene == 1 && (
+                            })}
+                        </Grid>
+                    </FormControl>)
+                }
+                {
+                    scene == 1 && (
+                        <div>
+                            <DisplayData element={selectedTopic} maxHeight={200} />
+                            <form id="contactForm">
                                 <div>
-                                    <DisplayData element={selectedTopic} maxHeight={200} />
-                                    <form id="contactForm">
-                                        <div>
-                                            <Switch
-                                                checked={switchState}
-                                                onChange={handleSwitchChange}
-                                                name="useNumber"
-                                                inputProps={{ 'aria-label': 'secondary checkbox' }}
-                                            />
-                                            {!switchState ? '' : (<div>
-                                                <img className={classes.rating} src={imagesArray[postRating]} />
-                                                <IconButton aria-label="minus" onClick={() => setRating(!(postRating == 0) ? postRating - 1 : postRating)}>
-                                                    <RemoveIcon />
-                                                </IconButton>
-                                                <IconButton aria-label="plus" onClick={() => setRating(!(postRating == 10) ? postRating + 1 : postRating)}>
-                                                    <AddIcon />
-                                                </IconButton>
-                                            </div>)}
-                                        </div>
-                                        <TextField
-                                            id="postTitle"
-                                            label="Post Title"
-                                            rows={1}
-                                            fullWidth
-                                            variant="outlined"
-                                            value={postTitle}
-                                            onChange={(e) => setTitle(e.target.value)}
-                                        /><br />
-                                        <TextField
-                                            id="postBody"
-                                            label="Post Body"
-                                            multiline
-                                            rows={6}
-                                            fullWidth
-                                            variant="outlined"
-                                            value={postBody}
-                                            margin="dense"
-                                            onChange={(e) => setBody(e.target.value)}
-                                        />
-
-                                    </form>
-                                    <Button color="primary" variant="contained" onClick={() => sendPost()} >Make Post</Button>
+                                    <Switch
+                                        checked={switchState}
+                                        onChange={handleSwitchChange}
+                                        name="useNumber"
+                                        inputProps={{ 'aria-label': 'secondary checkbox' }}
+                                    />
+                                    {!switchState ? '' : (<div>
+                                        <img className={classes.rating} src={imagesArray[postRating]} />
+                                        <IconButton aria-label="minus" onClick={() => setRating(!(postRating == 0) ? postRating - 1 : postRating)}>
+                                            <RemoveIcon />
+                                        </IconButton>
+                                        <IconButton aria-label="plus" onClick={() => setRating(!(postRating == 10) ? postRating + 1 : postRating)}>
+                                            <AddIcon />
+                                        </IconButton>
+                                    </div>)}
                                 </div>
-                            )
-                        }
-                    </CardContent>
-                </Card>
+                                <TextField
+                                    id="postTitle"
+                                    label="Post Title"
+                                    rows={1}
+                                    fullWidth
+                                    variant="outlined"
+                                    value={postTitle}
+                                    onChange={(e) => setTitle(e.target.value)}
+                                /><br />
+                                <TextField
+                                    id="postBody"
+                                    label="Post Body"
+                                    multiline
+                                    rows={6}
+                                    fullWidth
+                                    variant="outlined"
+                                    value={postBody}
+                                    margin="dense"
+                                    onChange={(e) => setBody(e.target.value)}
+                                />
 
-            </Grid>
-        </div>
+                            </form>
+                            <Button color="primary" variant="contained" onClick={() => sendPost()} >Make Post</Button>
+                        </div>
+                    )
+                }
+            </CardContent>
+        </Card>
     )
 }
 
