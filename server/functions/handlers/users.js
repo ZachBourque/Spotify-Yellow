@@ -1,5 +1,8 @@
 const { admin, db, client_secret } = require('../util/admin')
-const request = require("request")
+const request = require("request");
+
+var redirect_uri = 'http://localhost:5000/spotify-yellow-282e0/us-central1/api/callback'; // Your redirect uri
+var client_id = "e5f1276d07b74135956c8b3130f79f3f"; // Your client id
 
 var generateRandomString = function(length) {
     var text = '';
@@ -131,25 +134,18 @@ exports.getUser = (req,res) => {
   })
 }
 
-exports.refreshToken = (req,res) => {
-  var client_id = "e5f1276d07b74135956c8b3130f79f3f" 
-  var authOptions = {
-  url: 'https://accounts.spotify.com/api/token',
-  headers: { 'Authorization': 'Basic ' + (new Buffer(client_id + ':' + client_secret).toString('base64')) },
-  form: {
-    grant_type: 'refresh_token',
-    refresh_token: req.params.token
-  },
-  json: true
-};
-request.post(authOptions, function(error, response, body){
-  if(error || response.statusCode !== 200){
-    error ? console.error(err) : null 
-    return res.status(401).json({error: "Could not refresh token, LOGOUT"})
-  } else {
-    return res.json(body)
-  }
-})
+exports.getSelf = (req,res) => {
+  db.collection('posts').where('authorid', '==', req.user.id).get().then(snap => {
+    req.user.posts = []
+    snap.forEach(doc => {
+      req.user.posts.push({...doc.data(), id: doc.id})
+    })
+    if(req.auth.refreshed){
+      return res.json({success: "Successfully got user", refreshed: true, token: req.auth.token, expires: req.auth.expires, user: req.user})
+    } else {
+      return res.json({success: "Successfully got user", user: req.user})
+    }
+  })
 }
 
 exports.uploadPic = (req,res) => {
@@ -190,4 +186,68 @@ exports.uploadPic = (req,res) => {
       });
   });
   busboy.end(req.rawBody);
+}
+
+exports.addFavorite = (req,res) => {
+  let newFavorite = {
+    name: req.body.spotifyName,
+    pic: req.body.spotifyPic,
+    url: req.body.spotifyUrl
+  }
+  let union = admin.firestore.FieldValue.arrayUnion(newFavorite)
+  db.collection('users').where('id', '==', req.user.id).limit(1).get().then(snap => {
+    let update = req.body.type === "song" ? {favSongs: union} : req.body.type === "album" ? {favAlbums: union} : req.body.type === "artist" ? {favArtists: union} : null 
+    if(update){
+      snap.docs[0].ref.update(update).then(() => {
+        if(req.auth.refreshed){
+          return res.json({success: "Successfully added favorite", refreshed: true, token: req.auth.token, expires: req.auth.expires})
+        } else {
+          return res.json({success: "Successfully added favorite"})
+        }
+      }).catch(err => {
+        console.error(err)
+        return res.status(500).json({error: "Could not update user."})
+      })
+    } else {
+      return res.status(400).json({error: "Invalid favorite type"})
+    }
+  }).catch(err => {
+    console.error(err)
+    return res.status(500).json({error: "Could not get user."})
+  })
+}
+
+exports.removeFavorite = (req,res) => {
+  let favorite = {name: req.body.name, pic: req.body.pic, url: req.body.url}
+  let remove = admin.firestore.FieldValue.arrayRemove(favorite)
+  db.collection('users').where('id', '==', req.user.id).limit(1).get().then(snap => {
+    let update = req.body.type === "song" ? {favSongs: remove} : req.body.type === "album" ? {favAlbums: remove} : req.body.type === "artist" ? {favArtists: remove} : null 
+    if(update){
+      snap.docs[0].ref.update(update).then(() => {
+        if(req.auth.refreshed){            
+          return res.json({success: "Successfully added favorite", refreshed: true, token: req.auth.token, expires: req.auth.expires})
+        } else {
+          return res.json({success: "Successfully added favorite"})
+        }
+      }).catch(err => {
+        console.error(err)
+        return res.json({error: "Could not update user"})
+      })
+    } else {
+      return res.status(400).json({error: "Invalid favorite type"})
+    }
+  }).catch(err => {
+    console.error(err)
+    return res.status(500).json({error: "Could not get user"})
+  })
+}
+
+exports.editBio = (req,res) => {
+  //validate first
+  req.userRef.update({bio: req.body.bio}).then(() => {
+     return res.json({success: "Successfully updated bio"})
+  }).catch(err => {
+    console.error(err)
+    return res.status(500).json({error: "Failed to update bio"})
+  })
 }

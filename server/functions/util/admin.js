@@ -5,6 +5,8 @@ const request = require('request')
 admin.initializeApp()
 const client_secret = functions.config().info.client_secret 
 const db = admin.firestore()
+var client_id = "e5f1276d07b74135956c8b3130f79f3f"; // Your client id
+
 
 const validateUser = (req,res,next) => {
 	const getUser = () => {
@@ -21,20 +23,22 @@ const validateUser = (req,res,next) => {
 				return res.status(401).json({error: "Error getting spotify data, LOGOUT"})
 			} else {
 				db.collection('users').where('id', '==', body.id).limit(1).get().then(snap => {
+					req.userRef = snap.docs[0].ref
 					req.user = {...snap.docs[0].data()}
-					req.user.refreshed = true
-					req.user.token = req.body.token 
-					req.user.expires = req.body.expires
+					req.auth = {}
+					req.auth.refreshed = true
+					req.auth.token = req.body.token 
+					req.auth.expires = req.body.expires
 					return next()
 				}).catch(err => {
 					console.error(err)
-					return res.status(500).json({errro: "Error getting user data, LOGOUT"})
+					return res.status(500).json({error: "Error getting user data, LOGOUT"})
 				})
 			}
 		})
 
 	}
-	let { expires, token, rtoken } = req.body
+	let { expires, rtoken } = req.body
 	let now = new Date().getTime()
 	if(now < expires){
 		getUser()

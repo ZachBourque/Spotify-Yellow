@@ -186,7 +186,7 @@ function PrimarySearchAppBar(props) {
             <div className={classes.sectionMobile}>
               {auth.loggedIn ? (
                 <IconButton edge="end" aria-label="account of current user" aria-controls={menuId} aria-haspopup="true" onClick={handleProfileMenuOpen} color="inherit">
-                {!user.loaded ? <img src={localStorage.getItem("cachepfp")} width="50" heigh="50"/> : <img src={user.pfp} width="50" heigh="50"/>}
+                {!user.loaded ? <img src={localStorage.getItem("cachepfp")} width="50" heigh="50"/> : <img src={user.profilepic} width="50" heigh="50"/>}
                 </IconButton>
               ) : 
               (<a href={url}>

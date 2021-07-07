@@ -7,6 +7,7 @@ export const REFRESH_TOKEN = "REFRESH_TOKEN"
 export const USERLOADING = "USERLOADING"
 export const SETUSERDATA = "SETUSERDATA"
 export const CLEARUSERDATA = "CLEARUSERDATA"
+export const UPDATEBIO = "UPDATEBIO"
 
 // profile types
 export const SETPROFILEDATA = "SETPROFILEDATA"

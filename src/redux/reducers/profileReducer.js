@@ -1,7 +1,7 @@
 import { SETPROFILEDATA, CLEARPROFILEDATA, PROFILELOADING } from '../types'
 
 const initialState = {
-    pfp: null,
+    profilepic: null,
     posts: null,
     favAlbums: null,
     favSongs: null,
