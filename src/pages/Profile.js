@@ -205,7 +205,9 @@ class Profile extends Component {
                                         </Grid>
                                     </Grid>
                                 ) : <Typography variant="h4">User does not have any favorite songs.</Typography>}
-                                <MakePost></MakePost>
+                                <Grid item xs={8}>
+                                <MakePost />
+                                </Grid>
                             </Container>
                             {/*User's Posts container*/}
                             <Grid
