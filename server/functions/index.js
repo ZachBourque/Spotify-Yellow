@@ -13,7 +13,7 @@ app.get('/login', login);
 app.get('/callback', callback);
 app.post('/createUser', createUser)
 app.get('/getUser/:id', getUser)
-app.patch('/self', validateUser, getSelf)
+app.get('/self', validateUser, getSelf)
 app.post('/uploadpic', uploadPic)
 app.post('/addFavorite', validateUser, addFavorite)
 app.post('/removeFavorite', validateUser, removeFavorite)

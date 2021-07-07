@@ -13,7 +13,7 @@ const validateUser = (req,res,next) => {
 
 		var options = {
 		url: 'https://api.spotify.com/v1/me',
-		headers: { 'Authorization': 'Bearer ' + req.body.token },
+		headers: { 'Authorization': 'Bearer ' + req.auth.token },
 		json: true
 		};
 	
@@ -25,10 +25,6 @@ const validateUser = (req,res,next) => {
 				db.collection('users').where('id', '==', body.id).limit(1).get().then(snap => {
 					req.userRef = snap.docs[0].ref
 					req.user = {...snap.docs[0].data()}
-					req.auth = {}
-					req.auth.refreshed = true
-					req.auth.token = req.body.token 
-					req.auth.expires = req.body.expires
 					return next()
 				}).catch(err => {
 					console.error(err)
@@ -38,9 +34,12 @@ const validateUser = (req,res,next) => {
 		})
 
 	}
-	let { expires, rtoken } = req.body
+	req.auth = {}
+	let { expires, token, rtoken } = req.headers
 	let now = new Date().getTime()
 	if(now < expires){
+		req.auth.token = token
+		req.auth.expires = expires
 		getUser()
 	} else {
 		var authOptions = {
@@ -57,8 +56,9 @@ const validateUser = (req,res,next) => {
 				error ? console.error(error) : null
 				return res.status(401).json({error: "Error getting refresh token, LOGOUT"})
 			} else {
-				req.body.token = body.access_token
-				req.body.expires = new Date(new Date().getTime() + ((body.expires_in * 1000)-60000)).getTime()
+				req.auth.token = body.access_token
+				req.auth.refreshed = true
+				req.auth.expires = new Date(new Date().getTime() + ((body.expires_in * 1000)-60000)).getTime()
 				getUser()
 			}
 		})

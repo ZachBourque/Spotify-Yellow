@@ -56,7 +56,7 @@ export class Post extends Component {
 
     componentDidMount() {
         const id = this.props.match.params.postID
-        axios.get(`http://localhost:5000/spotify-yellow-282e0/us-central1/api/post/${id}`)
+        axios.get(`/post/${id}`)
             .then(res => {
                 this.setState({ element: res.data.post, isLoading: false })
                 console.log(res.data.post)
