@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import { Container, Avatar, Grid, Paper, Typography, Divider, Box, CardHeader, CardMedia, CardContent, CardActions, Collapse, IconButton, Card, Menu, MenuItem, Button } from '@material-ui/core'
 import { red } from '@material-ui/core/colors';
 import $ from 'jquery'
+import axios from 'axios';
 import Zero from '../assets/0.png'
 import One from '../assets/1.png'
 import Two from '../assets/2.png'
@@ -16,9 +17,10 @@ import Nine from '../assets/9.png'
 import Ten from '../assets/10.png'
 import withStyles from '@material-ui/core/styles/withStyles'
 import { makeStyles, createMuiTheme } from '@material-ui/core/styles';
-import { ThumbUp, Comment, Share, MoreVert, Create, Delete } from '@material-ui/icons';
+import { ThumbUp, Comment, Share, MoreVert, Create, Delete, PostAddOutlined } from '@material-ui/icons';
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@material-ui/core';
 import MakePost from './MakePost';
+import { thisExpression } from '@babel/types';
 
 
 const styles = makeStyles(theme => ({
@@ -89,8 +91,10 @@ export class Post extends Component {
         this.setState({ deletePostOpen: false })
     }
 
-    deletePost() {
-        //TODO
+    deletePost(postId) {
+        const {token, expires, rtoken} = this.props.auth;
+        axios.delete(`/post/${postId}`, {headers: {token, expires, rtoken}}).then(res => {console.log(res.data)})
+        //('/post/:postId', validateUser, deletePost)
     }
 
     render() {
@@ -229,7 +233,7 @@ export class Post extends Component {
                         <Button
                             variant="contained"
                             color="secondary"
-                            onClick={this.closeDeletePost}
+                            onClick={() => this.deletePost(element.postId)}
                             startIcon={<Delete />}
                         >
                             Delete
@@ -242,7 +246,8 @@ export class Post extends Component {
 }
 
 const mapStateToProps = (state) => ({
-    user: state.user
+    user: state.user,
+    auth: state.auth
 })
 
 const mapActionsToProps = {
