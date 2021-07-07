@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { Container, Avatar, Grid, Paper, Typography, Divider, Box, CardHeader, CardMedia, CardContent, CardActions, Collapse, IconButton, Card, Menu, MenuItem } from '@material-ui/core'
+import { Container, Avatar, Grid, Paper, Typography, Divider, Box, CardHeader, CardMedia, CardContent, CardActions, Collapse, IconButton, Card, Menu, MenuItem, Button } from '@material-ui/core'
 import { red } from '@material-ui/core/colors';
 import $ from 'jquery'
 import Zero from '../assets/0.png'
@@ -16,13 +16,10 @@ import Nine from '../assets/9.png'
 import Ten from '../assets/10.png'
 import withStyles from '@material-ui/core/styles/withStyles'
 import { makeStyles, createMuiTheme } from '@material-ui/core/styles';
-import ThumbUpIcon from '@material-ui/icons/ThumbUp';
-import CommentIcon from '@material-ui/icons/Comment';
-import ShareIcon from '@material-ui/icons/Share';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
-import DialogContent from '@material-ui/core/DialogContent';
-import Dialog from '@material-ui/core/Dialog';
+import { ThumbUp, Comment, Share, MoreVert, Create, Delete } from '@material-ui/icons';
+import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@material-ui/core';
 import MakePost from './MakePost';
+
 
 const styles = makeStyles(theme => ({
 
@@ -38,6 +35,7 @@ export class Post extends Component {
         content: null,
         menuOpen: null,
         makePostOpen: false,
+        deletePostOpen: false,
     }
 
     imagesArray = [Zero, One, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten];
@@ -83,6 +81,14 @@ export class Post extends Component {
         //TODO
     }
 
+    openDeletePost() {
+        this.setState({ deletePostOpen: true })
+    }
+
+    closeDeletePost = () => {
+        this.setState({ deletePostOpen: false })
+    }
+
     deletePost() {
         //TODO
     }
@@ -99,7 +105,7 @@ export class Post extends Component {
                         action={
                             <>
                                 <IconButton aria-label="settings" aria-controls="simple-menu" aria-haspopup="true" onClick={this.handleClick}>
-                                    <MoreVertIcon />
+                                    <MoreVert />
                                 </IconButton>
                                 <Menu
                                     id="simple-menu"
@@ -110,8 +116,8 @@ export class Post extends Component {
                                 >
                                     <MenuItem onClick={() => { this.handleClose(); this.openMakePost(); }}>Make Post On Topic</MenuItem>
                                     <MenuItem onClick={() => { this.handleClose(); this.sharePost(); }}>Share</MenuItem>
-                                    {element.authorid == this.props.user.id ? <MenuItem onClick={() => { this.handleClose(); this.editPost(); }}>Edit Post</MenuItem> : ''}
-                                    {element.authorid == this.props.user.id ? <MenuItem onClick={() => { this.handleClose(); this.deletePost(); }} style={{ color: 'red' }}>Delete Post</MenuItem> : ''}
+                                    {element.authorid == this.props.user.id ? <MenuItem onClick={() => { this.handleClose(); this.editPost(); }}><Create />Edit Post</MenuItem> : ''}
+                                    {element.authorid == this.props.user.id ? <MenuItem onClick={() => { this.handleClose(); this.openDeletePost(); }} style={{ color: 'red' }}><Delete />Delete Post</MenuItem> : ''}
                                 </Menu>
                             </>
                         }
@@ -170,13 +176,13 @@ export class Post extends Component {
                         <Divider style={{ margin: 10 }} />
                         <CardActions disableSpacing>
                             <IconButton onClick={this.handleLike()}>
-                                <ThumbUpIcon />
+                                <ThumbUp />
                             </IconButton>
                             <IconButton onClick={() => this.postRe(element.postId)}>
-                                <CommentIcon />
+                                <Comment />
                             </IconButton>
                             <IconButton >
-                                <ShareIcon />
+                                <Share />
                             </IconButton>
 
                         </CardActions>
@@ -185,8 +191,8 @@ export class Post extends Component {
 
 
                 </Card>
+                {/* MakePost Dialog Box */}
                 <Dialog onClose={this.closeMakePost} aria-labelledby="customized-dialog-title" open={this.state.makePostOpen} maxWidth="md" fullWidth>
-
                     <DialogContent >
                         <Grid container justify="center">
                             <Grid item>
@@ -200,9 +206,35 @@ export class Post extends Component {
                                 }} />
                             </Grid>
                         </Grid>
-
                     </DialogContent>
+                </Dialog>
 
+                {/* DeletePost Dialog */}
+                <Dialog
+                    open={this.state.deletePostOpen}
+                    onClose={this.closeDeletePost}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                >
+                    <DialogTitle id="alert-dialog-title">{"Are you sure you want to delete this post?"}</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText id="alert-dialog-description">
+                            Once this post is deleted, it cannot be recovered.
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={this.closeDeletePost} variant="outlined"> 
+                            Cancel
+                        </Button>
+                        <Button
+                            variant="contained"
+                            color="secondary"
+                            onClick={this.closeDeletePost}
+                            startIcon={<Delete />}
+                        >
+                            Delete
+                        </Button>
+                    </DialogActions>
                 </Dialog>
             </>
         )
