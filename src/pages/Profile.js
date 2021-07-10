@@ -3,7 +3,6 @@ import { Container, Avatar, Grid, Paper, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/ButtonBase';
 import ProfileSkeleton from "../Skeletons/ProfileSkeleton"
-import { getProfileData, getUserProfileData } from "../redux/actions/profileActions"
 import { connect } from 'react-redux'
 import withStyles from '@material-ui/core/styles/withStyles'
 import queryString from "query-string"
@@ -16,6 +15,7 @@ import Card from '@material-ui/core/Card'
 import CardMedia from '@material-ui/core/CardMedia'
 import CardContent from '@material-ui/core/CardContent'
 import { sizing } from '@material-ui/system';
+import axios from 'axios';
 
 const styles = makeStyles((theme) => ({
     root: {
@@ -68,35 +68,48 @@ class Profile extends Component {
         bio: null,
         username: null,
         id: null,
-        loading: true
+        loading: true,
+        self: false
     }
 
 
     componentDidMount() {
         const { state } = this.props.location
         if (state && state.setData) {
-            this.setState({ ...state.user, loading: false })
+            this.setState({ ...state.user, loading: false, self: true })
             this.props.location.state = {}
             console.log(state.user)
         } else {
             let id = queryString.parse(this.props.location.pathname)['/profile']
             if (!id) {
                 this.props.history.push("/")
-            } else if (id === this.props.profile.id) {
-                this.setState({ ...this.props.profile, loading: false })
+            } else if (id === this.props.user.id ) {
+                this.setState({ ...this.props.user, loading: false, self: true })
             } else {
-                this.props.getProfileData(id)
+                this.getProfileData(id)
             }
         }
 
     }
 
-    componentDidUpdate() {
-        if (this.state.loading && this.props.profile.loaded) {
-            this.setState({
-                loading: false, ...this.props.profile
-            })
+    componentDidUpdate(prevProps) {
+        let id = queryString.parse(this.props.location.pathname)['/profile']
+        if(id !== this.state.id){
+            this.getProfileData(id)
+        } else if(prevProps.user !== this.props.user && this.state.self && this.props.user.loaded){
+            this.setState({...this.props.user, loading: false, self: true})
         }
+    }
+
+    getProfileData = (id) => {
+        this.setState({loading: true})
+        axios.get(`/getUser/${id}`).then(res => {
+            if(res.data.id === this.props.user.id){
+                this.setState({...res.data, loading: false, self: true})
+            } else {
+                this.setState({...res.data, loading: false})
+            }
+        })
     }
 
     render() {
@@ -238,15 +251,14 @@ class Profile extends Component {
 }
 
 Profile.propTypes = {
-    profile: PropTypes.object.isRequired
+    user: PropTypes.object.isRequired
 }
 
 const mapStateToProps = (state) => ({
-    profile: state.profile
+    user: state.user
 })
 
 const mapActionsToProps = {
-    getProfileData
 }
 
 export default connect(mapStateToProps, mapActionsToProps)(withStyles(styles)(Profile))

@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import withStyles from '@material-ui/core/styles/withStyles'
 import { connect } from 'react-redux'
-import { getProfileData} from '../redux/actions/profileActions'
 import { editBio } from '../redux/actions/userActions'
 import { makeStyles } from '@material-ui/core/styles';
 import { Container } from '@material-ui/core';
@@ -68,7 +67,6 @@ const mapStateToProps = (state) => ({
 })
 
 const mapActionsToProps = {
-    getProfileData,
     editBio
 }
 

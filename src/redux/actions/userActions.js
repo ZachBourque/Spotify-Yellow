@@ -14,7 +14,7 @@ const getData = (token, expires, rtoken, dispatch) => {
 		}
 		dispatch({type: SETUSERDATA, payload: res.data.user})
 	}).catch(err => {
-		console.log(err.response.data.error)
+		console.log(err?.response?.data?.error)
 	})
 }
 
