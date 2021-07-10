@@ -41,10 +41,15 @@ export const editBio = (bio, token, expires, rtoken, history) => (dispatch) => {
 		}
 		dispatch({type: UPDATEBIO, payload: {bio}})
 		history.push('/profile')
+		window.location.reload()
 	})
 }
 
-export const getNewToken = (rtoken) => (dispatch) => {
+export const updateProfilePic = (token, expires, rtoken, formData) => (dispatch) => {
+
+}
+
+export const getNewToken = (rtoken, callback) => (dispatch) => {
 	dispatch({type: LOADTOKEN})
 	axios.get('/token', {headers: {rtoken}}).then(res => {
 		let lsdata = JSON.parse(localStorage.getItem("data"))
@@ -52,5 +57,6 @@ export const getNewToken = (rtoken) => (dispatch) => {
 		lsdata.expires = res.data.expires
 		localStorage.setItem("data", JSON.stringify(lsdata))
 		dispatch({type: REFRESH_TOKEN, payload: {token: lsdata.token, expires: lsdata.expires}})
+		callback()
 	})
 }

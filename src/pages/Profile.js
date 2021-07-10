@@ -76,6 +76,7 @@ class Profile extends Component {
         const { state } = this.props.location
         if (state && state.setData) {
             this.setState({ ...state.user, loading: false })
+            this.props.location.state = {}
             console.log(state.user)
         } else {
             let id = queryString.parse(this.props.location.pathname)['/profile']

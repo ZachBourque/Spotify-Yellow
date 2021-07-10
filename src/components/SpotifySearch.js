@@ -4,7 +4,7 @@ import { TextField, Radio, RadioGroup, FormControlLabel, FormControl, Grid } fro
 import DisplayData from './DisplayData'
 import Spotify from 'spotify-web-api-js'
 import $ from 'jquery'
-import { refreshToken } from '../redux/actions/authActions'
+import { getNewToken } from '../redux/actions/userActions'
 
 const SpotifySearch = (props) => {
 
@@ -30,9 +30,11 @@ const SpotifySearch = (props) => {
 
 
     const searchTextChanged = (event) => {
+        if(props.auth.tokenLoading){return}
         let now = new Date().getTime()
         if (now < props.auth.expires) {
-
+            props.getNewToken(props.auth.rtoken, searchTextChanged)
+            return
         }
         //if the event is empty, dont display anything for search results
         if (event == '' || event?.target?.value == '') { setDataArray(null); setReturnedData(null); return }
@@ -150,7 +152,7 @@ const SpotifySearch = (props) => {
                 <TextField variant="filled" id="searchText" onChange={searchTextChanged} />
             </Grid>
             {dataArray?.map((element, index) => {
-                return <DisplayData element={element} id={index} maxHeight={'200px'} maxWidth={'200px'} onClick={(e) => { setSelectedTopic(dataArray[e.target.id]); }} />
+                return <DisplayData element={element} id={index} maxHeight={'200px'} maxWidth={'200px'} onClick={props.onClick} />
             })}
         </FormControl>
     )
@@ -161,7 +163,7 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = {
-    refreshToken
+    getNewToken
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SpotifySearch)
