@@ -1,4 +1,4 @@
-import { USERLOADING, SETUSERDATA, CLEARUSERDATA, LOGOUT, REFRESH_TOKEN, UPDATEBIO, LOADTOKEN } from "../types"
+import { USERLOADING, SETUSERDATA, CLEARUSERDATA, LOGOUT, REFRESH_TOKEN, UPDATEBIO, LOADTOKEN, UPDATEFAVORITES } from "../types"
 import axios from "axios"
 
 const getData = (token, expires, rtoken, dispatch) => {
@@ -14,7 +14,7 @@ const getData = (token, expires, rtoken, dispatch) => {
 		}
 		dispatch({type: SETUSERDATA, payload: res.data.user})
 	}).catch(err => {
-		console.log(err.response.data.error)
+		console.log(err?.response?.data?.error)
 	})
 }
 
@@ -40,17 +40,22 @@ export const editBio = (bio, token, expires, rtoken, history) => (dispatch) => {
 			dispatch({type: REFRESH_TOKEN, payload: {token: lsdata.token, expires: lsdata.expires}})
 		}
 		dispatch({type: UPDATEBIO, payload: {bio}})
-		history.push('/profile')
 	})
 }
 
-export const getNewToken = (rtoken) => (dispatch) => {
-	dispatch({type: LOADTOKEN})
-	axios.get('/token', {headers: {rtoken}}).then(res => {
-		let lsdata = JSON.parse(localStorage.getItem("data"))
-		lsdata.token = res.data.token 
-		lsdata.expires = res.data.expires
-		localStorage.setItem("data", JSON.stringify(lsdata))
-		dispatch({type: REFRESH_TOKEN, payload: {token: lsdata.token, expires: lsdata.expires}})
+export const editFavorites = (update, token, expires, rtoken) => (dispatch) => {
+	axios.post("/editFavorites", {update}, {headers: {token, expires, rtoken}}).then(res => {
+		if(res.data.refreshed){
+			let lsdata = JSON.parse(localStorage.getItem("data"))
+			lsdata.token = res.data.token 
+			lsdata.expires = res.data.expires
+			localStorage.setItem("data", JSON.stringify(lsdata))
+			dispatch({type: REFRESH_TOKEN, payload: {token: lsdata.token, expires: lsdata.expires}})
+		}
+		dispatch({type: UPDATEFAVORITES, payload: update})
 	})
+}
+
+export const updateProfilePic = (token, expires, rtoken, formData) => (dispatch) => {
+
 }

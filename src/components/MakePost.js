@@ -258,7 +258,7 @@ const MakePost = (props) => {
                                         id={index} 
                                         maxHeight='200px'
                                         maxWidth='200px'
-                                        onClick={(e) => {
+                                        onClick={() => {
                                             setSelectedTopic(dataArray[index]); setScene(1);
                                         }}
                                     />

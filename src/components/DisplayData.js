@@ -28,9 +28,10 @@ const DisplayData = ({ element, id, onClick, maxHeight, maxWidth }) => {
 
     const classes = useStyles();
 
+
     return (
         <Card
-            onClick={onClick}
+            onClick={() => onClick(element)}
             styles={classes.paper}
             style={{ cursor: 'pointer', marginBottom: '10px'}}
             id={id}
