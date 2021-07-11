@@ -16,6 +16,7 @@ import CardMedia from '@material-ui/core/CardMedia'
 import CardContent from '@material-ui/core/CardContent'
 import { sizing } from '@material-ui/system';
 import axios from 'axios';
+import FavoriteCard from '../components/FavoriteCard'
 
 const styles = makeStyles((theme) => ({
     root: {
@@ -78,7 +79,6 @@ class Profile extends Component {
         if (state && state.setData) {
             this.setState({ ...state.user, loading: false, self: true })
             this.props.location.state = {}
-            console.log(state.user)
         } else {
             let id = queryString.parse(this.props.location.pathname)['/profile']
             if (!id) {
@@ -153,16 +153,7 @@ class Profile extends Component {
                                         <Grid item >
                                             {this.state.favArtists.map((artist, idx) => {
                                                 return (
-                                                    <Button href={artist.url} target="_blank" style={{ margin: 5, maxWidth: 200 }} className={classes.button}>
-                                                        <Card className={classes.cardstyle}>
-                                                            <img src={artist.pic} width="110" style={{ display: "block", marginLeft: "auto", marginRight: "auto", minWidth: 150 }} />
-                                                            <CardContent>
-                                                                <Typography variant="body1">
-                                                                    {artist.name}
-                                                                </Typography>
-                                                            </CardContent>
-                                                        </Card>
-                                                    </Button>
+                                                   <FavoriteCard key={idx} name={artist.name} url={artist.url} pic={artist.pic}/>
                                                 )
                                             })}
                                         </Grid>
@@ -178,16 +169,7 @@ class Profile extends Component {
                                         <Grid item >
                                             {this.state.favAlbums.map((album, idx) => {
                                                 return (
-                                                    <Button href={album.url} target="_blank" style={{ margin: 5, maxWidth: 200 }} className={classes.button} >
-                                                        <Card className={classes.cardstyle}>
-                                                            <img src={album.pic} width="110" style={{ display: "block", marginLeft: "auto", marginRight: "auto", minWidth: 150, maxWidth: 250, maxHeight: 215 }} />
-                                                            <CardContent>
-                                                                <Typography variant="body1">
-                                                                    {album.name}
-                                                                </Typography>
-                                                            </CardContent>
-                                                        </Card>
-                                                    </Button>
+                                                   <FavoriteCard key={idx} name={album.name} url={album.url} pic={album.pic}/>
                                                 )
                                             })}
                                         </Grid>
@@ -204,16 +186,7 @@ class Profile extends Component {
                                         <Grid item >
                                             {this.state.favSongs.map((song, idx) => {
                                                 return (
-                                                    <Button href={song.url} target="_blank" style={{ margin: 5, maxWidth: 200 }} className={classes.button}>
-                                                        <Card className={classes.cardstyle}>
-                                                            <img src={song.pic} width="110" style={{ display: "block", marginLeft: "auto", marginRight: "auto" }} />
-                                                            <CardContent>
-                                                                <Typography variant="body1">
-                                                                    {song.name}
-                                                                </Typography>
-                                                            </CardContent>
-                                                        </Card>
-                                                    </Button>
+                                                   <FavoriteCard key={idx} name={song.name} url={song.url} pic={song.pic}/>
                                                 )
                                             })}
                                         </Grid>

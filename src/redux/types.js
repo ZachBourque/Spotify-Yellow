@@ -9,7 +9,7 @@ export const USERLOADING = "USERLOADING"
 export const SETUSERDATA = "SETUSERDATA"
 export const CLEARUSERDATA = "CLEARUSERDATA"
 export const UPDATEBIO = "UPDATEBIO"
-
+export const UPDATEFAVORITES = "UPDATEFAVORITES"
 // data types
 export const DATALOADING = "DATALOADING"
 export const SETFEEDDATA = "SETFEEDDATA"
