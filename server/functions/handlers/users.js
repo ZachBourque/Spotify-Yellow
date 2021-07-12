@@ -139,7 +139,7 @@ exports.getSelf = (req,res) => {
   db.collection('posts').where('authorid', '==', req.user.id).get().then(snap => {
     req.user.posts = []
     snap.forEach(doc => {
-      req.user.posts.push({...doc.data(), id: doc.id})
+      req.user.posts.push({...doc.data(), postId: doc.id})
     })
     if(req.auth.refreshed){
       return res.json({success: "Successfully got user", refreshed: true, token: req.auth.token, expires: req.auth.expires, user: req.user})

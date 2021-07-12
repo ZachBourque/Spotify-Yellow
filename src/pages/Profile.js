@@ -9,7 +9,7 @@ import withStyles from '@material-ui/core/styles/withStyles'
 import queryString from "query-string"
 import { AlbumOutlined, TimerSharp } from '@material-ui/icons';
 import PropTypes from "prop-types"
-import Post from "../components/SmallPost"
+import SmallPost from "../components/SmallPost"
 import SpotifySearch from "../components/SpotifySearch"
 import MakePost from "../components/MakePost"
 import Card from '@material-ui/core/Card'
@@ -76,7 +76,6 @@ class Profile extends Component {
         const { state } = this.props.location
         if (state && state.setData) {
             this.setState({ ...state.user, loading: false })
-            console.log(state.user)
         } else {
             let id = queryString.parse(this.props.location.pathname)['/profile']
             if (!id) {
@@ -96,6 +95,7 @@ class Profile extends Component {
                 loading: false, ...this.props.profile
             })
         }
+        console.log(this.state)
     }
 
     render() {
@@ -220,7 +220,8 @@ class Profile extends Component {
                                         return (
                                             <Grid item xs={12}>
                                                 <Grid item xs={6}>
-                                                    <Post element={post} history={this.props.history} key={post.postId} />
+                                                    <SmallPost element={post} history={this.props.history} key={post.postId} />
+
                                                 </Grid>
                                             </Grid>
                                         )
@@ -249,6 +250,3 @@ const mapActionsToProps = {
 }
 
 export default connect(mapStateToProps, mapActionsToProps)(withStyles(styles)(Profile))
-
-
-

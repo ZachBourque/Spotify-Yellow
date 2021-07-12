@@ -102,16 +102,54 @@ exports.getPost = (req,res) => {
 
 exports.deletePost = (req,res) => {
   db.doc(`/posts/${req.params.postId}`).get().then(doc => {
+    if(!doc.exists){
+      return res.status(404).json({error: "Could not find post."})
+    }
     let post = doc.data()
     if(post.authorid === req.user.id){
-      doc.delete().then(() => {
+      doc.ref.delete().then(() => {
         if(req.auth.refreshed){
           return res.json({success: "Successfully deleted post", refreshed: true, token: req.auth.token, expires: req.auth.expires})
         } else {
           return res.json({success: "Successfully deleted post"})
         }
         // delete comments and likes and stuff
+      }).catch(err => {
+        console.error(err)
+        return res.status(500).json({error: "Error deleting post"})
       })
+    } else {
+      console.log(post.authorid, req.user.id)
+      return res.status(400).json({error: "Post isnt yours lol"})
     }
+  }).catch(err => {
+    console.error(err)
+    return res.status(500).json({error: "Could not get post"})
+  })
+}
+
+exports.editPost = (req,res) => {
+  console.log(req.params.postId)
+  db.doc(`/posts/${req.params.postId}`).get().then(doc => {
+    if(!doc.exists){
+      return res.status(404).json({error: "Post does not exist"})
+    }
+    if(doc.data().authorid === req.user.id){
+      doc.ref.update(req.body.update).then(() => {
+        if(req.auth.refreshed){
+          return res.json({success: "Successfully edited post", refreshed: true, token: req.auth.token, expires: req.auth.expires})
+        } else {
+          return res.json({success: "Successfully edited post", doc: {...doc.data(), ...req.body.update}})
+        }
+      }).catch(err => {
+        console.error(err)
+        return res.status(500).json({error: "Error updating post."})
+      })
+    } else {
+      return res.status(403).json({error: "post isnt yours lol"})
+    }
+  }).catch(err => {
+    console.error(err)
+    return res.status(500).json({error: "Error getting post"})
   })
 }
