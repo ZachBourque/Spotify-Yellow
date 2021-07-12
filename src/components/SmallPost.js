@@ -1,8 +1,10 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Container, Avatar, Grid, Paper, Typography, Divider, Box, CardHeader, CardMedia, CardContent, CardActions, Collapse, IconButton, Card, Menu, MenuItem, Button } from '@material-ui/core'
+import { FormControl, FormLabel, TextField, Switch } from '@material-ui/core'
 import { red } from '@material-ui/core/colors';
 import $ from 'jquery'
+import axios from 'axios';
 import Zero from '../assets/0.png'
 import One from '../assets/1.png'
 import Two from '../assets/2.png'
@@ -16,9 +18,11 @@ import Nine from '../assets/9.png'
 import Ten from '../assets/10.png'
 import withStyles from '@material-ui/core/styles/withStyles'
 import { makeStyles, createMuiTheme } from '@material-ui/core/styles';
-import { ThumbUp, Comment, Share, MoreVert, Create, Delete } from '@material-ui/icons';
+import { ThumbUp, Comment, Share, MoreVert, Create, Delete, PostAddOutlined, Remove, Add, Send } from '@material-ui/icons';
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@material-ui/core';
 import MakePost from './MakePost';
+import { thisExpression } from '@babel/types';
+import { reloadUserProfile } from '../redux/actions/userActions'
 
 
 const styles = makeStyles(theme => ({
@@ -32,13 +36,22 @@ const styles = makeStyles(theme => ({
 export class Post extends Component {
 
     state = {
-        content: null,
+        element: this.props.element,
         menuOpen: null,
-        makePostOpen: false,
-        deletePostOpen: false,
+        makePostStatus: false,
+        deletePostStatus: false,
+        editPostStatus: false,
+        newRating: this.props.element.rating,
+        newTitle: this.props.element.title,
+        newBody: this.props.element.body,
+        switchState: this.props.element.rating > -1 ? true : false
     }
 
     imagesArray = [Zero, One, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten];
+
+    componentDidMount() {
+        this.setState({ element: this.props.element })
+    }
 
     handleClick = (event) => {
         this.setState({ menuOpen: event.currentTarget });
@@ -47,6 +60,18 @@ export class Post extends Component {
     handleClose = () => {
         this.setState({ menuOpen: null });
     };
+
+    handleSwitchChange = (event) => {
+        this.setState({ switchState: !this.state.switchState });
+    }
+
+    handleTitleChange = (e) => {
+        this.setState({ newTitle: e.target.value })
+    }
+
+    handleBodyChange = (e) => {
+        this.setState({ newBody: e.target.value })
+    }
 
     userRe = (id) => {
         this.props.history.push(`/profile=${id}`)
@@ -66,35 +91,67 @@ export class Post extends Component {
     }
 
     openMakePost() {
-        this.setState({ makePostOpen: true })
+        this.setState({ makePostStatus: true })
     }
 
     closeMakePost = () => {
-        this.setState({ makePostOpen: false });
+        this.setState({ makePostStatus: false });
     };
 
     sharePost() {
         //TODO
     }
 
-    editPost() {
-        //TODO
+    openEditPost() {
+        this.setState({ editPostStatus: true })
+    }
+
+    closeEditPost = () => {
+        this.setState({ editPostStatus: false })
+    }
+
+    editPost(postId, newTitle, newBody, newRating) {
+        const { title, body, rating } = this.props.element
+        const { token, expires, rtoken } = this.props.auth;
+        let changes = {}
+        if (title != newTitle) {
+            changes.title = newTitle
+        }
+        if (body != newBody) {
+            changes.body = newBody
+        }
+        if (rating != newRating) {
+            changes.rating = newRating
+        }
+        if (JSON.stringify(changes) === "{}") { return };
+
+        axios.put(`/editPost/${postId}`, { update: changes }, { headers: { token, expires, rtoken } })
+            .then(res => {
+                this.setState({ element: res.data.doc });
+                this.closeEditPost();
+                this.props.reloadUserProfile();
+
+            })
+            .catch(e => console.log(e.response.data))
     }
 
     openDeletePost() {
-        this.setState({ deletePostOpen: true })
+        this.setState({ deletePostStatus: true })
     }
 
     closeDeletePost = () => {
-        this.setState({ deletePostOpen: false })
+        this.setState({ deletePostStatus: false })
     }
 
-    deletePost() {
-        //TODO
+    deletePost(postId) {
+        const { token, expires, rtoken } = this.props.auth;
+        axios.delete(`/post/${postId}`, { headers: { token, expires, rtoken } }).then(res => { console.log(res.data) })
+        window.location.reload()
     }
 
     render() {
-        const { classes, element, postId } = this.props
+        const { classes } = this.props
+        const { element } = this.state
         return (
             <>
                 <Card style={{ backgroundColor: "#4d4d4d" }} align="center">
@@ -116,8 +173,8 @@ export class Post extends Component {
                                 >
                                     <MenuItem onClick={() => { this.handleClose(); this.openMakePost(); }}>Make Post On Topic</MenuItem>
                                     <MenuItem onClick={() => { this.handleClose(); this.sharePost(); }}>Share</MenuItem>
-                                    {element.authorid == this.props.user.id ? <MenuItem onClick={() => { this.handleClose(); this.editPost(); }}><Create />Edit Post</MenuItem> : ''}
-                                    {element.authorid == this.props.user.id ? <MenuItem onClick={() => { this.handleClose(); this.openDeletePost(); }} style={{ color: 'red' }}><Delete />Delete Post</MenuItem> : ''}
+                                    {element.authorid == this.props.user.id && <MenuItem onClick={() => { this.handleClose(); this.openEditPost(); }}><Create />Edit Post</MenuItem>}
+                                    {element.authorid == this.props.user.id && <MenuItem onClick={() => { this.handleClose(); this.openDeletePost(); }} style={{ color: 'red' }}><Delete />Delete Post</MenuItem>}
                                 </Menu>
                             </>
                         }
@@ -130,7 +187,7 @@ export class Post extends Component {
                             { backgroundColor: "#D99E2A" }
                         }
                     />
-                    {/* Main Content */console.log(element)}
+                    {/* Main Content */}
                     <CardContent>
                         <div onClick={() => this.postRe(element.postId)} style={{ cursor: 'pointer' }}>
 
@@ -192,7 +249,7 @@ export class Post extends Component {
 
                 </Card>
                 {/* MakePost Dialog Box */}
-                <Dialog onClose={this.closeMakePost} aria-labelledby="customized-dialog-title" open={this.state.makePostOpen} maxWidth="md" fullWidth>
+                <Dialog onClose={this.closeMakePost} aria-labelledby="customized-dialog-title" open={this.state.makePostStatus} maxWidth="md" fullWidth>
                     <DialogContent >
                         <Grid container justify="center">
                             <Grid item>
@@ -209,9 +266,9 @@ export class Post extends Component {
                     </DialogContent>
                 </Dialog>
 
-                {/* DeletePost Dialog */}
+                {/* DeletePost Dialog Box */}
                 <Dialog
-                    open={this.state.deletePostOpen}
+                    open={this.state.deletePostStatus}
                     onClose={this.closeDeletePost}
                     aria-labelledby="alert-dialog-title"
                     aria-describedby="alert-dialog-description"
@@ -223,16 +280,97 @@ export class Post extends Component {
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={this.closeDeletePost} variant="outlined"> 
+                        <Button onClick={this.closeDeletePost} variant="outlined">
                             Cancel
                         </Button>
                         <Button
                             variant="contained"
                             color="secondary"
-                            onClick={this.closeDeletePost}
+                            onClick={() => this.deletePost(element.postId)}
                             startIcon={<Delete />}
                         >
                             Delete
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+
+                {/* EditPost Dialog Box */}
+                <Dialog
+                    open={this.state.editPostStatus}
+                    onClose={this.closeEditPost}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                    maxWidth="sm" fullWidth
+                >
+                    <DialogTitle id="alert-dialog-title">{"Edit Post:"}</DialogTitle>
+                    <DialogContent>
+
+                        <TextField
+                            id="newTitle"
+                            label="Post Title"
+                            rows={1}
+                            fullWidth
+                            variant="outlined"
+                            defaultValue={element.title}
+                            onChange={this.handleTitleChange}
+                        />
+
+                        <TextField
+                            id="newBody"
+                            label="Post Body"
+                            multiline
+                            rows={6}
+                            fullWidth
+                            variant="outlined"
+                            defaultValue={element.body}
+                            onChange={this.handleBodyChange}
+                            margin="dense"
+                        />
+                        <Grid container direction="row" justify="center">
+                            <Grid item>
+                                <Switch
+                                    checked={this.state.switchState}
+                                    onChange={this.handleSwitchChange}
+                                    name="useNumber"
+                                    inputProps={{ 'aria-label': 'secondary checkbox' }}
+                                />
+                            </Grid>
+                        </Grid>
+                        {!this.state.switchState ? '' : (
+                            <>
+                                <Grid container direction="row" justify="center">
+                                    <Grid item>
+                                        <img className={classes.rating} src={this.imagesArray[this.state.newRating]} style={{ width: '200px', height: '200px' }} />
+                                    </Grid>
+                                </Grid>
+                                <Grid container direction="row" justify="center">
+                                    <Grid item>
+                                        <IconButton aria-label="minus" onClick={() => this.setState({ newRating: this.state.newRating !== 0 ? this.state.newRating - 1 : this.state.newRating })}>
+                                            <Remove />
+                                        </IconButton>
+                                    </Grid>
+                                    <Grid item>
+                                        <IconButton aria-label="plus" onClick={() => this.setState({ newRating: this.state.newRating !== 10 ? this.state.newRating + 1 : this.state.newRating })}>
+                                            <Add />
+                                        </IconButton>
+                                    </Grid>
+
+                                </Grid>
+                            </>
+                        )}
+
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={this.closeEditPost} variant="outlined">
+                            Cancel
+                        </Button>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            endIcon={<Send />}
+                            onClick={() => this.editPost(element.postId, this.state.newTitle, this.state.newBody, this.state.newRating > -1 && this.state.switchState ? this.state.newRating : null)}
+                        >
+                            Confirm
                         </Button>
                     </DialogActions>
                 </Dialog>
@@ -242,11 +380,12 @@ export class Post extends Component {
 }
 
 const mapStateToProps = (state) => ({
-    user: state.user
+    user: state.user,
+    auth: state.auth
 })
 
 const mapActionsToProps = {
-
+    reloadUserProfile: reloadUserProfile
 }
 
 
