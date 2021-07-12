@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { LOGOUT, SETAUTHDATA, REFRESH_TOKEN, CLEARUSERDATA } from '../types'
+import { LOGOUT, SETAUTHDATA, REFRESH_TOKEN, CLEARUSERDATA, LOADTOKEN} from '../types'
 
 export const loadDataIntoState = () => (dispatch) => {
     dispatch({type: SETAUTHDATA, payload: JSON.parse(window.localStorage.getItem("data"))})
@@ -38,4 +38,16 @@ export const logout = (history) => (dispatch) => {
 
 export const refreshToken = (token, expires) => (dispatch) => {
     dispatch({type: REFRESH_TOKEN, payload: {token, expires}})
+}
+
+export const getNewToken = (rtoken, callback) => (dispatch) => {
+	dispatch({type: LOADTOKEN})
+	axios.get('/token', {headers: {rtoken}}).then(res => {
+		let lsdata = JSON.parse(localStorage.getItem("data"))
+		lsdata.token = res.data.token 
+		lsdata.expires = res.data.expires
+		localStorage.setItem("data", JSON.stringify(lsdata))
+		dispatch({type: REFRESH_TOKEN, payload: {token: lsdata.token, expires: lsdata.expires}})
+		callback()
+	})
 }

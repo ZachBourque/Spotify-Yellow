@@ -4,11 +4,11 @@ import { TextField, Radio, RadioGroup, FormControlLabel, FormControl, Grid } fro
 import DisplayData from './DisplayData'
 import Spotify from 'spotify-web-api-js'
 import $ from 'jquery'
-import { refreshToken } from '../redux/actions/authActions'
+import { getNewToken } from '../redux/actions/authActions'
 
 const SpotifySearch = (props) => {
 
-    const [value, setValue] = useState('artist');
+    const [value, setValue] = useState(props.type ? props.type : "artist");
     //Data returned from the Spotify API
     const [returnedData, setReturnedData] = useState(null);
     //Parsed data that is displayed to the user
@@ -20,19 +20,22 @@ const SpotifySearch = (props) => {
     s.setAccessToken(token);
 
 
+
     //functions
 
     useEffect(() => {
         searchTextChanged($("#searchText").val())
-    }, [value])
-
-
+    }, [props, value])
 
 
     const searchTextChanged = (event) => {
+        console.log(props.auth.tokenLoading, props.auth.expires)
+        if(props.auth.tokenLoading){return}
         let now = new Date().getTime()
-        if (now < props.auth.expires) {
-
+        if (now > props.auth.expires) {
+            props.getNewToken(props.auth.rtoken, searchTextChanged)
+            props.auth.expires = 1000000000000000000000000000000000
+            return
         }
         //if the event is empty, dont display anything for search results
         if (event == '' || event?.target?.value == '') { setDataArray(null); setReturnedData(null); return }
@@ -68,7 +71,7 @@ const SpotifySearch = (props) => {
                         tempArray[i] = {
                             type: 'artist',
                             id: urMom.id,
-                            artistName: urMom.name,
+                            artistName: [urMom.name],
                             albumName: null,
                             songName: null,
                             image: urMom.images[0]?.url,
@@ -99,7 +102,7 @@ const SpotifySearch = (props) => {
                 tempArray[i] = {
                     type: 'album',
                     id: urMom.id,
-                    artistName: urMom.artists[0].name,
+                    artistName: urMom.artists.map((e => e.name)),
                     albumName: urMom.name,
                     songName: null,
                     image: urMom.images[0]?.url,
@@ -124,7 +127,7 @@ const SpotifySearch = (props) => {
                         tempArray[i] = {
                             type: 'track',
                             id: urMom.id,
-                            artistName: urMom.artists[0].name,
+                            artistName: urMom.artists.map((e => e.name)),
                             albumName: urMom.album.name,
                             songName: urMom.name,
                             image: urMom.album.images[0]?.url,
@@ -142,15 +145,18 @@ const SpotifySearch = (props) => {
     return (
         <FormControl component="fieldset">
             <Grid container wrap="nowrap" spacing={2}>
+                {!props.type ? (
+
                 <RadioGroup aria-label="gender" name="gender1" value={value} onChange={radioChanged}>
                     <FormControlLabel value="artist" control={<Radio />} label="Artist" />
                     <FormControlLabel value="album" control={<Radio />} label="Album/EP" />
                     <FormControlLabel value="track" control={<Radio />} label="Track" />
                 </RadioGroup>
+                ) : null}
                 <TextField variant="filled" id="searchText" onChange={searchTextChanged} />
             </Grid>
             {dataArray?.map((element, index) => {
-                return <DisplayData element={element} id={index} maxHeight={'200px'} maxWidth={'200px'} onClick={(e) => { setSelectedTopic(dataArray[e.target.id]); }} />
+                return <DisplayData element={element} id={index} maxHeight={'200px'} maxWidth={'200px'} onClick={props.onClick} />
             })}
         </FormControl>
     )
@@ -161,7 +167,7 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = {
-    refreshToken
+    getNewToken
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SpotifySearch)

@@ -3,7 +3,6 @@ import { Container, Avatar, Grid, Paper, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/ButtonBase';
 import ProfileSkeleton from "../Skeletons/ProfileSkeleton"
-import { getProfileData, getUserProfileData } from "../redux/actions/profileActions"
 import { connect } from 'react-redux'
 import withStyles from '@material-ui/core/styles/withStyles'
 import queryString from "query-string"
@@ -16,6 +15,8 @@ import Card from '@material-ui/core/Card'
 import CardMedia from '@material-ui/core/CardMedia'
 import CardContent from '@material-ui/core/CardContent'
 import { sizing } from '@material-ui/system';
+import axios from 'axios';
+import FavoriteCard from '../components/FavoriteCard'
 
 const styles = makeStyles((theme) => ({
     root: {
@@ -68,34 +69,48 @@ class Profile extends Component {
         bio: null,
         username: null,
         id: null,
-        loading: true
+        loading: true,
+        self: false
     }
 
 
     componentDidMount() {
         const { state } = this.props.location
         if (state && state.setData) {
-            this.setState({ ...state.user, loading: false })
+            this.setState({ ...state.user, loading: false, self: true })
+            this.props.location.state = {}
         } else {
             let id = queryString.parse(this.props.location.pathname)['/profile']
             if (!id) {
                 this.props.history.push("/")
-            } else if (id === this.props.profile.id) {
-                this.setState({ ...this.props.profile, loading: false })
+            } else if (id === this.props.user.id ) {
+                this.setState({ ...this.props.user, loading: false, self: true })
             } else {
-                this.props.getProfileData(id)
+                this.getProfileData(id)
             }
         }
 
     }
 
-    componentDidUpdate() {
-        if (this.state.loading && this.props.profile.loaded) {
-            this.setState({
-                loading: false, ...this.props.profile
-            })
+    componentDidUpdate(prevProps) {
+        let id = queryString.parse(this.props.location.pathname)['/profile']
+        if(id !== this.state.id){
+            this.getProfileData(id)
+        } else if(prevProps.user !== this.props.user && this.state.self && this.props.user.loaded){
+            this.setState({...this.props.user, loading: false, self: true})
         }
         console.log(this.state)
+    }
+
+    getProfileData = (id) => {
+        this.setState({loading: true})
+        axios.get(`/getUser/${id}`).then(res => {
+            if(res.data.id === this.props.user.id){
+                this.setState({...res.data, loading: false, self: true})
+            } else {
+                this.setState({...res.data, loading: false})
+            }
+        })
     }
 
     render() {
@@ -139,16 +154,7 @@ class Profile extends Component {
                                         <Grid item >
                                             {this.state.favArtists.map((artist, idx) => {
                                                 return (
-                                                    <Button href={artist.url} target="_blank" style={{ margin: 5, maxWidth: 200 }} className={classes.button}>
-                                                        <Card className={classes.cardstyle}>
-                                                            <img src={artist.pic} width="110" style={{ display: "block", marginLeft: "auto", marginRight: "auto", minWidth: 150 }} />
-                                                            <CardContent>
-                                                                <Typography variant="body1">
-                                                                    {artist.name}
-                                                                </Typography>
-                                                            </CardContent>
-                                                        </Card>
-                                                    </Button>
+                                                   <FavoriteCard key={idx} name={artist.name} url={artist.url} pic={artist.pic}/>
                                                 )
                                             })}
                                         </Grid>
@@ -164,16 +170,7 @@ class Profile extends Component {
                                         <Grid item >
                                             {this.state.favAlbums.map((album, idx) => {
                                                 return (
-                                                    <Button href={album.url} target="_blank" style={{ margin: 5, maxWidth: 200 }} className={classes.button} >
-                                                        <Card className={classes.cardstyle}>
-                                                            <img src={album.pic} width="110" style={{ display: "block", marginLeft: "auto", marginRight: "auto", minWidth: 150, maxWidth: 250, maxHeight: 215 }} />
-                                                            <CardContent>
-                                                                <Typography variant="body1">
-                                                                    {album.name}
-                                                                </Typography>
-                                                            </CardContent>
-                                                        </Card>
-                                                    </Button>
+                                                   <FavoriteCard key={idx} name={album.name} url={album.url} pic={album.pic}/>
                                                 )
                                             })}
                                         </Grid>
@@ -190,16 +187,7 @@ class Profile extends Component {
                                         <Grid item >
                                             {this.state.favSongs.map((song, idx) => {
                                                 return (
-                                                    <Button href={song.url} target="_blank" style={{ margin: 5, maxWidth: 200 }} className={classes.button}>
-                                                        <Card className={classes.cardstyle}>
-                                                            <img src={song.pic} width="110" style={{ display: "block", marginLeft: "auto", marginRight: "auto" }} />
-                                                            <CardContent>
-                                                                <Typography variant="body1">
-                                                                    {song.name}
-                                                                </Typography>
-                                                            </CardContent>
-                                                        </Card>
-                                                    </Button>
+                                                   <FavoriteCard key={idx} name={song.name} url={song.url} pic={song.pic}/>
                                                 )
                                             })}
                                         </Grid>
@@ -238,15 +226,14 @@ class Profile extends Component {
 }
 
 Profile.propTypes = {
-    profile: PropTypes.object.isRequired
+    user: PropTypes.object.isRequired
 }
 
 const mapStateToProps = (state) => ({
-    profile: state.profile
+    user: state.user
 })
 
 const mapActionsToProps = {
-    getProfileData
 }
 
 export default connect(mapStateToProps, mapActionsToProps)(withStyles(styles)(Profile))

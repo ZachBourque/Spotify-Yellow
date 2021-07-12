@@ -189,57 +189,14 @@ exports.uploadPic = (req,res) => {
   busboy.end(req.rawBody);
 }
 
-exports.addFavorite = (req,res) => {
-  let newFavorite = {
-    name: req.body.spotifyName,
-    pic: req.body.spotifyPic,
-    url: req.body.spotifyUrl
-  }
-  let union = admin.firestore.FieldValue.arrayUnion(newFavorite)
-  db.collection('users').where('id', '==', req.user.id).limit(1).get().then(snap => {
-    let update = req.body.type === "song" ? {favSongs: union} : req.body.type === "album" ? {favAlbums: union} : req.body.type === "artist" ? {favArtists: union} : null 
-    if(update){
-      snap.docs[0].ref.update(update).then(() => {
-        if(req.auth.refreshed){
-          return res.json({success: "Successfully added favorite", refreshed: true, token: req.auth.token, expires: req.auth.expires})
-        } else {
-          return res.json({success: "Successfully added favorite"})
-        }
-      }).catch(err => {
-        console.error(err)
-        return res.status(500).json({error: "Could not update user."})
-      })
-    } else {
-      return res.status(400).json({error: "Invalid favorite type"})
-    }
+exports.editFavorites = (req,res) => {
+  //validate probably lol
+  console.log(req.body)
+  req.userRef.update(req.body.update).then(() => {
+    return res.json({success: "Success"})
   }).catch(err => {
     console.error(err)
-    return res.status(500).json({error: "Could not get user."})
-  })
-}
-
-exports.removeFavorite = (req,res) => {
-  let favorite = {name: req.body.name, pic: req.body.pic, url: req.body.url}
-  let remove = admin.firestore.FieldValue.arrayRemove(favorite)
-  db.collection('users').where('id', '==', req.user.id).limit(1).get().then(snap => {
-    let update = req.body.type === "song" ? {favSongs: remove} : req.body.type === "album" ? {favAlbums: remove} : req.body.type === "artist" ? {favArtists: remove} : null 
-    if(update){
-      snap.docs[0].ref.update(update).then(() => {
-        if(req.auth.refreshed){            
-          return res.json({success: "Successfully added favorite", refreshed: true, token: req.auth.token, expires: req.auth.expires})
-        } else {
-          return res.json({success: "Successfully added favorite"})
-        }
-      }).catch(err => {
-        console.error(err)
-        return res.json({error: "Could not update user"})
-      })
-    } else {
-      return res.status(400).json({error: "Invalid favorite type"})
-    }
-  }).catch(err => {
-    console.error(err)
-    return res.status(500).json({error: "Could not get user"})
+    return res.status(500).json({error: "Could not update user"})
   })
 }
 
@@ -251,4 +208,28 @@ exports.editBio = (req,res) => {
     console.error(err)
     return res.status(500).json({error: "Failed to update bio"})
   })
+}
+
+exports.updatePfp = (req,res) => {
+  
+}
+
+exports.getToken = (req,res) => {
+  var authOptions = {
+			url: 'https://accounts.spotify.com/api/token',
+			headers: { 'Authorization': 'Basic ' + (new Buffer(client_id + ':' + client_secret).toString('base64')) },
+			form: {
+				grant_type: 'refresh_token',
+				refresh_token: req.headers.rtoken
+			},
+			json: true
+		};
+		request.post(authOptions, function(error, response, body){
+			if(error || response.statusCode !== 200){
+				error ? console.error(error) : null
+				return res.status(401).json({error: "Error getting refresh token, LOGOUT"})
+			} else {
+        return res.json({token: body.access_token, expires: new Date(new Date().getTime() + ((body.expires_in * 1000)-60000)).getTime()})
+			}
+		})
 }

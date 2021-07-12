@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import axios from 'axios';
 import SmallPost from '../components/SmallPost'
 import { Grid } from '@material-ui/core';
-import { getFeedData } from "../redux/actions/dataActions"
+import { getFeedData, reloadFeedData } from "../redux/actions/dataActions"
 import { IconButton } from '@material-ui/core'
 import PostAddIcon from '@material-ui/icons/PostAdd';
 import Dialog from '@material-ui/core/Dialog';
@@ -24,13 +24,10 @@ export class Homepage extends Component {
     }
 
     componentDidMount() {
-        if (!this.props.data.loaded || this.props.data.posts.length === 0) {
+        if (!this.props.data.loaded) {
             this.props.getFeedData()
         } else {
-            this.setState({
-                isLoading: false,
-                postList: this.props.data.posts
-            })
+            this.props.reloadFeedData()
         }
     }
 
@@ -61,7 +58,7 @@ export class Homepage extends Component {
                     align="center"
                 >
                     {
-                        !this.state.isLoading && this.state.postList?.map(post => {
+                        this.props.data.loaded && this.props.data.current.map(post => {
                             return (
                                 <Grid item xs={12}>
                                     <Grid item xs={6}>
@@ -100,7 +97,8 @@ const mapStateToProps = (state) => ({
 })
 
 const mapActionsToProps = {
-    getFeedData
+    getFeedData,
+    reloadFeedData
 }
 
 export default connect(mapStateToProps, mapActionsToProps)(Homepage)
