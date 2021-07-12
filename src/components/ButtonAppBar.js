@@ -141,7 +141,7 @@ function PrimarySearchAppBar(props) {
       // proper error handling later
       console.log("cannot search spotify when not logged in")
     }
-    props.history.push(`/search=${searchTerm}&id=${search}`)
+    props.history.push(`/search?query=${searchTerm}&id=${search}`)
   }
 
   return (

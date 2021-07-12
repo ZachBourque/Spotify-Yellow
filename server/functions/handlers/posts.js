@@ -107,7 +107,7 @@ exports.deletePost = (req,res) => {
     }
     let post = doc.data()
     if(post.authorid === req.user.id){
-      doc.delete().then(() => {
+      doc.ref.delete().then(() => {
         if(req.auth.refreshed){
           return res.json({success: "Successfully deleted post", refreshed: true, token: req.auth.token, expires: req.auth.expires})
         } else {
@@ -120,7 +120,7 @@ exports.deletePost = (req,res) => {
       })
     } else {
       console.log(post.authorid, req.user.id)
-      return res.status(403).json({error: "Post isnt yours lol"})
+      return res.status(400).json({error: "Post isnt yours lol"})
     }
   }).catch(err => {
     console.error(err)
@@ -129,6 +129,7 @@ exports.deletePost = (req,res) => {
 }
 
 exports.editPost = (req,res) => {
+  console.log(req.params.postId)
   db.doc(`/posts/${req.params.postId}`).get().then(doc => {
     if(!doc.exists){
       return res.status(404).json({error: "Post does not exist"})
@@ -138,7 +139,7 @@ exports.editPost = (req,res) => {
         if(req.auth.refreshed){
           return res.json({success: "Successfully edited post", refreshed: true, token: req.auth.token, expires: req.auth.expires})
         } else {
-          return res.json({success: "Successfully edited post"})
+          return res.json({success: "Successfully edited post", doc: {...doc.data(), ...req.body.update}})
         }
       }).catch(err => {
         console.error(err)

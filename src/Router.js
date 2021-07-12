@@ -18,6 +18,7 @@ import SmallPost from "./components/SmallPost"
 import BigPost from "./components/BigPost"
 import Settings from "./pages/Settings"
 import axios from "axios"
+import SearchPage from './pages/SearchPage'
 
 axios.defaults.baseURL = "http://localhost:5000/spotify-yellow-282e0/us-central1/api"
 $("body").css("margin", 0)
@@ -56,6 +57,7 @@ class Router extends React.Component {
             <Route path='/temp' component={Temp}/>
             <Route path='/post/:postID' component={BigPost} />
             <Route path='/settings' component={Settings}/>
+            <Route path='/search' component={SearchPage}/>
             </Switch>
             </BrowserRouter>
             </Paper>
