@@ -1,4 +1,4 @@
-import { USERLOADING, SETUSERDATA, CLEARUSERDATA, LOGOUT, REFRESH_TOKEN, UPDATEBIO, LOADTOKEN, UPDATEFAVORITES } from "../types"
+import { USERLOADING, SETUSERDATA, CLEARUSERDATA, LOGOUT, REFRESH_TOKEN, UPDATEBIO, UPDATEPFP, UPDATEFAVORITES } from "../types"
 import axios from "axios"
 
 const getData = (token, expires, rtoken, dispatch) => {
@@ -57,5 +57,20 @@ export const editFavorites = (update, token, expires, rtoken) => (dispatch) => {
 }
 
 export const updateProfilePic = (token, expires, rtoken, formData) => (dispatch) => {
-
+	axios.post('/uploadPic', formData).then(res1 => {
+		axios.put('/updatePfp', {url: res1.data.url}, {headers: {token,expires,rtoken}}).then(res => {
+			if(res.data.refreshed){
+				let lsdata = JSON.parse(localStorage.getItem("data"))
+				lsdata.token = res.data.token 
+				lsdata.expires = res.data.expires
+				localStorage.setItem("data", JSON.stringify(lsdata))
+				dispatch({type: REFRESH_TOKEN, payload: {token: lsdata.token, expires: lsdata.expires}})
+			}
+			dispatch({type: UPDATEPFP, payload: {pfp: res1.data.url}})
+		}).catch(err => {
+			console.error(err)
+		})
+	}).catch(err => {
+		console.error(err)
+	})
 }

@@ -25,7 +25,7 @@ function FavoriteCard(props) {
 		<Card className={classes.cardstyle}>
 			<img src={props.pic} width="110" style={{ display: "block", marginLeft: "auto", marginRight: "auto" }} />
 			<CardContent>
-			<Typography variant="body1">
+			<Typography variant="body1" style={{textAlign: "center"}}>
 				{props.name}
 			</Typography>
 			</CardContent>

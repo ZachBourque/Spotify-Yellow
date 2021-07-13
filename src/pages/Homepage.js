@@ -14,6 +14,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import MakePost from '../components/MakePost';
+import UserCard from "../components/UserCard"
 
 export class Homepage extends Component {
 
@@ -32,13 +33,7 @@ export class Homepage extends Component {
     }
 
     componentDidUpdate() {
-        if (this.state.isLoading && !this.props.data.loading) {
-            this.setState({
-                postList: this.props.data.posts,
-                isLoading: false
-            })
-        }
-        console.log(this.state.postList)
+        console.log(this.props.data.feed[0])
     }
 
     handleClickOpen = () => {
@@ -58,7 +53,7 @@ export class Homepage extends Component {
                     align="center"
                 >
                     {
-                        this.props.data.loaded && this.props.data.current.map(post => {
+                        this.props.data.loaded && this.props.data.feed.map(post => {
                             return (
                                 <Grid item xs={12}>
                                     <Grid item xs={6}>

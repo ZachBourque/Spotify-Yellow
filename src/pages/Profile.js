@@ -99,11 +99,10 @@ class Profile extends Component {
         } else if(prevProps.user !== this.props.user && this.state.self && this.props.user.loaded){
             this.setState({...this.props.user, loading: false, self: true})
         }
-        console.log(this.state)
     }
 
     getProfileData = (id) => {
-        this.setState({loading: true})
+        this.setState({loading: true, id})
         axios.get(`/getUser/${id}`).then(res => {
             if(res.data.id === this.props.user.id){
                 this.setState({...res.data, loading: false, self: true})

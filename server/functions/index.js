@@ -4,7 +4,7 @@ const express = require('express');
 const app = express();
 app.use(cors())
 
-const { login, callback, createUser, getUser, getSelf, uploadPic, addFavorite, removeFavorite, editBio, updatePfp, getToken, editFavorites} = require('./handlers/users')
+const { login, callback, createUser, getUser, getSelf, uploadPic, editBio, updatePfp, getToken, editFavorites, getUsers} = require('./handlers/users')
 const { validateUser } = require('./util/admin')
 const { createPost, getAllPosts, getPostsByTopic, getPostsByType, getPostsByUser, getPost, deletePost, editPost } = require('./handlers/posts')
 
@@ -19,6 +19,7 @@ app.post('/editFavorites', validateUser, editFavorites)
 app.post('/editBio', validateUser, editBio)
 app.put('/updatePfp', validateUser, updatePfp)
 app.get('/token', getToken)
+app.get('/users', getUsers)
 //Post Routes
 app.post('/createPost', validateUser, createPost)
 app.get('/postsByType/:type', getPostsByType)
