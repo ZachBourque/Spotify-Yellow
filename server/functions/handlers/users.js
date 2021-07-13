@@ -150,6 +150,11 @@ exports.getSelf = (req,res) => {
 }
 
 exports.uploadPic = (req,res) => {
+  const BusBoy = require("busboy");
+  const path = require("path");
+  const os = require("os");
+  const { uuid } = require("uuidv4");
+  const fs = require("fs");
   const busboy = new BusBoy({ headers: req.headers });
 
   let imageToBeUploaded = {};
@@ -211,7 +216,13 @@ exports.editBio = (req,res) => {
 }
 
 exports.updatePfp = (req,res) => {
-  
+  let image = req.body.url 
+  req.userRef.update({profilepic: image}).then(() => {
+    return res.json({success: "Successfully updated bio"})
+  }).catch(err => {
+    console.error(err)
+    return res.status(500).json({error: "Failed to update pfp"})
+  })
 }
 
 exports.getToken = (req,res) => {
@@ -232,4 +243,14 @@ exports.getToken = (req,res) => {
         return res.json({token: body.access_token, expires: new Date(new Date().getTime() + ((body.expires_in * 1000)-60000)).getTime()})
 			}
 		})
+}
+
+exports.getUsers = (req,res) => {
+  db.collection('users').get().then(snap => {
+    let users = []
+    snap.forEach(user => {
+      users.push(user.data())
+    })
+    return res.json({users})
+  })
 }

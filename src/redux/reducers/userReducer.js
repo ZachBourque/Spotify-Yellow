@@ -1,4 +1,4 @@
-import { USERLOADING, SETUSERDATA, CLEARUSERDATA, UPDATEBIO, UPDATEFAVORITES} from '../types'
+import { USERLOADING, SETUSERDATA, CLEARUSERDATA, UPDATEBIO, UPDATEFAVORITES, UPDATEPFP} from '../types'
 
 const initialState = {
     profilepic: null,
@@ -25,6 +25,8 @@ export default function(state = initialState, action){
             return {...state, bio: action.payload.bio}
         case UPDATEFAVORITES:
             return {...state, ...action.payload}
+        case UPDATEPFP:
+            return {...state, profilepic: action.payload.pfp}
         default:
             return state
     }

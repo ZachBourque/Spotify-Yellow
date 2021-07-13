@@ -6,7 +6,7 @@ import FavoriteCard from "../components/FavoriteCard"
 import AddIcon from '@material-ui/icons/Add';
 import withStyles from '@material-ui/core/styles/withStyles'
 import { connect } from 'react-redux'
-import { editBio, editFavorites} from '../redux/actions/userActions'
+import { editBio, editFavorites, updateProfilePic} from '../redux/actions/userActions'
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import EditIcon from '@material-ui/icons/Edit';
@@ -30,7 +30,7 @@ const Settings = (props) => {
 	const classes = styles()
 	const [loading, setLoading] = useState(true)
 	const [pfp, setPfp] = useState(null)
-	const [newBio, setNewBio] = useState(null)
+	const [newBio, setNewBio] = useState(props.user.bio)
 	const [open, setOpen] = useState(false)
 	const [type, setType] = useState(null)	
 	const [tempFavArtists, setTempFavArtists] = useState(props.user.favArtists)
@@ -66,8 +66,9 @@ const Settings = (props) => {
 	const [dialog, setDialog] = useState(false)
 	const submitBio = () => {
 		//validate data first
-		setNewBio(document.getElementById('bioInput').value)
-		props.editBio(document.getElementById('bioInput').value, props.auth.token, props.auth.expires, props.auth.rtoken, props.history)
+		setNewBio(document.getElementById('openBioInput').value)
+		handleClick()
+		props.editBio(document.getElementById('openBioInput').value, props.auth.token, props.auth.expires, props.auth.rtoken, props.history)
 	}
 	const pfpChange = () => {
         	var file = $('#pfpInput').prop('files')[0];
@@ -80,8 +81,10 @@ const Settings = (props) => {
 		input.click()
 	}
 	const submitPfp = () => {
+        	var file = $('#pfpInput').prop('files')[0];
 		let formData = new FormData()
-		formData.append()
+		formData.append('image', file, file.name)
+		props.updateProfilePic(props.auth.token, props.auth.expires, props.auth.rtoken, formData)
 	}
 	const cancelPfp = () => {
 		setPfp(props.user.profilepic)
@@ -162,7 +165,7 @@ const Settings = (props) => {
 		{pfp !== props.user.profilepic ? (
 			<div>
 				<Button type="button" onClick={cancelPfp}>Cancel</Button> 
-				<Button type="button">Submit</Button>
+				<Button type="button" onClick={submitPfp}>Submit</Button>
 			</div>
 		) : null}
 			<Grid container direction="row" alignItems="center" >
@@ -174,7 +177,7 @@ const Settings = (props) => {
 				<div>
 				{!open ? (
 					<>
-					<input type="text" autoComplete="off" defaultValue={props.user.bio} disabled/>
+					<input type="text" autoComplete="off" defaultValue={newBio} disabled/>
 					<IconButton className="button" onClick={handleClick}><EditIcon color="primary"/></IconButton>
 					</>
 				) : null}
@@ -297,7 +300,8 @@ const mapStateToProps = (state) => ({
 
 const mapActionsToProps = {
     editBio,
-    editFavorites
+    editFavorites,
+    updateProfilePic
 }
 
 export default connect(mapStateToProps, mapActionsToProps)(Settings)

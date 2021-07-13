@@ -22,6 +22,7 @@ import { ThumbUp, Comment, Share, MoreVert, Create, Delete, PostAddOutlined, Rem
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@material-ui/core';
 import MakePost from './MakePost';
 import { thisExpression } from '@babel/types';
+import { deletePost, editPost } from '../redux/actions/dataActions'
 import { reloadUserProfile } from '../redux/actions/userActions'
 
 
@@ -125,14 +126,9 @@ export class Post extends Component {
         }
         if (JSON.stringify(changes) === "{}") { return };
 
-        axios.put(`/editPost/${postId}`, { update: changes }, { headers: { token, expires, rtoken } })
-            .then(res => {
-                this.setState({ element: res.data.doc });
-                this.closeEditPost();
-                this.props.reloadUserProfile();
-
-            })
-            .catch(e => console.log(e.response.data))
+        this.props.editPost(postId, {update: changes}, token, expires, rtoken) 
+        this.setState({element: {...this.state.element, ...changes}})
+        this.closeEditPost()
     }
 
     openDeletePost() {
@@ -145,8 +141,7 @@ export class Post extends Component {
 
     deletePost(postId) {
         const { token, expires, rtoken } = this.props.auth;
-        axios.delete(`/post/${postId}`, { headers: { token, expires, rtoken } }).then(res => { console.log(res.data) })
-        window.location.reload()
+        this.props.deletePost(postId, token, expires, rtoken)
     }
 
     render() {
@@ -385,7 +380,9 @@ const mapStateToProps = (state) => ({
 })
 
 const mapActionsToProps = {
-    reloadUserProfile: reloadUserProfile
+    reloadUserProfile: reloadUserProfile,
+    deletePost,
+    editPost
 }
 
 

@@ -18,6 +18,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import logo from "../assets/logo.ico"
 import PersonIcon from '@material-ui/icons/Person';
 import CreateIcon from '@material-ui/icons/Create';
+import Avatar from '@material-ui/core/Avatar'
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -186,7 +187,7 @@ function PrimarySearchAppBar(props) {
             <div className={classes.sectionMobile}>
               {auth.loggedIn ? (
                 <IconButton edge="end" aria-label="account of current user" aria-controls={menuId} aria-haspopup="true" onClick={handleProfileMenuOpen} color="inherit">
-                {!user.loaded ? <img src={localStorage.getItem("cachepfp")} width="50" heigh="50"/> : <img src={user.profilepic} width="50" heigh="50"/>}
+                {!user.loaded ? <Avatar src={localStorage.getItem("cachepfp")} width="50" /> : <Avatar src={user.profilepic} width="50"/>}
                 </IconButton>
               ) : 
               (<a href={url}>
