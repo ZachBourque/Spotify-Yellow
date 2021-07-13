@@ -73,7 +73,7 @@ class Profile extends Component {
         self: false
     }
 
-
+    
     componentDidMount() {
         const { state } = this.props.location
         if (state && state.setData) {
@@ -89,7 +89,6 @@ class Profile extends Component {
                 this.getProfileData(id)
             }
         }
-
     }
 
     componentDidUpdate(prevProps) {
