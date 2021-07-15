@@ -147,6 +147,7 @@ export class Post extends Component {
     render() {
         const { classes } = this.props
         const { element } = this.state
+        console.log(element)
         return (
             <>
                 <Card style={{ backgroundColor: "#4d4d4d" }} align="center">
