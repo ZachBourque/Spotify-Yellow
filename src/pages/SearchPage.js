@@ -1,6 +1,11 @@
+<<<<<<< HEAD
 import { Button, Grid, Typography } from '@material-ui/core'
 import UserCard from '../components/UserCard'
 import React, { Component } from 'react'
+=======
+import { Button, Grid, Typography, Radio, RadioGroup, FormControl, FormControlLabel, FormHelperText, FormLabel } from '@material-ui/core'
+import React, { useState, useEffect } from 'react'
+>>>>>>> 141ccad... Comments working!
 import { connect } from 'react-redux'
 import queryString from "query-string"
 import Spotify from 'spotify-web-api-js'
@@ -149,6 +154,7 @@ class SearchPage extends Component {
         })
     }
 
+<<<<<<< HEAD
 
     tabChange = (event, newValue) => {
         this.props.history.push(`/search?query=${this.state.query}&id=${newValue}&filter=${0}`)
@@ -212,6 +218,36 @@ class SearchPage extends Component {
                     <RadioGroup aria-label="gender" name="gender1" value={this.filter} onChange={this.handleRadioChange}>
                             {radioArr[this.state.id ? this.state.id : 0]}
                         </RadioGroup>
+=======
+    return (
+        <Grid container justify="center">
+            {(id == 0) && (
+                <>
+                    <Grid item md></Grid>
+                    <Grid item md={5} align="center">
+                        <button onClick={gettingContent} variant="default">click me 0</button>
+                    </Grid>
+                    <Grid item md>
+                        <RadioGroup aria-label="gender" name="gender1" value={radioState} onChange={handleRadioChange}>
+                            <FormControlLabel value="artist" control={<Radio />} label="Artist" />
+                            <FormControlLabel value="album" control={<Radio />} label="Album/EP" />
+                            <FormControlLabel value="track" control={<Radio />} label="Track" />
+                        </RadioGroup>
+                    </Grid>
+                </>
+            )}
+            {(!loading && id == 1) && (
+
+                <Grid item md={6} align="center">
+                    {result ? result.map((element) => {
+
+                    }) : <></>}
+                </Grid>
+            )}
+            {(!loading && id == 2) && (
+                <Grid item md={6} align="center">
+                    <button onClick={gettingContent} variant="default">click me 2</button>
+>>>>>>> 141ccad... Comments working!
                 </Grid>
             </Grid>
         )
