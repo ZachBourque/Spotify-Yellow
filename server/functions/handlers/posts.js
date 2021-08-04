@@ -181,7 +181,7 @@ exports.createComment = (req, res) => {
     body: req.body.body,
     createdAt: new Date().toISOString(),
     postId: req.body.postId,
-    authorId: req.body.authorId,
+    authorid: req.body.authorid,
     username: req.user.username,
     pfp: req.body.pfp
   }
@@ -262,7 +262,8 @@ exports.likePost = (req,res) => {
 
   let likeDoc = {
     postId: req.params.postId,
-    authorid: req.user.id
+    authorid: req.user.id,
+    authorName: req.user.username
   }
 
   db.doc(`/posts/${req.params.postId}`).get().then(doc => {

@@ -12,6 +12,7 @@ import Menu from '@material-ui/core/Menu';
 import SearchIcon from '@material-ui/icons/Search';
 import queryString from "query-string"
 import { logout } from "../redux/actions/authActions"
+import { markNotificationsRead } from "../redux/actions/userActions"
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -21,6 +22,9 @@ import CreateIcon from '@material-ui/icons/Create';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import Badge from '@material-ui/core/Badge';
 import Avatar from '@material-ui/core/Avatar'
+import Notification from "./Notification"
+import Card from "@material-ui/core/Card"
+import CardHeader from "@material-ui/core/CardHeader"
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -107,6 +111,24 @@ function PrimarySearchAppBar(props) {
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
+
+  const [notiEl, setNotiEl] = React.useState(null)
+  const isNotiMenuOpen = Boolean(notiEl)
+  const handleNotiMenuOpen = (event) => {
+    let notRead = props.user.notifications.filter(notification => !notification.read)
+    console.log(notRead)
+    if(notRead.length > 0){
+      let ids = []
+      notRead.forEach(notification => ids.push(notification.notificationId))
+      console.log(ids)
+      props.markNotificationsRead(ids, props.auth.token, props.auth.expires, props.auth.rtoken)
+    }
+    setNotiEl(event.currentTarget)
+  }
+  const handleNotiMenuClose = () => {
+    setNotiEl(null)
+  }
+
   const logout = () => {
     handleMenuClose()
     props.logout(props.history)
@@ -128,6 +150,22 @@ function PrimarySearchAppBar(props) {
       <MenuItem onClick={logout}>Log Out</MenuItem>
     </Menu>
   );
+
+  const notificationId = 'notification-menu'
+  const renderNotificationMenu = (
+    <Menu 
+    anchorEl={notiEl}
+    anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+    id={notificationId}
+    keepMounted
+    transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+    open={isNotiMenuOpen}
+    onClose={handleNotiMenuClose}>
+      {props?.user?.notifications?.length > 0 ? props?.user?.notifications?.map(notification => {
+        return <MenuItem><Notification notification={notification}/></MenuItem>
+      }) : <Typography variant="h6">You don't have any notifications.</Typography>}
+    </Menu>
+  )
 
   const [search, setSearch] = React.useState(0);
   const [searchTerm, setSearchTerm] = React.useState("")
@@ -186,17 +224,17 @@ function PrimarySearchAppBar(props) {
           value={search}
           onChange={handleChange}
         >
+          <MenuItem value={0}><CreateIcon/></MenuItem>
           <MenuItem value={1}>
            <img src={logo}/> 
           </MenuItem>
           <MenuItem value={2}><PersonIcon/></MenuItem>
-          <MenuItem value={0}><CreateIcon/></MenuItem>
         </Select>
       </FormControl>       
       <div className={classes.grow}/>
             <div className={classes.sectionMobile}>
-              <IconButton aria-label="show 17 new notifications" color="inherit">
-              <Badge badgeContent={0} color="secondary">
+              <IconButton aria-label="show new notifications" color="inherit" aria-controls={notificationId} aria-haspopup="true" onClick={handleNotiMenuOpen}>
+              <Badge badgeContent={props?.user?.notifications?.filter(notification => !notification.read).length} color="secondary">
                 <NotificationsIcon />
               </Badge>
             </IconButton>
@@ -216,6 +254,7 @@ function PrimarySearchAppBar(props) {
         </Toolbar>
       </AppBar>
       {renderMenu}
+      {renderNotificationMenu}
     </div>
   );
 }
@@ -226,7 +265,8 @@ const mapStateToProps = (state) => ({
 })
 
 const mapActionsToProps = {
-    logout
+    logout,
+    markNotificationsRead
 }
 
 export default connect(mapStateToProps, mapActionsToProps)(PrimarySearchAppBar)

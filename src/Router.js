@@ -20,7 +20,7 @@ import Settings from "./pages/Settings"
 import axios from "axios"
 import SearchPage from './pages/SearchPage'
 
-axios.defaults.baseURL = "http://localhost:5000/spotify-yellow-282e0/us-central1/api"
+axios.defaults.baseURL = "https://us-central1-spotify-yellow-282e0.cloudfunctions.net/api"
 $("body").css("margin", 0)
 $("body").css("overflow-x", "hidden")
 var a = JSON.parse(window.localStorage.getItem("data"));

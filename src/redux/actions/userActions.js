@@ -1,4 +1,4 @@
-import { USERLOADING, SETUSERDATA, CLEARUSERDATA, LOGOUT, REFRESH_TOKEN, UPDATEBIO, UPDATEPFP, UPDATEFAVORITES, SETCURRENT } from "../types"
+import { USERLOADING, SETUSERDATA, CLEARUSERDATA, LOGOUT, REFRESH_TOKEN, UPDATEBIO, UPDATEPFP, UPDATEFAVORITES, MARKNOTIFICATIONSREAD } from "../types"
 import axios from "axios"
 
 const getData = (token, expires, rtoken, dispatch) => {
@@ -72,5 +72,18 @@ export const updateProfilePic = (token, expires, rtoken, formData) => (dispatch)
 		})
 	}).catch(err => {
 		console.error(err)
+	})
+}
+
+export const markNotificationsRead = (notifications, token, expires, rtoken) => (dispatch) => {
+	axios.post("/notificationsMarkRead", notifications,{headers: {token,expires,rtoken}}).then(res => {
+		if(res.data.refreshed){
+			let lsdata = JSON.parse(localStorage.getItem("data"))
+			lsdata.token = res.data.token 
+			lsdata.expires = res.data.expires
+			localStorage.setItem("data", JSON.stringify(lsdata))
+			dispatch({type: REFRESH_TOKEN, payload: {token: lsdata.token, expires: lsdata.expires}})
+		}
+		dispatch({type: MARKNOTIFICATIONSREAD})
 	})
 }
