@@ -249,6 +249,9 @@ export class Post extends Component {
                             <IconButton onClick={() => this.postRe(element.postId)}>
                                 <Comment />
                             </IconButton>
+                            <Typography variant="body2">
+                                {element.commentCount}
+                            </Typography>
                             <IconButton >
                                 <Share />
                             </IconButton>

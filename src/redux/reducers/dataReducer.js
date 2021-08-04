@@ -1,7 +1,8 @@
-import { DATALOADING, SETCURRENT, SETSEARCHDATA, SETFEEDDATA, DELETEPOST, EDITPOST } from '../types'
+import { DATALOADING, SETCURRENT, SETSEARCHDATA, SETFEEDDATA, DELETEPOST, EDITPOST, SETCURRENTPOST, SETCOMMENTLIST } from '../types'
 
 const initialState = {
 	feed: [],
+	currentPost: null,
 	loading: false,
 	loaded: false
 }
@@ -26,6 +27,13 @@ export default function(state = initialState, action){
 			console.log(post)
 			console.log(newFeed)
 			return {state: newState, feed: newFeed}
+		case SETCURRENTPOST:
+			return {...state, currentPost: action.payload, loading: false, loaded: true}
+		case SETCOMMENTLIST:
+			let newCommentList = [...state.currentPost.comments]
+			newCommentList.push(action.payload.newComment)
+			state.currentPost.comments = newCommentList
+			return {...state}
 		default:
 			return state
     }

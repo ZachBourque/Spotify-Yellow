@@ -1,3 +1,4 @@
+const { firebaseConfig } = require('firebase-functions')
 const { admin, db } = require('../util/admin')
 
 exports.createPost = (req, res) => {
@@ -15,7 +16,8 @@ exports.createPost = (req, res) => {
     spotifyid: req.body.spotifyid,
     authorid: req.user.id,
     pfp: req.user.profilepic,
-    username: req.user.username
+    username: req.user.username,
+    commentCount: 0,
   }
   db.collection('posts').add(newPost).then(() => {
     if (req.auth.refreshed) {
@@ -105,7 +107,9 @@ exports.getPost = (req, res) => {
     .then((data) => {
       postData.post.comments = [];
       data.forEach((doc) => {
-        postData.post.comments.push(doc.data())
+        theDoc = doc.data()
+        theDoc.id = doc.id
+        postData.post.comments.push(theDoc)
       })
       return res.json(postData)
     })
@@ -186,10 +190,11 @@ exports.createComment = (req, res) => {
   console.log("----------\n\n")
 
   db.collection('comments').add(newComment).then(() => {
+    db.collection('posts').doc(newComment.postId).update({commentCount: admin.firestore.FieldValue.increment(1)})
     if (req.auth.refreshed) {
-      return res.json({ success: "Successfully created post.", refreshed: true, expires: req.auth.expires, token: req.auth.token })
+      return res.json({ success: "Successfully created post.", refreshed: true, expires: req.auth.expires, token: req.auth.token, newComment })
     } else {
-      return res.json({ success: "Successfully created post." })
+      return res.json({ success: "Successfully created post.", newComment })
     }
   }).catch(err => {
     console.error(err)
@@ -198,9 +203,56 @@ exports.createComment = (req, res) => {
 }
 
 exports.editComment = (req, res) => {
-  //TODO
+  console.log(req.params.postId)
+  db.doc(`/comments/${req.params.postId}`).get().then(doc => {
+    if (!doc.exists) {
+      return res.status(404).json({ error: "Post does not exist" })
+    }
+    if (doc.data().authorid === req.user.id) {
+      doc.ref.update(req.body.update).then(() => {
+        if (req.auth.refreshed) {
+          return res.json({ success: "Successfully edited post", refreshed: true, token: req.auth.token, expires: req.auth.expires })
+        } else {
+          return res.json({ success: "Successfully edited post", doc: { ...doc.data(), ...req.body.update } })
+        }
+      }).catch(err => {
+        console.error(err)
+        return res.status(500).json({ error: "Error updating post." })
+      })
+    } else {
+      return res.status(403).json({ error: "post isnt yours lol" })
+    }
+  }).catch(err => {
+    console.error(err)
+    return res.status(500).json({ error: "Error getting post" })
+  })
 }
 
 exports.deleteComment = (req, res) => {
-  //TODO
+   db.doc(`/posts/${req.params.postId}`).get().then(doc => {
+    if (!doc.exists) {
+      return res.status(404).json({ error: "Could not find post." })
+    }
+    let post = doc.data()
+    if (post.authorid === req.user.id) {
+      doc.ref.delete().then(() => {
+        db.collection('posts').doc(newComment.postId).update({commentCount: admin.firestore.FieldValue.increment(-1)})
+        if (req.auth.refreshed) {
+          return res.json({ success: "Successfully deleted post", refreshed: true, token: req.auth.token, expires: req.auth.expires })
+        } else {
+          return res.json({ success: "Successfully deleted post" })
+        }
+        // delete comments and likes and stuff
+      }).catch(err => {
+        console.error(err)
+        return res.status(500).json({ error: "Error deleting post" })
+      })
+    } else {
+      console.log(post.authorid, req.user.id)
+      return res.status(400).json({ error: "Post isnt yours lol" })
+    }
+  }).catch(err => {
+    console.error(err)
+    return res.status(500).json({ error: "Could not get post" })
+  })
 }
