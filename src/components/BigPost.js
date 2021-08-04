@@ -1,12 +1,15 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { Container, Avatar, Grid, Paper, Typography, Divider, Box, CardHeader, CardMedia, CardContent, CardActions, Collapse, IconButton, Card, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField } from '@material-ui/core'
+import {
+    Menu, MenuItem, Avatar, Grid, Typography, Divider, Box, CardHeader, CardMedia, CardContent, CardActions, IconButton,
+    Card, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField
+} from '@material-ui/core'
 import clsx from 'clsx';
-import { red } from '@material-ui/core/colors';
 import ThumbUpIcon from '@material-ui/icons/ThumbUp';
-import ShareIcon from '@material-ui/icons/Share';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
+import MoreVert from '@material-ui/icons/MoreVert';
+import Delete from '@material-ui/icons/Delete';
+import Create from '@material-ui/icons/Create';
 import Zero from '../assets/0.png'
 import One from '../assets/1.png'
 import Two from '../assets/2.png'
@@ -22,8 +25,14 @@ import withStyles from '@material-ui/core/styles/withStyles'
 import { makeStyles, createMuiTheme } from '@material-ui/core/styles';
 import axios from 'axios';
 import Comment from './Comment'
+import MakePost from './MakePost'
 import CommentIcon from '@material-ui/icons/Comment';
 import $ from 'jquery'
+import { deletePost, editPost, setCurrentPost } from '../redux/actions/dataActions'
+import { reloadUserProfile } from '../redux/actions/userActions'
+import EditPostDialog from './EditPostDialog';
+import DeletePostDialog from './DeletePostDialog';
+import MakeCommentDialog from './MakeCommentDialog';
 
 const styles = makeStyles(theme => ({
 
@@ -38,31 +47,39 @@ export class Post extends Component {
     imagesArray = [Zero, One, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten];
 
     state = {
-        content: null,
         element: null,
         isLoading: true,
         expanded: false,
-        commentBody: null,
         makeCommentState: false,
         emptyBodyBoolean: false,
+        newRating: null,
+        newTitle: null,
+        newBody: null,
+        switchState: false,
     }
 
+    componentDidMount() {
+        const id = this.props.match.params.postID
+        //  this.props.makeComment(this.props.element.postId, this.props.auth.token, this.props.auth.expires, this.props.auth.rtoken, newComment)
+        this.props.setCurrentPost(id).then(res => {
+            this.setState({ element: this.props.data.currentPost, comments: this.props.data.currentPost.comments, isLoading: false })
+            this.setState({ newRating: this.state.element.rating, newTitle: this.state.element.title, newBody: this.state.element.body, switchState: this.state.element.rating > -1 ? true : false })
+        })
+    }
 
     userRe = (id) => {
         this.props.history.push(`/profile=${id}`)
+    }
+
+    updateElement = (newElement) => {
+        this.setState({ element: newElement })
     }
 
     handleExpandClick = () => {
         this.setState({ expanded: !this.state.expanded })
     }
 
-    handleLike = () => {
-        //TODO send post like to database
-    }
 
-    commentTextChanged = (e) => {
-        this.setState({ commentBody: e.target.value })
-    }
 
     openMakeComment = () => {
         this.setState({ makeCommentState: true })
@@ -72,39 +89,67 @@ export class Post extends Component {
         this.setState({ makeCommentState: false })
     }
 
-    sendComment = () => {
-        if (!this.state.commentBody) {
-            this.setState({ emptyBodyBoolean: true })
-            return
-        }
-        const newComment = {
-            body: this.state.commentBody,
-            postId: this.state.element.postId,
-            authorId: this.props.user.id,
-            username: this.props.user.username,
-            pfp: this.props.user.profilepic
-        }
-        axios.post(`/post/${this.state.element.postId}/comment`, newComment, { headers: { token: this.props.auth.token, rtoken: this.props.auth.rtoken, expires: this.props.auth.expires } })
-            .then(res => {
-                //Do a thing
-            }).catch(e => {
-                console.error(e)
-            })
-        window.location.reload()
+
+
+    handleClick = (event) => {
+        this.setState({ menuOpen: event.currentTarget });
+    };
+
+    handleClose = () => {
+        this.setState({ menuOpen: null });
+    };
+
+    handleSwitchChange = (event) => {
+        this.setState({ switchState: !this.state.switchState });
     }
 
-    componentDidMount() {
-        const id = this.props.match.params.postID
-        axios.get(`/post/${id}`)
-            .then(res => {
-                const postData = res.data.post
-                postData.postId = id
-                this.setState({ element: postData, comments: res.data.comments, isLoading: false })
-            })
+    handleTitleChange = (e) => {
+        this.setState({ newTitle: e.target.value })
+    }
+
+    handleBodyChange = (e) => {
+        this.setState({ newBody: e.target.value })
+    }
+
+    handleLike = () => {
+        //TODO send post like to database
+    }
+
+    openMakePost() {
+        this.setState({ makePostStatus: true })
+    }
+
+    closeMakePost = () => {
+        this.setState({ makePostStatus: false });
+    };
+
+    sharePost() {
+        //TODO
+    }
+
+    openEditPost() {
+        this.setState({ editPostStatus: true })
+    }
+
+    closeEditPost = () => {
+        this.setState({ editPostStatus: false })
+    }
+
+    openDeletePost() {
+        this.setState({ deletePostStatus: true })
+    }
+
+    closeDeletePost = () => {
+        this.setState({ deletePostStatus: false })
+    }
+
+    deletePost(postId) {
+        const { token, expires, rtoken } = this.props.auth;
+        this.props.deletePost(postId, token, expires, rtoken)
     }
 
     render() {
-        const { classes, key } = this.props
+        const { classes } = this.props
         const { element } = this.state
         return (this.state.isLoading ? '' :
             <>
@@ -114,6 +159,25 @@ export class Post extends Component {
                             <CardHeader
                                 avatar={
                                     <Avatar src={element.pfp} style={{ cursor: 'pointer' }} onClick={() => this.userRe(element.authorid)} />
+                                }
+                                action={
+                                    <>
+                                        <IconButton aria-label="settings" aria-controls="simple-menu" aria-haspopup="true" onClick={this.handleClick}>
+                                            <MoreVert />
+                                        </IconButton>
+                                        <Menu
+                                            id="simple-menu"
+                                            anchorEl={this.state.menuOpen}
+                                            keepMounted
+                                            open={Boolean(this.state.menuOpen)}
+                                            onClose={this.handleClose}
+                                        >
+                                            <MenuItem onClick={() => { this.handleClose(); this.openMakePost(); }}>Make Post On Topic</MenuItem>
+                                            <MenuItem onClick={() => { this.handleClose(); this.sharePost(); }}>Share</MenuItem>
+                                            {element.authorid == this.props.user.id && <MenuItem onClick={() => { this.handleClose(); this.openEditPost(); }}><Create />Edit Post</MenuItem>}
+                                            {element.authorid == this.props.user.id && <MenuItem onClick={() => { this.handleClose(); this.openDeletePost(); }} style={{ color: 'red' }}><Delete />Delete Post</MenuItem>}
+                                        </Menu>
+                                    </>
                                 }
                                 title={
                                     <Typography variant="h5">
@@ -166,7 +230,7 @@ export class Post extends Component {
                                     </Grid>
                                     <Box style={{ backgroundColor: "#363434", width: "80%", }} borderRadius={16}>
                                         <Grid item xs={12}>
-                                            {element.body.split("\n").map(line => { return <Typography variant="body1" align="center">{line}</Typography> })}
+                                            {!this.state.isLoading && element.body.split("\n").map(line => { return <Typography variant="body1" align="center">{line}</Typography> })}
                                         </Grid>
                                     </Box>
 
@@ -198,32 +262,48 @@ export class Post extends Component {
                         })}
                     </Grid>
                 </Grid>
-
-                <Dialog open={this.state.makeCommentState} onClose={this.closeMakeComment} maxWidth='xs' fullWidth>
-                    <DialogTitle id="">Make Comment:</DialogTitle>
-                    {this.state.emptyBodyBoolean && <Typography color="error" variant="body1" align="center">Comment must not be empty</Typography>}
-                    <DialogContent>
-                        <TextField
-                            autoFocus
-                            id="commentBody"
-                            type="email"
-                            multiline
-                            rows={6}
-                            fullWidth
-                            variant="outlined"
-                            value={this.state.commentBody}
-                            onChange={this.commentTextChanged}
-                        />
+                { /* MakeComment Dialog */}
+                <MakeCommentDialog
+                    onClose={this.closeMakeComment}
+                    makeCommentState={this.state.makeCommentState}
+                    element={element}
+                />
+                {/* MakePost Dialog Box */}
+                <Dialog onClose={this.closeMakePost} aria-labelledby="customized-dialog-title" open={this.state.makePostStatus} maxWidth="md" fullWidth>
+                    <DialogContent >
+                        <Grid container justify="center">
+                            <Grid item>
+                                <MakePost selectedTopic={{
+                                    type: element.type,
+                                    id: element.spotifyid,
+                                    artistName: element.artist,
+                                    albumName: element.album,
+                                    songName: element.track,
+                                    image: element.pic,
+                                }} />
+                            </Grid>
+                        </Grid>
                     </DialogContent>
-                    <DialogActions>
-                        <Button onClick={this.closeMakeComment} color="default">
-                            Cancel
-                        </Button>
-                        <Button onClick={this.sendComment} color="primary" variant="contained">
-                            Comment
-                        </Button>
-                    </DialogActions>
                 </Dialog>
+
+                {/* DeletePost Dialog Box */}
+                <DeletePostDialog
+                    element={this.state.element}
+                    open={this.state.deletePostStatus}
+                    onClose={this.closeDeletePost}
+                    auth={this.props.auth}
+                    deletePost={this.props.deletePost}
+                    history={this.props.history}
+                />
+
+                <EditPostDialog
+                    element={this.state.element}
+                    open={this.state.editPostStatus}
+                    onClose={this.closeEditPost}
+                    auth={this.props.auth}
+                    editPost={this.props.editPost}
+                    updateParent={this.updateElement}
+                />
             </>
         )
     }
@@ -231,11 +311,15 @@ export class Post extends Component {
 
 const mapStateToProps = (state) => ({
     user: state.user,
-    auth: state.auth
+    auth: state.auth,
+    data: state.data
 })
 
 const mapActionsToProps = {
-
+    reloadUserProfile: reloadUserProfile,
+    deletePost,
+    editPost,
+    setCurrentPost
 }
 
 export default connect(mapStateToProps, mapActionsToProps)(withStyles(styles)(Post))

@@ -10,7 +10,7 @@ export class Comment extends Component {
     }
 
     componentDidMount() {
-
+        
     }
 
     userRe = (id) => {
