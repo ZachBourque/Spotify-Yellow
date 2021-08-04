@@ -1,8 +1,9 @@
-import { USERLOADING, SETUSERDATA, CLEARUSERDATA, UPDATEBIO, UPDATEFAVORITES, UPDATEPFP} from '../types'
+import { USERLOADING, SETUSERDATA, CLEARUSERDATA, UPDATEBIO, UPDATEFAVORITES, UPDATEPFP, LIKEPOST, UNLIKEPOST} from '../types'
 
 const initialState = {
     profilepic: null,
     posts: null,
+    likes: null,
     favAlbums: null,
     favSongs: null,
     favArtists: null,
@@ -27,6 +28,17 @@ export default function(state = initialState, action){
             return {...state, ...action.payload}
         case UPDATEPFP:
             return {...state, profilepic: action.payload.pfp}
+        case LIKEPOST:
+            console.log(action.payload.like)
+            return {...state, likes: [...state.likes, action.payload.like]}
+        case UNLIKEPOST:
+            let likes = []
+            if(state.likes.filter(like => like.postId !== action.payload.postId)){
+                console.log("definitely true for suer")
+                likes = state.likes.filter(like => like.postId !== action.payload.postId)
+            }
+
+            return {...state, likes}
         default:
             return state
     }

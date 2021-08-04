@@ -15,6 +15,7 @@ import SmallPost from '../components/SmallPost'
 import RadioGroup from '@material-ui/core/RadioGroup'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import Radio from "@material-ui/core/Radio"
+import { setCurrent, setDataLoading } from "../redux/actions/dataActions"
 
 class SearchPage extends Component {
 
@@ -31,13 +32,13 @@ class SearchPage extends Component {
     }
 
     handleRadioChange = (event) => {
+        this.setState({})
         this.props.history.push(`/search?query=${this.state.query}&id=${this.state.id}&filter=${event.target.value}`)
     }
 
     search = async (query, id, filter) => {
-        console.log(query)
         query = query.toLowerCase()
-        this.setState({loading: true})
+        this.props.setDataLoading()
         let display = []
         switch(id){
             case 1:
@@ -110,9 +111,8 @@ class SearchPage extends Component {
                 }
                 break
         }
-        console.log("done")
         console.log(display)
-        this.setState({items: display, loading: false})
+        this.props.setCurrent(display)
     }
 
     componentDidUpdate() {
@@ -135,6 +135,7 @@ class SearchPage extends Component {
         let query = queryString.parse(this.props.location.search)['query']
         let id = parseInt(queryString.parse(this.props.location.search)['id'])
         let filter = parseInt(queryString.parse(this.props.location.search)['filter']) 
+        this.props.setDataLoading()
         axios.get('/users').then(res => {
             this.setState({users: res.data.users})
             if(this.state.posts){
@@ -194,24 +195,26 @@ class SearchPage extends Component {
                         <Tab label="Users"/>
                     </Tabs>
                 </AppBar>
-                {!this.state.loading && this.state.items.length > 0 && (
+                {!this.props.data.loading && this.props.data.current.length > 0 && (
                     <>
-                    {this.state.id === 0 && this.state.items.map((item, idx) => {
+                    {this.state.id === 0 && this.props.data.current.map((item, idx) => {
                         return <SmallPost element={item} history={this.props.history} key={idx} postId={item.postId}/>
                     })}
-                    {this.state.id === 1 && this.state.items.map((item, idx) => {
+                    {this.state.id === 1 && this.props.data.current.map((item, idx) => {
                         return <DisplayData element={item} id={idx} maxHeight={'200px'} maxWidth={'200px'} key={idx} onClick={() => {}}/>
                     })}
-                    {this.state.id === 2 && this.state.items.map((item, idx) => {
+                    {this.state.id === 2 && this.props.data.current.map((item, idx) => {
                         return <UserCard user={item} key={idx} history={this.props.history}/>
                     })}
                     </>
                 )}
                 </Grid> 
                 <Grid item sm>
-                    <RadioGroup aria-label="gender" name="gender1" value={this.filter} onChange={this.handleRadioChange}>
+                    <div style={{marginLeft: 20}}>
+                    <RadioGroup aria-label="gender" name="gender1" value={this.state.filter} onChange={this.handleRadioChange}>
                             {radioArr[this.state.id ? this.state.id : 0]}
                         </RadioGroup>
+                </div>
                 </Grid>
             </Grid>
         )
@@ -224,7 +227,9 @@ const mapStateToProps = (state) => ({
 })
 
 const mapActionsToProps = {
-    getNewToken
+    setDataLoading,
+    getNewToken,
+    setCurrent
 }
 
 export default connect(mapStateToProps, mapActionsToProps)(SearchPage)

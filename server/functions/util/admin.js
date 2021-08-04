@@ -54,6 +54,7 @@ const validateUser = (req,res,next) => {
 		request.post(authOptions, function(error, response, body){
 			if(error || response.statusCode !== 200){
 				error ? console.error(error) : null
+				console.log(error, response.statusCode)
 				return res.status(401).json({error: "Error getting refresh token, LOGOUT"})
 			} else {
 				req.auth.token = body.access_token

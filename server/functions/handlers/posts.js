@@ -17,7 +17,8 @@ exports.createPost = (req, res) => {
     authorid: req.user.id,
     pfp: req.user.profilepic,
     username: req.user.username,
-    commentCount: 0,
+    likeCount: 0,
+    commentCount: 0
   }
   db.collection('posts').add(newPost).then(() => {
     if (req.auth.refreshed) {
@@ -117,7 +118,7 @@ exports.getPost = (req, res) => {
       console.error(err)
       return res.status(500).json({ error: "Error getting post." })
     })
-}
+
 
 exports.deletePost = (req, res) => {
   db.doc(`/posts/${req.params.postId}`).get().then(doc => {
@@ -254,5 +255,80 @@ exports.deleteComment = (req, res) => {
   }).catch(err => {
     console.error(err)
     return res.status(500).json({ error: "Could not get post" })
+  })
+}
+
+exports.likePost = (req,res) => {
+
+  let likeDoc = {
+    postId: req.params.postId,
+    authorid: req.user.id
+  }
+
+  db.doc(`/posts/${req.params.postId}`).get().then(doc => {
+    if(!doc.exists){
+      return res.status(404).json({error: "Cannot like post that does not exist."})
+    } else {
+      db.collection('likes').where('authorid', '==', req.user.id).where('postId', '==', req.params.postId).limit(1).get().then(snap => {
+        if(snap.size === 0){
+          var batch = db.batch() //create batch
+          var newLikeRef = db.collection('likes').doc() //make a new empty like document
+          batch.set(newLikeRef, likeDoc) //set new like document data
+          batch.update(doc.ref, {likeCount: doc.data().likeCount + 1}) //increase like count on post
+          batch.commit().then(() => { //commit batch
+            if(req.auth.refreshed){
+              return res.json({success: "Successfully created like", refreshed: true, token: req.auth.token, expires: req.auth.expires, like: likeDoc})
+            } else {
+              return res.json({success: "Successfully created like", like: likeDoc})
+            }
+          }).catch(err => {
+            console.error(err)
+            return res.status(500).json({error: "Error committing batch"})
+          })
+        } else {
+          return res.status(400).json({error: "Post has already been liked by user."})
+        }
+      }).catch(err => {
+        console.error(err)
+        return res.status(500).json({error: "Error getting likes"})
+      })
+    }
+  }).catch(err => {
+    console.error(err)
+    return res.status(500).json({error: "Error getting post"})
+  })
+}
+
+exports.unlikePost = (req,res) => {
+  db.doc(`/posts/${req.params.postId}`).get().then(doc => {
+    if(!doc.exists){
+      return res.status(404).json({error: "Post not found"})
+    } else {
+      db.collection('likes').where('authorid', '==', req.user.id).where('postId', '==', req.params.postId).limit(1).get().then(snap => {
+        if(snap.size === 0){
+          return res.status(400).json({error: "Like document does not exist"})
+        } else {
+          var batch = db.batch()
+          batch.delete(snap.docs[0].ref)
+          batch.update(doc.ref, {likeCount: doc.data().likeCount - 1})
+          batch.commit().then(() => {
+            if(req.auth.refreshed){
+              return res.json({success: "Successfully removed like", refreshed: true, token: req.auth.token, expires: req.auth.expires})
+            } else {
+              return res.json({success: "Successfully removed like"})
+            }
+          }).catch(err => {
+            console.error(err)
+            return res.status(500).json({error: "Error committing batch"})
+          })
+        }
+      }).catch(err => {
+        console.error(err)
+        return res.status(500).json({error: "Error getting like"})
+      })
+    }
+  }).catch(err => {
+    console.error(err)
+    return res.status(500).json({error: "Could not get post"})
   })
 }

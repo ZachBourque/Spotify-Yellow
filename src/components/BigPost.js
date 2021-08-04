@@ -33,6 +33,8 @@ import { reloadUserProfile } from '../redux/actions/userActions'
 import EditPostDialog from './EditPostDialog';
 import DeletePostDialog from './DeletePostDialog';
 import MakeCommentDialog from './MakeCommentDialog';
+import { setCurrent, setDataLoading} from "../redux/actions/dataActions"
+import LikeButton from "./LikeButton"
 
 const styles = makeStyles(theme => ({
 
@@ -47,23 +49,14 @@ export class Post extends Component {
     imagesArray = [Zero, One, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten];
 
     state = {
-        element: null,
-        isLoading: true,
-        expanded: false,
-        makeCommentState: false,
-        emptyBodyBoolean: false,
-        newRating: null,
-        newTitle: null,
-        newBody: null,
-        switchState: false,
+        isLoading: true
     }
 
     componentDidMount() {
         const id = this.props.match.params.postID
         //  this.props.makeComment(this.props.element.postId, this.props.auth.token, this.props.auth.expires, this.props.auth.rtoken, newComment)
         this.props.setCurrentPost(id).then(res => {
-            this.setState({ element: this.props.data.currentPost, comments: this.props.data.currentPost.comments, isLoading: false })
-            this.setState({ newRating: this.state.element.rating, newTitle: this.state.element.title, newBody: this.state.element.body, switchState: this.state.element.rating > -1 ? true : false })
+            this.setState({isLoading: false })
         })
     }
 
@@ -74,12 +67,6 @@ export class Post extends Component {
     updateElement = (newElement) => {
         this.setState({ element: newElement })
     }
-
-    handleExpandClick = () => {
-        this.setState({ expanded: !this.state.expanded })
-    }
-
-
 
     openMakeComment = () => {
         this.setState({ makeCommentState: true })
@@ -98,22 +85,6 @@ export class Post extends Component {
     handleClose = () => {
         this.setState({ menuOpen: null });
     };
-
-    handleSwitchChange = (event) => {
-        this.setState({ switchState: !this.state.switchState });
-    }
-
-    handleTitleChange = (e) => {
-        this.setState({ newTitle: e.target.value })
-    }
-
-    handleBodyChange = (e) => {
-        this.setState({ newBody: e.target.value })
-    }
-
-    handleLike = () => {
-        //TODO send post like to database
-    }
 
     openMakePost() {
         this.setState({ makePostStatus: true })
@@ -150,7 +121,7 @@ export class Post extends Component {
 
     render() {
         const { classes } = this.props
-        const { element } = this.state
+        const element = this.props.data.current[0]
         return (this.state.isLoading ? '' :
             <>
                 <Grid container justify="center">
@@ -236,9 +207,8 @@ export class Post extends Component {
 
                                 </Grid>
                                 <CardActions disableSpacing>
-                                    <IconButton aria-label="add to favorites">
-                                        <ThumbUpIcon onClick={this.handleLike()} />
-                                    </IconButton>
+                                    <LikeButton postId={element.postId}/>
+                               {element.likeCount}
                                     <IconButton onClick={this.openMakeComment}>
                                         <CommentIcon />
                                     </IconButton>
@@ -254,8 +224,6 @@ export class Post extends Component {
                                     </IconButton>
                                 </CardActions>
                             </CardContent>
-
-
                         </Card>
                         {element.comments.map((element, index) => {
                             return <Comment element={element} key={index} history={this.props.history} />
