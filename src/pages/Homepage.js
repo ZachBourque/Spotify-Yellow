@@ -53,7 +53,7 @@ export class Homepage extends Component {
                     align="center"
                 >
                     {
-                        this.props.data.loaded && this.props.data.feed.map(post => {
+                        this.props.data.loaded && this.props.data.current.map(post => {
                             return (
                                 <Grid item xs={12}>
                                     <Grid item xs={6}>

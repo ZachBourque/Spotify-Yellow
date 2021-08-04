@@ -21,6 +21,8 @@ import Ten from '../assets/10.png'
 import withStyles from '@material-ui/core/styles/withStyles'
 import { makeStyles, createMuiTheme } from '@material-ui/core/styles';
 import axios from 'axios';
+import { setCurrent, setDataLoading} from "../redux/actions/dataActions"
+import LikeButton from "./LikeButton"
 
 const styles = makeStyles(theme => ({
 
@@ -56,17 +58,19 @@ export class Post extends Component {
 
     componentDidMount() {
         const id = this.props.match.params.postID
+        this.props.setDataLoading()
         axios.get(`/post/${id}`)
             .then(res => {
-                this.setState({ element: res.data.post, isLoading: false })
-                console.log(res.data.post)
+                this.props.setCurrent([res.data.post])
+                this.setState({ isLoading: false })
             })
     }
 
     render() {
         const { classes, key } = this.props
-        const { element } = this.state
-        return (this.state.isLoading ? '' :
+        const  element = this.props.data.current[0]
+        console.log(this.state.isLoading || !this.props.data.loaded || this.props.data.loading)
+        return (this.state.isLoading || !this.props.data.loaded || this.props.data.loading ? '' :
             <Grid container justify="center">
                 <Grid item xs={6}>
                     <Card style={{ backgroundColor: "#4d4d4d" }} align="center">
@@ -131,9 +135,8 @@ export class Post extends Component {
 
                             </Grid>
                             <CardActions disableSpacing>
-                                <IconButton aria-label="add to favorites">
-                                    <ThumbUpIcon onClick={this.handleLike()} />
-                                </IconButton>
+                                <LikeButton postId={element.postId}/>
+                               {element.likeCount}
                                 <IconButton
                                     className={clsx(classes.expand, {
                                         [classes.expandOpen]: this.state.expanded,
@@ -155,11 +158,12 @@ export class Post extends Component {
 }
 
 const mapStateToProps = (state) => ({
-
+    data: state.data
 })
 
 const mapDispatchToProps = {
-
+    setDataLoading,
+    setCurrent
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(Post))

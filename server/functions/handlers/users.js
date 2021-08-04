@@ -141,11 +141,20 @@ exports.getSelf = (req,res) => {
     snap.forEach(doc => {
       req.user.posts.push({...doc.data(), postId: doc.id})
     })
+    return db.collection('likes').where('authorid', '==', req.user.id).get()
+  }).then(snap => {
+    req.user.likes = []
+    snap.forEach(doc => {
+      req.user.likes.push(doc.data())
+    })
     if(req.auth.refreshed){
       return res.json({success: "Successfully got user", refreshed: true, token: req.auth.token, expires: req.auth.expires, user: req.user})
     } else {
       return res.json({success: "Successfully got user", user: req.user})
     }
+  }).catch(err => {
+    console.error(err)
+    return res.status(500).json({error: "Internal server error"})
   })
 }
 

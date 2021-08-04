@@ -24,6 +24,7 @@ import MakePost from './MakePost';
 import { thisExpression } from '@babel/types';
 import { deletePost, editPost } from '../redux/actions/dataActions'
 import { reloadUserProfile } from '../redux/actions/userActions'
+import LikeButton from "../components/LikeButton"
 
 
 const styles = makeStyles(theme => ({
@@ -87,10 +88,6 @@ export class Post extends Component {
 
     }
 
-    handleLike = () => {
-        //TODO send post like to database
-    }
-
     openMakePost() {
         this.setState({ makePostStatus: true })
     }
@@ -145,8 +142,8 @@ export class Post extends Component {
     }
 
     render() {
-        const { classes } = this.props
-        const { element } = this.state
+        let { classes } = this.props
+        let { element } = this.props
         console.log(element)
         return (
             <>
@@ -228,9 +225,8 @@ export class Post extends Component {
                         </div>
                         <Divider style={{ margin: 10 }} />
                         <CardActions disableSpacing>
-                            <IconButton onClick={this.handleLike()}>
-                                <ThumbUp />
-                            </IconButton>
+                               <LikeButton postId={element.postId}/> 
+                               {element.likeCount}
                             <IconButton onClick={() => this.postRe(element.postId)}>
                                 <Comment />
                             </IconButton>

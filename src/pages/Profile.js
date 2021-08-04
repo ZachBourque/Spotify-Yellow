@@ -15,6 +15,7 @@ import Card from '@material-ui/core/Card'
 import CardMedia from '@material-ui/core/CardMedia'
 import CardContent from '@material-ui/core/CardContent'
 import { sizing } from '@material-ui/system';
+import { setCurrent } from '../redux/actions/dataActions'
 import axios from 'axios';
 import FavoriteCard from '../components/FavoriteCard'
 
@@ -77,6 +78,7 @@ class Profile extends Component {
     componentDidMount() {
         const { state } = this.props.location
         if (state && state.setData) {
+            this.props.setCurrent(state.user.posts)
             this.setState({ ...state.user, loading: false, self: true })
             this.props.location.state = {}
         } else {
@@ -84,7 +86,8 @@ class Profile extends Component {
             if (!id) {
                 this.props.history.push("/")
             } else if (id === this.props.user.id ) {
-                this.setState({ ...this.props.user, loading: false, self: true })
+                this.props.setCurrent(this.props.user.posts)
+                this.setState({ ...this.props.user, loading: false, self: true})
             } else {
                 this.getProfileData(id)
             }
@@ -96,6 +99,8 @@ class Profile extends Component {
         if(id !== this.state.id){
             this.getProfileData(id)
         } else if(prevProps.user !== this.props.user && this.state.self && this.props.user.loaded){
+            console.log("setting")
+            this.props.setCurrent(this.props.user.posts)
             this.setState({...this.props.user, loading: false, self: true})
         }
     }
@@ -103,12 +108,23 @@ class Profile extends Component {
     getProfileData = (id) => {
         this.setState({loading: true, id})
         axios.get(`/getUser/${id}`).then(res => {
+            this.props.setCurrent(res.data.posts)
             if(res.data.id === this.props.user.id){
                 this.setState({...res.data, loading: false, self: true})
             } else {
                 this.setState({...res.data, loading: false})
             }
         })
+    }
+
+    getPosts = () => {
+        let arr = []
+        if(this.state.posts){
+            this.state.posts.forEach(post => arr.push({...post}))
+            return arr
+        } else {
+            return []
+        }
     }
 
     render() {
@@ -202,7 +218,8 @@ class Profile extends Component {
                                 align="center"
                             >
                                 {
-                                    this.state.posts.reverse().map(post => {
+                                    this.getPosts().reverse().map(post => {
+                                        console.log("render", post)
                                         return (
                                             <Grid item xs={12}>
                                                 <Grid item xs={6}>
@@ -228,10 +245,12 @@ Profile.propTypes = {
 }
 
 const mapStateToProps = (state) => ({
-    user: state.user
+    user: state.user,
+    data: state.data
 })
 
 const mapActionsToProps = {
+    setCurrent
 }
 
 export default connect(mapStateToProps, mapActionsToProps)(withStyles(styles)(Profile))

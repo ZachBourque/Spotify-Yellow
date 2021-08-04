@@ -31,7 +31,7 @@ const DisplayData = ({ element, id, onClick, maxHeight, maxWidth }) => {
 
     return (
         <Card
-            onClick={() => onClick(element)}
+            onClick={onClick ? () => onClick(element) : null}
             styles={classes.paper}
             style={{ cursor: 'pointer', marginBottom: '10px'}}
             id={id}

@@ -18,6 +18,8 @@ import InputLabel from '@material-ui/core/InputLabel';
 import logo from "../assets/logo.ico"
 import PersonIcon from '@material-ui/icons/Person';
 import CreateIcon from '@material-ui/icons/Create';
+import NotificationsIcon from '@material-ui/icons/Notifications';
+import Badge from '@material-ui/core/Badge';
 import Avatar from '@material-ui/core/Avatar'
 
 const useStyles = makeStyles((theme) => ({
@@ -40,9 +42,11 @@ const useStyles = makeStyles((theme) => ({
     '&:hover': {
       backgroundColor: fade(theme.palette.common.white, 0.25),
     },
+    marginRight: theme.spacing(2),
+    marginLeft: 0,
     width: '100%',
     [theme.breakpoints.up('sm')]: {
-      marginLeft: theme.spacing(50),
+      marginLeft: theme.spacing(3),
       width: 'auto',
     },
   },
@@ -65,7 +69,7 @@ const useStyles = makeStyles((theme) => ({
     transition: theme.transitions.create('width'),
     width: '100%',
     [theme.breakpoints.up('md')]: {
-      width: '80ch',
+      width: '20ch',
     },
   },
   sectionMobile: {
@@ -182,15 +186,21 @@ function PrimarySearchAppBar(props) {
           value={search}
           onChange={handleChange}
         >
-          <MenuItem value={0}>
+          <MenuItem value={1}>
            <img src={logo}/> 
           </MenuItem>
-          <MenuItem value={1}><PersonIcon/></MenuItem>
-          <MenuItem value={2}><CreateIcon/></MenuItem>
+          <MenuItem value={2}><PersonIcon/></MenuItem>
+          <MenuItem value={0}><CreateIcon/></MenuItem>
         </Select>
       </FormControl>       
       <div className={classes.grow}/>
             <div className={classes.sectionMobile}>
+              <IconButton aria-label="show 17 new notifications" color="inherit">
+              <Badge badgeContent={0} color="secondary">
+                <NotificationsIcon />
+              </Badge>
+            </IconButton>
+
               {auth.loggedIn ? (
                 <IconButton edge="end" aria-label="account of current user" aria-controls={menuId} aria-haspopup="true" onClick={handleProfileMenuOpen} color="inherit">
                 {!user.loaded ? <Avatar src={localStorage.getItem("cachepfp")} width="50" /> : <Avatar src={user.profilepic} width="50"/>}

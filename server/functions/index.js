@@ -4,9 +4,9 @@ const express = require('express');
 const app = express();
 app.use(cors())
 
-const { login, callback, createUser, getUser, getSelf, uploadPic, addFavorite, removeFavorite, editBio, updatePfp, getToken, editFavorites, getUsers} = require('./handlers/users')
+const { login, callback, createUser, getUser, getSelf, uploadPic, editBio, updatePfp, getToken, editFavorites, getUsers} = require('./handlers/users')
 const { validateUser } = require('./util/admin')
-const { createPost, getAllPosts, getPostsByTopic, getPostsByType, getPostsByUser, getPost, deletePost, editPost } = require('./handlers/posts')
+const { createPost, getAllPosts, getPostsByTopic, getPostsByType, getPostsByUser, getPost, deletePost, editPost, likePost, unlikePost } = require('./handlers/posts')
 
 //User Routes
 app.get('/login', login);
@@ -29,5 +29,7 @@ app.get('/postsByUser/:user', getPostsByUser)
 app.get('/post/:postId', getPost)
 app.delete('/post/:postId', validateUser, deletePost)
 app.put('/editPost/:postId', validateUser, editPost)
+app.get('/post/:postId/like', validateUser, likePost)
+app.get('/post/:postId/unlike', validateUser, unlikePost)
 
 exports.api = functions.https.onRequest(app)

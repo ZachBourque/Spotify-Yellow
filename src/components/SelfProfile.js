@@ -11,6 +11,7 @@ function SelfProfile(props) {
 			history.push("/")
 		}
 		if(user.loaded){
+			props.reloadUserProfile(auth.token, auth.expires, auth.rtoken)
 			history.replace({
 				pathname: `/profile=${user.id}`,
 				state: {setData: true, user}
