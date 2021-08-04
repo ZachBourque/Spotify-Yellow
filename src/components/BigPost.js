@@ -122,6 +122,7 @@ export class Post extends Component {
     render() {
         const { classes } = this.props
         const element = this.props.data.current[0]
+        console.log(this.props.data.current[0], this.state.isLoading)
         return (this.state.isLoading ? '' :
             <>
                 <Grid container justify="center">
@@ -256,7 +257,7 @@ export class Post extends Component {
 
                 {/* DeletePost Dialog Box */}
                 <DeletePostDialog
-                    element={this.state.element}
+                    element={element}
                     open={this.state.deletePostStatus}
                     onClose={this.closeDeletePost}
                     auth={this.props.auth}
@@ -265,7 +266,7 @@ export class Post extends Component {
                 />
 
                 <EditPostDialog
-                    element={this.state.element}
+                    element={element}
                     open={this.state.editPostStatus}
                     onClose={this.closeEditPost}
                     auth={this.props.auth}

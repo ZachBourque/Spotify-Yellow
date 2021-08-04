@@ -118,7 +118,7 @@ exports.getPost = (req, res) => {
       console.error(err)
       return res.status(500).json({ error: "Error getting post." })
     })
-
+  }
 
 exports.deletePost = (req, res) => {
   db.doc(`/posts/${req.params.postId}`).get().then(doc => {

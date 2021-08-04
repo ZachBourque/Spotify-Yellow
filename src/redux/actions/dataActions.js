@@ -75,8 +75,9 @@ export const setCurrentPost = (postId) => (dispatch) => {
 		.then(res => {
 			const postData = res.data.post
 			postData.postId = postId
-			dispatch({type: SETCURRENT, payload: postData})
+			dispatch({type: SETCURRENT, payload: [postData]})
 		})
+	}
 
 export const likePost = (postId, token, expires, rtoken) => (dispatch) => {
 	axios.get(`/post/${postId}/like`, {headers: {token, expires, rtoken}}).then(res => {
