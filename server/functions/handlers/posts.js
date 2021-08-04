@@ -1,6 +1,7 @@
-const {admin, db} = require('../util/admin')
+const { firebaseConfig } = require('firebase-functions')
+const { admin, db } = require('../util/admin')
 
-exports.createPost = (req,res) => {
+exports.createPost = (req, res) => {
   let newPost = {
     type: req.body.type,
     body: req.body.body,
@@ -20,18 +21,18 @@ exports.createPost = (req,res) => {
     commentCount: 0
   }
   db.collection('posts').add(newPost).then(() => {
-	  if(req.auth.refreshed){
-		return res.json({success: "Successfully created post.", refreshed: true, expires: req.auth.expires, token: req.auth.token})
-	  } else {
-		return res.json({success: "Successfully created post."})
-	  }
+    if (req.auth.refreshed) {
+      return res.json({ success: "Successfully created post.", refreshed: true, expires: req.auth.expires, token: req.auth.token })
+    } else {
+      return res.json({ success: "Successfully created post." })
+    }
   }).catch(err => {
-	console.error(err)
-	return res.status(500).json({error: "Error creating post."})
+    console.error(err)
+    return res.status(500).json({ error: "Error creating post." })
   })
 }
 
-exports.getAllPosts = (req,res) => {
+exports.getAllPosts = (req, res) => {
   db.collection('posts').orderBy('createdAt', 'desc').get().then(snap => {
     let posts = []
     snap.forEach(doc => {
@@ -48,111 +49,212 @@ exports.getAllPosts = (req,res) => {
   });
 }
 
-exports.getPostsByType = (req,res) => {
-  const type = req.params.type 
+exports.getPostsByType = (req, res) => {
+  const type = req.params.type
   db.collection('posts').where("type", "==", type).get().then(snap => {
     let posts = []
     snap.forEach(post => {
-      posts.push({...post.data(), id: post.id})
+      posts.push({ ...post.data(), id: post.id })
     })
-    return res.json({posts})
+    return res.json({ posts })
   }).catch((err) => {
     console.error(err);
     return res.status(500).json({ error: "Could not get posts." });
   });
 }
 
-exports.getPostsByTopic = (req,res) => {
-  const topic = req.params.topic 
+exports.getPostsByTopic = (req, res) => {
+  const topic = req.params.topic
   db.collection('posts').where("topic", "==", topic).get().then(snap => {
     let posts = []
     snap.forEach(post => {
-      posts.push({...post.data(), id: post.id})
+      posts.push({ ...post.data(), id: post.id })
     })
-    return res.json({posts})
+    return res.json({ posts })
   }).catch((err) => {
     console.error(err);
     return res.status(500).json({ error: "Could not get posts." });
   });
 }
 
-exports.getPostsByUser = (req,res) => {
+exports.getPostsByUser = (req, res) => {
   const id = req.params.user
   db.collection('posts').where("id", "==", id).get().then(snap => {
     let posts = []
     snap.forEach(post => {
-      posts.push({...post.data(), id: post.id})
+      posts.push({ ...post.data(), id: post.id })
     })
-    return res.json({posts})
+    return res.json({ posts })
   }).catch((err) => {
     console.error(err);
     return res.status(500).json({ error: "Could not get posts." });
   });
 }
 
-exports.getPost = (req,res) => {
-  db.doc(`/posts/${req.params.postId}`).get().then(doc => {
-    if(!doc.exists){
-      return res.status(404).json({error: "Could not find post."})
-    }
-    return res.json({post: {...doc.data(), postId: doc.id}})
-  }).catch(err => {
-    console.error(err)
-    return res.status(500).json({error: "Error getting post."})
-  })
-}
+exports.getPost = (req, res) => {
+  let postData = {}
+  db.doc(`/posts/${req.params.postId}`).get()
+    .then(doc => {
+      if (!doc.exists) {
+        return res.status(404).json({ error: "Could not find post." })
+      }
+      postData.post = doc.data()
+      postData.id = doc.id
+      return db
+        .collection('comments')
+        .where('postId', '==', req.params.postId)
+        .get();
+    })
+    .then((data) => {
+      postData.post.comments = [];
+      data.forEach((doc) => {
+        theDoc = doc.data()
+        theDoc.id = doc.id
+        postData.post.comments.push(theDoc)
+      })
+      return res.json(postData)
+    })
+    .catch(err => {
+      console.error(err)
+      return res.status(500).json({ error: "Error getting post." })
+    })
 
-exports.deletePost = (req,res) => {
+
+exports.deletePost = (req, res) => {
   db.doc(`/posts/${req.params.postId}`).get().then(doc => {
-    if(!doc.exists){
-      return res.status(404).json({error: "Could not find post."})
+    if (!doc.exists) {
+      return res.status(404).json({ error: "Could not find post." })
     }
     let post = doc.data()
-    if(post.authorid === req.user.id){
+    if (post.authorid === req.user.id) {
       doc.ref.delete().then(() => {
-        if(req.auth.refreshed){
-          return res.json({success: "Successfully deleted post", refreshed: true, token: req.auth.token, expires: req.auth.expires})
+        if (req.auth.refreshed) {
+          return res.json({ success: "Successfully deleted post", refreshed: true, token: req.auth.token, expires: req.auth.expires })
         } else {
-          return res.json({success: "Successfully deleted post"})
+          return res.json({ success: "Successfully deleted post" })
         }
         // delete comments and likes and stuff
       }).catch(err => {
         console.error(err)
-        return res.status(500).json({error: "Error deleting post"})
+        return res.status(500).json({ error: "Error deleting post" })
       })
     } else {
       console.log(post.authorid, req.user.id)
-      return res.status(400).json({error: "Post isnt yours lol"})
+      return res.status(400).json({ error: "Post isnt yours lol" })
     }
   }).catch(err => {
     console.error(err)
-    return res.status(500).json({error: "Could not get post"})
+    return res.status(500).json({ error: "Could not get post" })
   })
 }
 
-exports.editPost = (req,res) => {
+exports.editPost = (req, res) => {
   console.log(req.params.postId)
   db.doc(`/posts/${req.params.postId}`).get().then(doc => {
-    if(!doc.exists){
-      return res.status(404).json({error: "Post does not exist"})
+    if (!doc.exists) {
+      return res.status(404).json({ error: "Post does not exist" })
     }
-    if(doc.data().authorid === req.user.id){
+    if (doc.data().authorid === req.user.id) {
       doc.ref.update(req.body.update).then(() => {
-        if(req.auth.refreshed){
-          return res.json({success: "Successfully edited post", refreshed: true, token: req.auth.token, expires: req.auth.expires})
+        if (req.auth.refreshed) {
+          return res.json({ success: "Successfully edited post", refreshed: true, token: req.auth.token, expires: req.auth.expires })
         } else {
-          return res.json({success: "Successfully edited post"})
+          return res.json({ success: "Successfully edited post", doc: { ...doc.data(), ...req.body.update } })
         }
       }).catch(err => {
         console.error(err)
-        return res.status(500).json({error: "Error updating post."})
+        return res.status(500).json({ error: "Error updating post." })
       })
     } else {
-      return res.status(403).json({error: "post isnt yours lol"})
+      return res.status(403).json({ error: "post isnt yours lol" })
     }
   }).catch(err => {
     console.error(err)
-    return res.status(500).json({error: "Error getting post"})
+    return res.status(500).json({ error: "Error getting post" })
+  })
+}
+
+exports.createComment = (req, res) => {
+  if (req.body.body.trim() === '') return res.status(400).json({ error: 'Must not be empty' })
+
+  const newComment = {
+    body: req.body.body,
+    createdAt: new Date().toISOString(),
+    postId: req.body.postId,
+    authorId: req.body.authorId,
+    username: req.user.username,
+    pfp: req.body.pfp
+  }
+
+  console.log("\n\n-Comment---")
+  console.log(newComment)
+  console.log("----------\n\n")
+
+  db.collection('comments').add(newComment).then(() => {
+    db.collection('posts').doc(newComment.postId).update({commentCount: admin.firestore.FieldValue.increment(1)})
+    if (req.auth.refreshed) {
+      return res.json({ success: "Successfully created post.", refreshed: true, expires: req.auth.expires, token: req.auth.token, newComment })
+    } else {
+      return res.json({ success: "Successfully created post.", newComment })
+    }
+  }).catch(err => {
+    console.error(err)
+    return res.status(500).json({ error: "Error creating post." })
+  })
+}
+
+exports.editComment = (req, res) => {
+  console.log(req.params.postId)
+  db.doc(`/comments/${req.params.postId}`).get().then(doc => {
+    if (!doc.exists) {
+      return res.status(404).json({ error: "Post does not exist" })
+    }
+    if (doc.data().authorid === req.user.id) {
+      doc.ref.update(req.body.update).then(() => {
+        if (req.auth.refreshed) {
+          return res.json({ success: "Successfully edited post", refreshed: true, token: req.auth.token, expires: req.auth.expires })
+        } else {
+          return res.json({ success: "Successfully edited post", doc: { ...doc.data(), ...req.body.update } })
+        }
+      }).catch(err => {
+        console.error(err)
+        return res.status(500).json({ error: "Error updating post." })
+      })
+    } else {
+      return res.status(403).json({ error: "post isnt yours lol" })
+    }
+  }).catch(err => {
+    console.error(err)
+    return res.status(500).json({ error: "Error getting post" })
+  })
+}
+
+exports.deleteComment = (req, res) => {
+   db.doc(`/posts/${req.params.postId}`).get().then(doc => {
+    if (!doc.exists) {
+      return res.status(404).json({ error: "Could not find post." })
+    }
+    let post = doc.data()
+    if (post.authorid === req.user.id) {
+      doc.ref.delete().then(() => {
+        db.collection('posts').doc(newComment.postId).update({commentCount: admin.firestore.FieldValue.increment(-1)})
+        if (req.auth.refreshed) {
+          return res.json({ success: "Successfully deleted post", refreshed: true, token: req.auth.token, expires: req.auth.expires })
+        } else {
+          return res.json({ success: "Successfully deleted post" })
+        }
+        // delete comments and likes and stuff
+      }).catch(err => {
+        console.error(err)
+        return res.status(500).json({ error: "Error deleting post" })
+      })
+    } else {
+      console.log(post.authorid, req.user.id)
+      return res.status(400).json({ error: "Post isnt yours lol" })
+    }
+  }).catch(err => {
+    console.error(err)
+    return res.status(500).json({ error: "Could not get post" })
   })
 }
 

@@ -250,7 +250,7 @@ const MakePost = (props) => {
                             <TextField variant="filled" id="searchText" onChange={searchTextChanged} />
                         </Grid>
                         <Divider style={{margin: '10px'}} />
-                        <Grid container justify="center" alignItems="space-evenly">
+                        <Grid container justify="center">
                             {dataArray?.map((element, index) => {
                                 return <Grid item xs={6} sm={4} md={2}>
                                     <DisplayData

@@ -123,8 +123,8 @@ export class Post extends Component {
         }
         if (JSON.stringify(changes) === "{}") { return };
 
-        this.props.editPost(postId, {update: changes}, token, expires, rtoken) 
-        this.setState({element: {...this.state.element, ...changes}})
+        this.props.editPost(postId, { update: changes }, token, expires, rtoken)
+        this.setState({ element: { ...this.state.element, ...changes } })
         this.closeEditPost()
     }
 
@@ -139,6 +139,18 @@ export class Post extends Component {
     deletePost(postId) {
         const { token, expires, rtoken } = this.props.auth;
         this.props.deletePost(postId, token, expires, rtoken)
+    }
+
+    getBodyText(element) {
+        let text = ""
+        if (element.body.split("\n").length > 5) {
+            text = element.body.split("\n").slice(0, 4).join("\n") + "..."
+        } else if (element.body.length > 50) {
+            text = element.body.substring(0, 47) + "..."
+        } else {
+            text = element.body
+        }
+        return text
     }
 
     render() {
@@ -215,8 +227,11 @@ export class Post extends Component {
                                     <Grid item>
                                         <Typography variant="h5" style={{ maxWidth: '75%' }}>{element.title}</Typography>
                                     </Grid>
-                                    <Grid item>
-                                        {element.body.split("\n").map(line => { return <Typography align="center" style={{ maxWidth: '75%' }}>{line}</Typography> })}
+                                    <Grid item align="center">
+                                        {
+                                            this.getBodyText(element).split("\n").map((line, index) => { return index <= 2 ? <Typography align="center" style={{ maxWidth: '75%' }}>{index == 2 ? `${line}...` : line}</Typography> : '' })
+                                        }
+
                                     </Grid>
                                 </Grid>
 
@@ -230,6 +245,9 @@ export class Post extends Component {
                             <IconButton onClick={() => this.postRe(element.postId)}>
                                 <Comment />
                             </IconButton>
+                            <Typography variant="body2">
+                                {element.commentCount}
+                            </Typography>
                             <IconButton >
                                 <Share />
                             </IconButton>
@@ -294,7 +312,7 @@ export class Post extends Component {
                     aria-describedby="alert-dialog-description"
                     maxWidth="sm" fullWidth
                 >
-                    <DialogTitle id="alert-dialog-title">{"Edit Post:"}</DialogTitle>
+                    <DialogTitle id="alert-dialog-title">Edit Post:</DialogTitle>
                     <DialogContent>
 
                         <TextField
