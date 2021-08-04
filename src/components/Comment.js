@@ -24,7 +24,7 @@ export class Comment extends Component {
                 <CardHeader
                 avatar={<Avatar src={element.pfp}></Avatar>}
                     title={
-                        <Typography variant="body1" style={{ cursor: 'pointer', width: 'fit-content' }} onClick={() => this.userRe(element.authorId)}>
+                        <Typography variant="body1" style={{ cursor: 'pointer', width: 'fit-content' }} onClick={() => this.userRe(element.authorid)}>
                             {element.username}
                         </Typography>
                     }

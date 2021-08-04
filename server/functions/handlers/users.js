@@ -147,6 +147,10 @@ exports.getSelf = (req,res) => {
     snap.forEach(doc => {
       req.user.likes.push(doc.data())
     })
+    return db.collection("notifications").where('receiver', '==', req.user.id).orderBy("createdAt", "desc").limit(20).get()
+  }).then(data => {
+    req.user.notifications = []
+    data.forEach(doc => req.user.notifications.push({...doc.data(), notificationId: doc.id}))
     if(req.auth.refreshed){
       return res.json({success: "Successfully got user", refreshed: true, token: req.auth.token, expires: req.auth.expires, user: req.user})
     } else {
@@ -207,7 +211,11 @@ exports.editFavorites = (req,res) => {
   //validate probably lol
   console.log(req.body)
   req.userRef.update(req.body.update).then(() => {
-    return res.json({success: "Success"})
+    if(req.auth.refreshed){
+      return res.json({success: "Success", refreshed: true, token: req.auth.token, expires: req.auth.expires})
+    } else {
+      return res.json({success: "Success"})
+    }
   }).catch(err => {
     console.error(err)
     return res.status(500).json({error: "Could not update user"})
@@ -217,7 +225,11 @@ exports.editFavorites = (req,res) => {
 exports.editBio = (req,res) => {
   //validate first
   req.userRef.update({bio: req.body.bio}).then(() => {
-     return res.json({success: "Successfully updated bio"})
+    if(req.auth.refreshed){
+      return res.json({success: "Success", refreshed: true, token: req.auth.token, expires: req.auth.expires})
+    } else {
+      return res.json({success: "Success"})
+    }
   }).catch(err => {
     console.error(err)
     return res.status(500).json({error: "Failed to update bio"})
@@ -227,7 +239,11 @@ exports.editBio = (req,res) => {
 exports.updatePfp = (req,res) => {
   let image = req.body.url 
   req.userRef.update({profilepic: image}).then(() => {
-    return res.json({success: "Successfully updated bio"})
+    if(req.auth.refreshed){
+      return res.json({success: "Success", refreshed: true, token: req.auth.token, expires: req.auth.expires})
+    } else {
+      return res.json({success: "Success"})
+    }
   }).catch(err => {
     console.error(err)
     return res.status(500).json({error: "Failed to update pfp"})
@@ -261,5 +277,46 @@ exports.getUsers = (req,res) => {
       users.push(user.data())
     })
     return res.json({users})
+  })
+}
+
+exports.markNotificationsRead = (req,res) => {
+  let batch = db.batch()
+  req.body.forEach(id => {
+    const notification = db.doc(`/notifications/${id}`)
+    batch.update(notification, {read: true})
+  })
+  batch.commit().then(() => {
+    if(req.auth.refreshed){
+      return res.json({success: "Success", refreshed: true, token: req.auth.token, expires: req.auth.expires})
+    } else {
+      return res.json({success: "Success"})
+    }
+  }).catch(err => {
+    console.error(err)
+    return res.status(500).json({error: "Error committing batch."})
+  })
+}
+
+exports.sendNotification = (req,res) => {
+  let notification = {
+    createdAt: new Date().toISOString(),
+    type: "send",
+    read: false,
+    postId: req.body.spotifyURL,
+    sender: req.user.id,
+    senderName: req.user.username,
+    receiver: req.body.receiveId,
+    pic: req.body.spotifyPic
+  }
+  db.collection('notifications').add(notification).then(() => {
+    if(req.auth.refreshed){
+      return res.json({success: "Success", refreshed: true, token: req.auth.token, expires: req.auth.expires})
+    } else {
+      return res.json({success: "Success"})
+    }
+  }).catch(err => {
+    console.error(err)
+    return res.status(500).json({error: "Error adding notification"})
   })
 }

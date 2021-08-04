@@ -1,4 +1,4 @@
-import { USERLOADING, SETUSERDATA, CLEARUSERDATA, UPDATEBIO, UPDATEFAVORITES, UPDATEPFP, LIKEPOST, UNLIKEPOST} from '../types'
+import { USERLOADING, SETUSERDATA, CLEARUSERDATA, UPDATEBIO, UPDATEFAVORITES, UPDATEPFP, LIKEPOST, UNLIKEPOST, MARKNOTIFICATIONSREAD} from '../types'
 
 const initialState = {
     profilepic: null,
@@ -11,7 +11,8 @@ const initialState = {
     username: null,
     id: null,
     loading: false,
-    loaded: false
+    loaded: false,
+    notifications: null
 }
 
 export default function(state = initialState, action){
@@ -39,6 +40,9 @@ export default function(state = initialState, action){
             }
 
             return {...state, likes}
+        case MARKNOTIFICATIONSREAD:
+            state.notifications.forEach(notification => notification.read = true)
+            return {...state}
         default:
             return state
     }

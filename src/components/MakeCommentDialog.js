@@ -34,7 +34,7 @@ class MakeCommentDialog extends Component {
         const newComment = {
             body: this.state.commentBody,
             postId: this.props.element.postId,
-            authorId: this.props.user.id,
+            authorid: this.props.user.id,
             username: this.props.user.username,
             pfp: this.props.user.profilepic
         }
