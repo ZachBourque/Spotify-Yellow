@@ -2,6 +2,7 @@ import React, { Component, useState, useEffect } from 'react'
 import { connect } from 'react-redux'
 import axios from 'axios';
 import SmallPost from '../components/SmallPost'
+import SearchUsers from '../components/SearchUsersDialog'
 import { Grid } from '@material-ui/core';
 import { getFeedData, reloadFeedData } from "../redux/actions/dataActions"
 import { IconButton } from '@material-ui/core'
@@ -22,6 +23,7 @@ export class Homepage extends Component {
         postList: null,
         isLoading: true,
         open: false,
+        searchUsersState: false,
     }
 
     componentDidMount() {
@@ -44,14 +46,24 @@ export class Homepage extends Component {
         this.setState({ open: false });
     };
 
+    openSearchUsers = () => {
+        this.setState({ searchUsersState: true })
+    }
+
+    closeSearchUsers = () => {
+        this.setState({ searchUsersState: false })
+    }
+
     render() {
         return (
             <>
+
                 <Grid
                     container
                     spacing={3}
                     align="center"
                 >
+
                     {
                         this.props.data.loaded && this.props.data.current.map(post => {
                             return (
@@ -68,6 +80,12 @@ export class Homepage extends Component {
                         <PostAddIcon />
                     </IconButton>
                 </div>
+                <Button variant="contained" onClick={this.openSearchUsers} ></Button>
+             <SearchUsers
+                    open={this.state.searchUsersState}
+                    onClose={this.closeSearchUsers}
+                    auth={this.props.auth}
+                />
                 <Dialog onClose={this.handleClose} aria-labelledby="customized-dialog-title" open={this.state.open} maxWidth="md" fullWidth>
 
                     <DialogContent >
