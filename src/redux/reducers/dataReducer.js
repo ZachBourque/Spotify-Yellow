@@ -1,4 +1,4 @@
-import { DATALOADING, SETCURRENT, SETSEARCHDATA, SETFEEDDATA, DELETEPOST, EDITPOST, SETCURRENTPOST, SETCOMMENTLIST, LIKEPOST, UNLIKEPOST } from '../types'
+import { DATALOADING, SETCURRENT, SETSEARCHDATA, SETFEEDDATA, DELETEPOST, EDITPOST, SETCURRENTPOST, SETCOMMENTLIST, LIKEPOST, UNLIKEPOST, DELETECOMMENT } from '../types'
 const initialState = {
 	feed: [],
 	current: [],
@@ -22,8 +22,10 @@ export default function(state = initialState, action){
 		case SETCOMMENTLIST:
 			let newCommentList = [...state.currentPost.comments]
 			newCommentList.push(action.payload.newComment)
-			state.currentPost.comments = newCommentList
+			state.current[0].comments = newCommentList
 			return {...state}
+		case DELETECOMMENT:
+			return {...state, feed: state.current[0].comments.filter(a => a.id !== action.payload.id)}
 		case LIKEPOST: 
 			let likeidx = state.current.findIndex(post => post.postId === action.payload.postId)
 			state.current[likeidx] = {...state.current[likeidx], likeCount: state.current[likeidx].likeCount + 1}

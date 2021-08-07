@@ -2,12 +2,17 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, DialogContentText} from '@material-ui/core'
 import Delete from '@material-ui/icons/Delete'
+import { deletePost, deleteComment } from '../redux/actions/dataActions'
 
-export class DeletePostDialog extends Component {
+class DeletePostDialog extends Component {
 
 
     state = {
         element: this.props.element,
+    }
+
+    componentDidMount() {
+        this.setState({deletingFunction: this.props.comment ? this.props.deleteComment : this.props.deletePost})        
     }
 
     render() {
@@ -19,10 +24,10 @@ export class DeletePostDialog extends Component {
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
         >
-            <DialogTitle id="alert-dialog-title">{"Are you sure you want to delete this post?"}</DialogTitle>
+            <DialogTitle id="alert-dialog-title">Are you sure you want to delete this {this.props.comment ? 'comment' : 'post'}?</DialogTitle>
             <DialogContent>
                 <DialogContentText id="alert-dialog-description">
-                    Once this post is deleted, it cannot be recovered.
+                    Once this {this.props.comment ? 'comment' : 'post'} is deleted, it cannot be recovered.
                 </DialogContentText>
             </DialogContent>
             <DialogActions>
@@ -32,7 +37,7 @@ export class DeletePostDialog extends Component {
                 <Button
                     variant="contained"
                     color="secondary"
-                    onClick={() => {this.props.deletePost(this.state.element.postId, token, expires, rtoken); this.props.history.push(`/`)}}
+                    onClick={() => {this.state.deletingFunction(this.state.element.postId || this.state.element.id, token, expires, rtoken);}}
                     startIcon={<Delete />}
                 >
                     Delete
@@ -48,7 +53,8 @@ const mapStateToProps = (state) => ({
 })
 
 const mapActionsToProps = {
-    
+    deletePost,
+    deleteComment
 }
 
 export default connect(mapStateToProps, mapActionsToProps)(DeletePostDialog)
