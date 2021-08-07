@@ -230,31 +230,31 @@ exports.editComment = (req, res) => {
 }
 
 exports.deleteComment = (req, res) => {
-   db.doc(`/posts/${req.params.postId}`).get().then(doc => {
+   db.doc(`/comments/${req.params.commentId}`).get().then(doc => {
     if (!doc.exists) {
-      return res.status(404).json({ error: "Could not find post." })
+      return res.status(404).json({ error: "Could not find comment." })
     }
-    let post = doc.data()
-    if (post.authorid === req.user.id) {
+    let comment = doc.data()
+    if (comment.authorid === req.user.id) {
       doc.ref.delete().then(() => {
-        db.collection('posts').doc(newComment.postId).update({commentCount: admin.firestore.FieldValue.increment(-1)})
+        db.collection('posts').doc(comment.postId).update({commentCount: admin.firestore.FieldValue.increment(-1)})
         if (req.auth.refreshed) {
-          return res.json({ success: "Successfully deleted post", refreshed: true, token: req.auth.token, expires: req.auth.expires })
+          return res.json({ success: "Successfully deleted comment", refreshed: true, token: req.auth.token, expires: req.auth.expires })
         } else {
-          return res.json({ success: "Successfully deleted post" })
+          return res.json({ success: "Successfully deleted comment" })
         }
         // delete comments and likes and stuff
       }).catch(err => {
         console.error(err)
-        return res.status(500).json({ error: "Error deleting post" })
+        return res.status(500).json({ error: "Error deleting Comment" })
       })
     } else {
-      console.log(post.authorid, req.user.id)
-      return res.status(400).json({ error: "Post isnt yours lol" })
+      console.log(comment.authorid, req.user.id)
+      return res.status(400).json({ error: "Comment isnt yours lol" })
     }
   }).catch(err => {
     console.error(err)
-    return res.status(500).json({ error: "Could not get post" })
+    return res.status(500).json({ error: "Could not get comment" })
   })
 }
 

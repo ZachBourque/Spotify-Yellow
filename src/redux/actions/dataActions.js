@@ -1,4 +1,4 @@
-import { DATALOADING, SETFEEDDATA, DELETEPOST, EDITPOST, REFRESH_TOKEN, SETCOMMENTLIST, LIKEPOST, UNLIKEPOST, SETCURRENT} from '../types'
+import { DATALOADING, SETFEEDDATA, DELETEPOST, EDITPOST, REFRESH_TOKEN, SETCOMMENTLIST, LIKEPOST, UNLIKEPOST, SETCURRENT, DELETECOMMENT} from '../types'
 import axios from "axios"
 
 export const getFeedData = () => (dispatch) => {
@@ -50,6 +50,18 @@ export const deletePost = (postId, token, expires, rtoken) => (dispatch) => {
 	})
 }
 
+export const deleteComment = (commentId, token, expires, rtoken) => (dispatch) => {
+	axios.delete(`/deleteComment/${commentId}`, { headers: { token, expires, rtoken } }).then(res => {
+		if (res.data.refreshed) {
+			let lsdata = JSON.parse(localStorage.getItem("data"))
+			lsdata.token = res.data.token
+			lsdata.expires = res.data.expires
+			localStorage.setItem("data", JSON.stringify(lsdata))
+			dispatch({ type: REFRESH_TOKEN, payload: { token: lsdata.token, expires: lsdata.expires } })
+		}
+		dispatch({ type: DELETECOMMENT, payload: { id: commentId } })
+	})
+}
 
 export const makeComment = (postId, token, expires, rtoken, newComment) => (dispatch) => {
 
