@@ -48,7 +48,7 @@ class MakeCommentDialog extends Component {
     render() {
         return (
             <Dialog open={this.props.makeCommentState} onClose={this.props.onClose} maxWidth='xs' fullWidth>
-                <DialogTitle id="">Make Comment:</DialogTitle>
+                <DialogTitle id="" style={{backgroundColor: "#A88F5D"}}>Make Comment:</DialogTitle>
                 {this.state.emptyBodyBoolean && <Typography color="error" variant="body1" align="center">Comment must not be empty</Typography>}
                 <DialogContent>
                     <TextField

@@ -114,11 +114,6 @@ export class Post extends Component {
         this.setState({ deletePostStatus: false })
     }
 
-    deletePost(postId) {
-        const { token, expires, rtoken } = this.props.auth;
-        this.props.deletePost(postId, token, expires, rtoken)
-    }
-
     render() {
         const { classes } = this.props
         const element = this.props.data.current[0]
