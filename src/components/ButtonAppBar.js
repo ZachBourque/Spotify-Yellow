@@ -23,8 +23,6 @@ import NotificationsIcon from '@material-ui/icons/Notifications';
 import Badge from '@material-ui/core/Badge';
 import Avatar from '@material-ui/core/Avatar'
 import Notification from "./Notification"
-import Card from "@material-ui/core/Card"
-import CardHeader from "@material-ui/core/CardHeader"
 
 const useStyles = makeStyles((theme) => ({
   grow: {
@@ -73,7 +71,7 @@ const useStyles = makeStyles((theme) => ({
     transition: theme.transitions.create('width'),
     width: '100%',
     [theme.breakpoints.up('md')]: {
-      width: '20ch',
+      width: '50ch',
     },
   },
   sectionMobile: {
@@ -200,6 +198,7 @@ function PrimarySearchAppBar(props) {
           <Typography className={classes.title} variant="h6" noWrap>
             <a onClick={() => props.history.push("/")} style={{cursor: "pointer"}}><span>Spotify Yellow</span></a>
           </Typography>
+      <div className={classes.grow}/>
           <form onSubmit={submitSearch}>
           <div className={classes.search}>
             <div className={classes.searchIcon}>
@@ -241,7 +240,7 @@ function PrimarySearchAppBar(props) {
 
               {auth.loggedIn ? (
                 <IconButton edge="end" aria-label="account of current user" aria-controls={menuId} aria-haspopup="true" onClick={handleProfileMenuOpen} color="inherit">
-                {!user.loaded ? <Avatar src={localStorage.getItem("cachepfp")} width="50" /> : <Avatar src={user.profilepic} width="50"/>}
+                {!user.loaded ? <Avatar src={localStorage.getItem("cachepfp")} width="50" /> : <Avatar src={user.profilepic} width="50" />}
                 </IconButton>
               ) : 
               (<a href={url}>

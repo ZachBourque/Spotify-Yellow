@@ -81,8 +81,15 @@ exports.createNotificationOnComment = functions.firestore.document('comments/{id
 	}).catch(err => console.error(err))
 })
 
-exports.onPostDelete = functions.firestore.document('comments/{id}').onDelete((snapshot, context) => {
-	const postId = context.params.postId
+exports.deleteNotificationsOnCommentDelete = functions.firestore.document('comments/{id}').onDelete(snapshot => {
+	return db.doc(`/comments/${snapshot.id}`).delete().catch(err => {
+		console.error(err)
+		return
+	})
+})
+
+exports.onPostDelete = functions.firestore.document('posts/{id}').onDelete((snapshot, context) => {
+	const postId = snapshot.data().postId
 	const batch = db.batch()
 	return db.collection('likes').where('postId', '==', postId).get().then(data => {
 		data.forEach(doc => {
@@ -101,6 +108,30 @@ exports.onPostDelete = functions.firestore.document('comments/{id}').onDelete((s
 		return batch.commit()
 	}).catch(err => console.error(err))
 
+})
+
+exports.onUserImageChange = functions.firestore.document('users/{id}').onUpdate(change => {
+	const pfp = change.after.data().profilepic
+	const id = change.after.data().id
+	if(change.before.data().profilepic !== pfp){
+		const batch = db.batch()
+		return db.collection('posts').where('authorid', '==', id).get().then(data => {
+			console.log(data.size)
+			data.forEach(doc => {
+				batch.update(db.doc(`/posts/${doc.id}`), {pfp})
+			})
+			db.collection('comments').where('authorid', '==', id).get().then(data2 => {
+				console.log(data2.size)
+				data2.forEach(doc => {
+					batch.update(db.doc(`/comments/${doc.id}`), {pfp})
+				})
+				console.log('committing')
+				batch.commit()
+			})
+		})
+	} else {
+		console.log("no change", pfp, change.before.data().profilepic)
+	}
 })
 
 exports.api = functions.https.onRequest(app)

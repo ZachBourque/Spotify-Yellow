@@ -230,7 +230,7 @@ exports.editComment = (req, res) => {
 }
 
 exports.deleteComment = (req, res) => {
-   db.doc(`/posts/${req.params.postId}`).get().then(doc => {
+   db.doc(`/posts/${req.params.commentId}`).get().then(doc => {
     if (!doc.exists) {
       return res.status(404).json({ error: "Could not find post." })
     }

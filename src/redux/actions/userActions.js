@@ -12,6 +12,9 @@ const getData = (token, expires, rtoken, dispatch) => {
 			localStorage.setItem("data", JSON.stringify(lsdata))
 			dispatch({type: REFRESH_TOKEN, payload: {token: lsdata.token, expires: lsdata.expires}})
 		}
+		if(localStorage.getItem('cachepfp') !== res.data.user.profilepic){
+			localStorage.setItem('cachepfp', res.data.user.profilepic)
+		}
 		dispatch({type: SETUSERDATA, payload: res.data.user})
 	}).catch(err => {
 		console.log(err?.response?.data?.error)
