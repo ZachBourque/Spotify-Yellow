@@ -60,6 +60,8 @@ export const deleteComment = (commentId, token, expires, rtoken) => (dispatch) =
 			dispatch({ type: REFRESH_TOKEN, payload: { token: lsdata.token, expires: lsdata.expires } })
 		}
 		dispatch({ type: DELETECOMMENT, payload: { id: commentId } })
+	}).catch(e => {
+		console.log(e)
 	})
 }
 

@@ -11,8 +11,7 @@ export class Comment extends Component {
     }
 
     componentDidMount() {
-        
-        console.log(this.props.element)
+
     }
 
     userRe = (id) => {
