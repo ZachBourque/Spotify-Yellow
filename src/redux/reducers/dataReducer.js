@@ -25,7 +25,9 @@ export default function(state = initialState, action){
 			state.current[0].comments = newCommentList
 			return {...state}
 		case DELETECOMMENT:
-			return {...state, feed: state.current[0].comments.filter(a => a.id !== action.payload.id)}
+			let newCurrent = state.current[0]
+			newCurrent.comments = newCurrent.comments.filter(a => a.id !== action.payload.id)
+			return {...state, current: state.current.comments.filter(a => {})}
 		case LIKEPOST: 
 			let likeidx = state.current.findIndex(post => post.postId === action.payload.postId)
 			state.current[likeidx] = {...state.current[likeidx], likeCount: state.current[likeidx].likeCount + 1}
