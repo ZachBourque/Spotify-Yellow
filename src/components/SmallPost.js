@@ -25,6 +25,9 @@ import { thisExpression } from '@babel/types';
 import { deletePost, editPost } from '../redux/actions/dataActions'
 import { reloadUserProfile } from '../redux/actions/userActions'
 import LikeButton from "../components/LikeButton"
+import SendMusicDialog from './SendMusicDialog';
+import { EditPostDialog } from './EditPostDialog';
+import DeletePostDialog from './DeletePostDialog';
 
 
 const styles = makeStyles(theme => ({
@@ -43,6 +46,7 @@ export class Post extends Component {
         makePostStatus: false,
         deletePostStatus: false,
         editPostStatus: false,
+        sendMusicStatus: false,
         newRating: this.props.element.rating,
         newTitle: this.props.element.title,
         newBody: this.props.element.body,
@@ -136,6 +140,14 @@ export class Post extends Component {
         this.setState({ deletePostStatus: false })
     }
 
+    openSendMusic() {
+        this.setState({ sendMusicStatus: true })
+    }
+
+    closeSendMusic = () => {
+        this.setState({ sendMusicStatus: false })
+    }
+
     deletePost(postId) {
         const { token, expires, rtoken } = this.props.auth;
         this.props.deletePost(postId, token, expires, rtoken)
@@ -156,7 +168,6 @@ export class Post extends Component {
     render() {
         let { classes } = this.props
         let { element } = this.props
-        console.log(element)
         return (
             <>
                 <Card style={{ backgroundColor: "#4d4d4d" }} align="center">
@@ -177,6 +188,7 @@ export class Post extends Component {
                                     onClose={this.handleClose}
                                 >
                                     <MenuItem onClick={() => { this.handleClose(); this.openMakePost(); }}>Make Post On Topic</MenuItem>
+                                    <MenuItem onClick={() => { this.handleClose(); this.openSendMusic(); }}>Recommend Topic To Someone</MenuItem>
                                     <MenuItem onClick={() => { this.handleClose(); this.sharePost(); }}>Share</MenuItem>
                                     {element.authorid == this.props.user.id && <MenuItem onClick={() => { this.handleClose(); this.openEditPost(); }}><Create />Edit Post</MenuItem>}
                                     {element.authorid == this.props.user.id && <MenuItem onClick={() => { this.handleClose(); this.openDeletePost(); }} style={{ color: 'red' }}><Delete />Delete Post</MenuItem>}
@@ -240,8 +252,8 @@ export class Post extends Component {
                         </div>
                         <Divider style={{ margin: 10 }} />
                         <CardActions disableSpacing>
-                               <LikeButton postId={element.postId}/> 
-                               {element.likeCount}
+                            <LikeButton postId={element.postId} />
+                            {element.likeCount}
                             <IconButton onClick={() => this.postRe(element.postId)}>
                                 <Comment />
                             </IconButton>
@@ -277,113 +289,37 @@ export class Post extends Component {
                 </Dialog>
 
                 {/* DeletePost Dialog Box */}
-                <Dialog
+                <DeletePostDialog
+                    element={element}
                     open={this.state.deletePostStatus}
                     onClose={this.closeDeletePost}
-                    aria-labelledby="alert-dialog-title"
-                    aria-describedby="alert-dialog-description"
-                >
-                    <DialogTitle id="alert-dialog-title">{"Are you sure you want to delete this post?"}</DialogTitle>
-                    <DialogContent>
-                        <DialogContentText id="alert-dialog-description">
-                            Once this post is deleted, it cannot be recovered.
-                        </DialogContentText>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={this.closeDeletePost} variant="outlined">
-                            Cancel
-                        </Button>
-                        <Button
-                            variant="contained"
-                            color="secondary"
-                            onClick={() => this.deletePost(element.postId)}
-                            startIcon={<Delete />}
-                        >
-                            Delete
-                        </Button>
-                    </DialogActions>
-                </Dialog>
-
+                    auth={this.props.auth}
+                    deletePost={this.props.deletePost}
+                    history={this.props.history}
+                />
                 {/* EditPost Dialog Box */}
-                <Dialog
+                <EditPostDialog
+                    element={element}
                     open={this.state.editPostStatus}
                     onClose={this.closeEditPost}
-                    aria-labelledby="alert-dialog-title"
-                    aria-describedby="alert-dialog-description"
-                    maxWidth="sm" fullWidth
-                >
-                    <DialogTitle id="alert-dialog-title">Edit Post:</DialogTitle>
-                    <DialogContent>
-
-                        <TextField
-                            id="newTitle"
-                            label="Post Title"
-                            rows={1}
-                            fullWidth
-                            variant="outlined"
-                            defaultValue={element.title}
-                            onChange={this.handleTitleChange}
-                        />
-
-                        <TextField
-                            id="newBody"
-                            label="Post Body"
-                            multiline
-                            rows={6}
-                            fullWidth
-                            variant="outlined"
-                            defaultValue={element.body}
-                            onChange={this.handleBodyChange}
-                            margin="dense"
-                        />
-                        <Grid container direction="row" justify="center">
-                            <Grid item>
-                                <Switch
-                                    checked={this.state.switchState}
-                                    onChange={this.handleSwitchChange}
-                                    name="useNumber"
-                                    inputProps={{ 'aria-label': 'secondary checkbox' }}
-                                />
-                            </Grid>
-                        </Grid>
-                        {!this.state.switchState ? '' : (
-                            <>
-                                <Grid container direction="row" justify="center">
-                                    <Grid item>
-                                        <img className={classes.rating} src={this.imagesArray[this.state.newRating]} style={{ width: '200px', height: '200px' }} />
-                                    </Grid>
-                                </Grid>
-                                <Grid container direction="row" justify="center">
-                                    <Grid item>
-                                        <IconButton aria-label="minus" onClick={() => this.setState({ newRating: this.state.newRating !== 0 ? this.state.newRating - 1 : this.state.newRating })}>
-                                            <Remove />
-                                        </IconButton>
-                                    </Grid>
-                                    <Grid item>
-                                        <IconButton aria-label="plus" onClick={() => this.setState({ newRating: this.state.newRating !== 10 ? this.state.newRating + 1 : this.state.newRating })}>
-                                            <Add />
-                                        </IconButton>
-                                    </Grid>
-
-                                </Grid>
-                            </>
-                        )}
-
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={this.closeEditPost} variant="outlined">
-                            Cancel
-                        </Button>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            endIcon={<Send />}
-                            onClick={() => this.editPost(element.postId, this.state.newTitle, this.state.newBody, this.state.newRating > -1 && this.state.switchState ? this.state.newRating : null)}
-                        >
-                            Confirm
-                        </Button>
-                    </DialogActions>
-                </Dialog>
+                    auth={this.props.auth}
+                    editPost={this.props.editPost}
+                    updateParent={this.updateElement}
+                />
+                <SendMusicDialog
+                    element={{
+                        type: element.type,
+                        id: element.spotifyid,
+                        artistName: element.artist,
+                        albumName: element.album,
+                        songName: element.track,
+                        image: element.pic,
+                        url: `https://open.spotify.com/${element.type}/${element.spotifyid}`
+                    }}
+                    open={this.state.sendMusicStatus}
+                    onClose={this.closeSendMusic}
+                    auth={this.props.auth}
+                />
             </>
         )
     }

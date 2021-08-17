@@ -76,6 +76,9 @@ export const makeComment = (postId, token, expires, rtoken, newComment) => (disp
 				localStorage.setItem("data", JSON.stringify(lsdata))
 				dispatch({ type: REFRESH_TOKEN, payload: { token: lsdata.token, expires: lsdata.expires } })
 			}
+			console.log('|||||||\n')
+			console.log(res.data)
+			console.log('\n|||||||')
 			dispatch({ type: SETCOMMENTLIST, payload: { newComment: res.data.newComment } })
 		})
 		.catch(e => {

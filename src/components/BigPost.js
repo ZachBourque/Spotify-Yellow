@@ -114,10 +114,18 @@ export class Post extends Component {
         this.setState({ deletePostStatus: false })
     }
 
+    openSendMusic() {
+        this.setState({ sendMusicStatus: true })
+    }
+
+    closeSendMusic = () => {
+        this.setState({ sendMusicStatus: false })
+    }
+
     render() {
         const { classes } = this.props
         const element = this.props.data.current[0]
-        console.log(this.props.data.current[0], this.state.isLoading)
+        console.log(element)
         return (this.state.isLoading ? '' :
             <>
                 <Grid container justify="center">
@@ -140,6 +148,7 @@ export class Post extends Component {
                                             onClose={this.handleClose}
                                         >
                                             <MenuItem onClick={() => { this.handleClose(); this.openMakePost(); }}>Make Post On Topic</MenuItem>
+                                            <MenuItem onClick={() => { this.closeSendMusic(); this.openSendMusic(); }}>Recommend Topic To Someone</MenuItem>
                                             <MenuItem onClick={() => { this.handleClose(); this.sharePost(); }}>Share</MenuItem>
                                             {element.authorid == this.props.user.id && <MenuItem onClick={() => { this.handleClose(); this.openEditPost(); }}><Create />Edit Post</MenuItem>}
                                             {element.authorid == this.props.user.id && <MenuItem onClick={() => { this.handleClose(); this.openDeletePost(); }} style={{ color: 'red' }}><Delete />Delete Post</MenuItem>}
@@ -244,6 +253,7 @@ export class Post extends Component {
                                     albumName: element.album,
                                     songName: element.track,
                                     image: element.pic,
+                                    url: `https://open.spotify.com/${element.type}/${element.spotifyid}`
                                 }} />
                             </Grid>
                         </Grid>

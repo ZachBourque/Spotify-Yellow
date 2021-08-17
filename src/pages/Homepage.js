@@ -16,6 +16,7 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import MakePost from '../components/MakePost';
 import UserCard from "../components/UserCard"
+import SendMusicDialog from '../components/SendMusicDialog';
 
 export class Homepage extends Component {
 
@@ -81,10 +82,9 @@ export class Homepage extends Component {
                     </IconButton>
                 </div>
                 <Button variant="contained" onClick={this.openSearchUsers} ></Button>
-             <SearchUsers
+             <SendMusicDialog
                     open={this.state.searchUsersState}
                     onClose={this.closeSearchUsers}
-                    auth={this.props.auth}
                 />
                 <Dialog onClose={this.handleClose} aria-labelledby="customized-dialog-title" open={this.state.open} maxWidth="md" fullWidth>
 

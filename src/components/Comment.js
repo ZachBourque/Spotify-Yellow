@@ -37,6 +37,8 @@ export class Comment extends Component {
     render() {
         const { element } = this.props
         return (
+
+            
             <Card>
                 <CardHeader
                     avatar={<Avatar src={element.pfp}></Avatar>}
@@ -45,7 +47,7 @@ export class Comment extends Component {
                             {element.username}
                         </Typography>
                     }
-                    action={
+                    action={element.authorid == this.props.user.id &&
                         <>
                             <IconButton aria-label="settings" aria-controls="simple-menu" aria-haspopup="true" onClick={this.handleClick}>
                                 <MoreVert />
@@ -57,10 +59,8 @@ export class Comment extends Component {
                                 open={Boolean(this.state.menuOpen)}
                                 onClose={this.handleClose}
                             >
-                                <MenuItem onClick={() => { this.handleClose(); this.openMakePost(); }}>Make Post On Topic</MenuItem>
                                 <MenuItem onClick={() => { this.handleClose(); this.sharePost(); }}>Share</MenuItem>
-                                {element.authorid == this.props.user.id && <MenuItem onClick={() => { this.handleClose(); this.openEditPost(); }}><Create />Edit Post</MenuItem>}
-                                {element.authorid == this.props.user.id && <MenuItem onClick={() => { this.handleClose(); this.openDeletePost(); }} style={{ color: 'red' }}><Delete />Delete Post</MenuItem>}
+                                {<MenuItem onClick={() => { this.handleClose(); this.openDeletePost(); }} style={{ color: 'red' }}><Delete />Delete Comment</MenuItem>}
                             </Menu>
                         </>
                     }
@@ -92,6 +92,7 @@ export class Comment extends Component {
                     history={this.props.history}
                     comment
                 />
+
             </Card>
         )
     }
