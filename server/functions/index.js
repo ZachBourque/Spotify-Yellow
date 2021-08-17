@@ -82,7 +82,7 @@ exports.createNotificationOnComment = functions.firestore.document('comments/{id
 })
 
 exports.deleteNotificationsOnCommentDelete = functions.firestore.document('comments/{id}').onDelete(snapshot => {
-	return db.doc(`/comments/${snapshot.id}`).delete().catch(err => {
+	return db.doc(`/notifications/${snapshot.id}`).delete().catch(err => {
 		console.error(err)
 		return
 	})

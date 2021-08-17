@@ -10,7 +10,7 @@ function UserCard(props) {
 	let history = useHistory();
 	let { user } = props
 	return (
-		<Card onClick={() => history.push(`/profile=${user.id}`)} style={{ width: props.width ? props.width : 325, cursor: "pointer" }}>
+		<Card onClick={props.onClick ? props.onClick : () => history.push(`/profile=${user.id}`)} style={{ width: props.width ? props.width : 325, cursor: "pointer", color: props.selected && 'blue' }}>
 			<CardHeader
 				avatar={
 					<Avatar src={user.profilepic} />
