@@ -8,7 +8,6 @@ import IconButton from "@material-ui/core/IconButton"
 
 class LikeButton extends React.Component {
 	liked = () => {
-		console.log(this.props.postId)
 		return this.props.user.likes && this.props.user.likes.find(like => like?.postId === this.props?.postId)
 	}
 

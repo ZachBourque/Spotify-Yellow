@@ -1,22 +1,22 @@
-import { DATALOADING, SETFEEDDATA, DELETEPOST, EDITPOST, REFRESH_TOKEN, SETCOMMENTLIST, LIKEPOST, UNLIKEPOST, SETCURRENT, DELETECOMMENT} from '../types'
+import { DATALOADING, DELETEPOST, EDITPOST, REFRESH_TOKEN, SETCOMMENTLIST, LIKEPOST, UNLIKEPOST, SETPOSTS, DELETECOMMENT} from '../types'
 import axios from "axios"
 
 export const getFeedData = () => (dispatch) => {
 	dispatch({ type: DATALOADING })
 	axios.get('/allPosts').then(res => {
-		dispatch({ type: SETFEEDDATA, payload: res.data })
+		dispatch({ type: SETPOSTS, payload: res.data })
 	})
 
 }
 
 export const reloadFeedData = () => (dispatch) => {
 	axios.get('/allPosts').then(res => {
-		dispatch({ type: SETFEEDDATA, payload: res.data })
+		dispatch({ type: SETPOSTS, payload: res.data })
 	})
 }
 
 export const setCurrent = (arr) => (dispatch) => {
-	dispatch({type: SETCURRENT, payload: arr})
+	dispatch({type: SETPOSTS, payload: arr})
 }
 
 export const setDataLoading = () => (dispatch) => {
@@ -89,7 +89,7 @@ export const setCurrentPost = (postId) => (dispatch) => {
 		.then(res => {
 			const postData = res.data.post
 			postData.postId = postId
-			dispatch({type: SETCURRENT, payload: [postData]})
+			dispatch({type: SETPOSTS, payload: [postData]})
 		})
 	}
 

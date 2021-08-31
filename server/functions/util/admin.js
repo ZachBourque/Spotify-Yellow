@@ -67,4 +67,12 @@ const validateUser = (req,res,next) => {
 
 }
 
-module.exports = { client_secret, db, admin, validateUser}
+const Return = (req,res,other) => {
+  if (req.auth.refreshed) {
+    return res.json({ success: "Success", refreshed: true, token: req.auth.token, expires: req.auth.expires, ...other})
+  } else {
+    return res.json({ success: "Success", ...other})
+  }
+}
+
+module.exports = { client_secret, db, admin, validateUser, Return}
