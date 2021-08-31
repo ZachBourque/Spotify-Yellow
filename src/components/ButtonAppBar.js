@@ -113,8 +113,7 @@ function PrimarySearchAppBar(props) {
   const [notiEl, setNotiEl] = React.useState(null)
   const isNotiMenuOpen = Boolean(notiEl)
   const handleNotiMenuOpen = (event) => {
-    let notRead = props.user.notifications.filter(notification => !notification.read)
-    console.log(notRead)
+    let notRead = props.user.notifications ? props.user.notifications.filter(notification => !notification.read) : []
     if(notRead.length > 0){
       let ids = []
       notRead.forEach(notification => ids.push(notification.notificationId))
@@ -159,8 +158,8 @@ function PrimarySearchAppBar(props) {
     transformOrigin={{ vertical: 'top', horizontal: 'right' }}
     open={isNotiMenuOpen}
     onClose={handleNotiMenuClose}>
-      {props?.user?.notifications?.length > 0 ? props?.user?.notifications?.map(notification => {
-        return <MenuItem><Notification notification={notification}/></MenuItem>
+      {props?.user?.notifications?.length > 0 ? props?.user?.notifications?.map((notification,idx) => {
+        return <MenuItem key={idx}><Notification notification={notification}/></MenuItem>
       }) : <Typography variant="h6">You don't have any notifications.</Typography>}
     </Menu>
   )

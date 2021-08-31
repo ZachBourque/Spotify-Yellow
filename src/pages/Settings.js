@@ -153,7 +153,7 @@ const Settings = (props) => {
 		<h2>Settings!</h2>
 		<Grid container direction="row" >
 			<Grid item>
-			<img src={pfp} alt="cantfind" width="200"/>
+			<img src={pfp} alt="cantfind" width="100"/>
 			</Grid>
 			<Grid item>
 			<input type="file" id="pfpInput" hidden="hidden" onChange={pfpChange}/>

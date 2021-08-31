@@ -1,51 +1,45 @@
-import React, { Component } from 'react'
-import { connect } from 'react-redux'
-import {
-    Menu, MenuItem, Avatar, Grid, Typography, Divider, Box, CardHeader, CardMedia, CardContent, CardActions, IconButton,
-    Card, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField
-} from '@material-ui/core'
-import clsx from 'clsx';
-import ThumbUpIcon from '@material-ui/icons/ThumbUp';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import MoreVert from '@material-ui/icons/MoreVert';
-import Delete from '@material-ui/icons/Delete';
-import Create from '@material-ui/icons/Create';
-import Zero from '../assets/0.png'
-import One from '../assets/1.png'
-import Two from '../assets/2.png'
-import Three from '../assets/3.png'
-import Four from '../assets/4.png'
-import Five from '../assets/5.png'
-import Six from '../assets/6.png'
-import Seven from '../assets/7.png'
-import Eight from '../assets/8.png'
-import Nine from '../assets/9.png'
-import Ten from '../assets/10.png'
-import withStyles from '@material-ui/core/styles/withStyles'
-import { makeStyles, createMuiTheme } from '@material-ui/core/styles';
-import axios from 'axios';
-import Comment from './Comment'
-import MakePost from './MakePost'
-import CommentIcon from '@material-ui/icons/Comment';
-import $ from 'jquery'
-import { deletePost, editPost, setCurrentPost } from '../redux/actions/dataActions'
-import { reloadUserProfile } from '../redux/actions/userActions'
-import EditPostDialog from './EditPostDialog';
-import DeletePostDialog from './DeletePostDialog';
-import MakeCommentDialog from './MakeCommentDialog';
-import { setCurrent, setDataLoading} from "../redux/actions/dataActions"
+import {Component, Fragment} from "react"
+import {connect} from "react-redux"
+import {Menu, MenuItem, Avatar, Grid, Typography, Divider, Box, CardHeader, CardMedia, CardContent, CardActions, IconButton, Card, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField} from "@material-ui/core"
+import clsx from "clsx"
+import ThumbUpIcon from "@material-ui/icons/ThumbUp"
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore"
+import MoreVert from "@material-ui/icons/MoreVert"
+import Delete from "@material-ui/icons/Delete"
+import Create from "@material-ui/icons/Create"
+import Zero from "../assets/0.png"
+import One from "../assets/1.png"
+import Two from "../assets/2.png"
+import Three from "../assets/3.png"
+import Four from "../assets/4.png"
+import Five from "../assets/5.png"
+import Six from "../assets/6.png"
+import Seven from "../assets/7.png"
+import Eight from "../assets/8.png"
+import Nine from "../assets/9.png"
+import Ten from "../assets/10.png"
+import withStyles from "@material-ui/core/styles/withStyles"
+import {makeStyles, createMuiTheme} from "@material-ui/core/styles"
+import axios from "axios"
+import Comment from "./Comment"
+import MakePost from "./MakePost"
+import CommentIcon from "@material-ui/icons/Comment"
+import $ from "jquery"
+import {deletePost, editPost, setCurrentPost} from "../redux/actions/dataActions"
+import {reloadUserProfile} from "../redux/actions/userActions"
+import EditPostDialog from "./EditPostDialog"
+import DeletePostDialog from "./DeletePostDialog"
+import MakeCommentDialog from "./MakeCommentDialog"
+import {setCurrent, setDataLoading} from "../redux/actions/dataActions"
 import LikeButton from "./LikeButton"
 
 const styles = makeStyles(theme => ({
-
-    header: {
-        backgroundColor: '#FFBB35',
-    }
-
+  header: {
+    backgroundColor: "#FFBB35"
+  }
 }))
 
 export class Post extends Component {
-
     imagesArray = [Zero, One, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten];
 
     state = {
@@ -124,8 +118,7 @@ export class Post extends Component {
 
     render() {
         const { classes } = this.props
-        const element = this.props.data.current[0]
-        console.log(element)
+        const element = this.props.data.posts[0]
         return (this.state.isLoading ? '' :
             <>
                 <Grid container justify="center">
@@ -234,6 +227,7 @@ export class Post extends Component {
                             return <Comment element={element} key={index} history={this.props.history} />
                         })}
                     </Grid>
+                  </Box>
                 </Grid>
                 { /* MakeComment Dialog */}
                 <MakeCommentDialog
@@ -278,22 +272,31 @@ export class Post extends Component {
                     editPost={this.props.editPost}
                     updateParent={this.updateElement}
                 />
-            </>
-        )
-    }
+              </Grid>
+            </Grid>
+          </DialogContent>
+        </Dialog>
+
+        {/* DeletePost Dialog Box */}
+        <DeletePostDialog element={element} open={this.state.deletePostStatus} onClose={this.closeDeletePost} auth={this.props.auth} deletePost={this.props.deletePost} history={this.props.history} />
+
+        <EditPostDialog element={element} open={this.state.editPostStatus} onClose={this.closeEditPost} auth={this.props.auth} editPost={this.props.editPost} updateParent={this.updateElement} />
+      </>
+    )
+  }
 }
 
-const mapStateToProps = (state) => ({
-    user: state.user,
-    auth: state.auth,
-    data: state.data
+const mapStateToProps = state => ({
+  user: state.user,
+  auth: state.auth,
+  data: state.data
 })
 
 const mapActionsToProps = {
-    reloadUserProfile: reloadUserProfile,
-    deletePost,
-    editPost,
-    setCurrentPost
+  reloadUserProfile: reloadUserProfile,
+  deletePost,
+  editPost,
+  setCurrentPost
 }
 
 export default connect(mapStateToProps, mapActionsToProps)(withStyles(styles)(Post))

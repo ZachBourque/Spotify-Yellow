@@ -1,116 +1,110 @@
-import React, { Component } from 'react'
-import { connect } from 'react-redux'
-import { Container, Avatar, Grid, Paper, Typography, Divider, Box, CardHeader, CardMedia, CardContent, CardActions, Collapse, IconButton, Card, Menu, MenuItem, Button } from '@material-ui/core'
-import { FormControl, FormLabel, TextField, Switch } from '@material-ui/core'
-import { red } from '@material-ui/core/colors';
-import $ from 'jquery'
-import axios from 'axios';
-import Zero from '../assets/0.png'
-import One from '../assets/1.png'
-import Two from '../assets/2.png'
-import Three from '../assets/3.png'
-import Four from '../assets/4.png'
-import Five from '../assets/5.png'
-import Six from '../assets/6.png'
-import Seven from '../assets/7.png'
-import Eight from '../assets/8.png'
-import Nine from '../assets/9.png'
-import Ten from '../assets/10.png'
-import withStyles from '@material-ui/core/styles/withStyles'
-import { makeStyles, createMuiTheme } from '@material-ui/core/styles';
-import { ThumbUp, Comment, Share, MoreVert, Create, Delete, PostAddOutlined, Remove, Add, Send } from '@material-ui/icons';
-import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@material-ui/core';
-import MakePost from './MakePost';
-import { thisExpression } from '@babel/types';
-import { deletePost, editPost } from '../redux/actions/dataActions'
-import { reloadUserProfile } from '../redux/actions/userActions'
+import {Component, Fragment} from "react"
+import {connect} from "react-redux"
+import {Container, Avatar, Grid, Paper, Typography, Divider, Box, CardHeader, CardMedia, CardContent, CardActions, Collapse, IconButton, Card, Menu, MenuItem, Button} from "@material-ui/core"
+import {FormControl, FormLabel, TextField, Switch} from "@material-ui/core"
+import {red} from "@material-ui/core/colors"
+import $ from "jquery"
+import axios from "axios"
+import Zero from "../assets/0.png"
+import One from "../assets/1.png"
+import Two from "../assets/2.png"
+import Three from "../assets/3.png"
+import Four from "../assets/4.png"
+import Five from "../assets/5.png"
+import Six from "../assets/6.png"
+import Seven from "../assets/7.png"
+import Eight from "../assets/8.png"
+import Nine from "../assets/9.png"
+import Ten from "../assets/10.png"
+import withStyles from "@material-ui/core/styles/withStyles"
+import {makeStyles, createMuiTheme} from "@material-ui/core/styles"
+import {ThumbUp, Comment, Share, MoreVert, Create, Delete, PostAddOutlined, Remove, Add, Send} from "@material-ui/icons"
+import {Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle} from "@material-ui/core"
+import MakePost from "./MakePost"
+import {thisExpression} from "@babel/types"
+import {deletePost, editPost} from "../redux/actions/dataActions"
+import {reloadUserProfile} from "../redux/actions/userActions"
 import LikeButton from "../components/LikeButton"
 import SendMusicDialog from './SendMusicDialog';
 import { EditPostDialog } from './EditPostDialog';
 import DeletePostDialog from './DeletePostDialog';
 
-
 const styles = makeStyles(theme => ({
-
-    header: {
-        backgroundColor: '#FFBB35',
-    }
-
+  header: {
+    backgroundColor: "#FFBB35"
+  }
 }))
 
 export class Post extends Component {
+  state = {
+    element: this.props.element,
+    menuOpen: null,
+    makePostStatus: false,
+    deletePostStatus: false,
+    editPostStatus: false,
+    newRating: this.props.element.rating,
+    newTitle: this.props.element.title,
+    newBody: this.props.element.body,
+    switchState: this.props.element.rating > -1 ? true : false
+  }
 
-    state = {
-        element: this.props.element,
-        menuOpen: null,
-        makePostStatus: false,
-        deletePostStatus: false,
-        editPostStatus: false,
-        sendMusicStatus: false,
-        newRating: this.props.element.rating,
-        newTitle: this.props.element.title,
-        newBody: this.props.element.body,
-        switchState: this.props.element.rating > -1 ? true : false
+  imagesArray = [Zero, One, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten]
+
+  componentDidMount() {
+    this.setState({element: this.props.element})
+  }
+
+  handleClick = event => {
+    this.setState({menuOpen: event.currentTarget})
+  }
+
+  handleClose = () => {
+    this.setState({menuOpen: null})
+  }
+
+  handleSwitchChange = event => {
+    this.setState({switchState: !this.state.switchState})
+  }
+
+  handleTitleChange = e => {
+    this.setState({newTitle: e.target.value})
+  }
+
+  handleBodyChange = e => {
+    this.setState({newBody: e.target.value})
+  }
+
+  userRe = id => {
+    this.props.history.push(`/profile=${id}`)
+  }
+
+  postRe = (id, comment) => {
+    if (comment) {
+      this.props.history.push(`/post/${id}#comment`)
+    } else {
+      this.props.history.push(`/post/${id}`)
     }
+ }
 
-    imagesArray = [Zero, One, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten];
+  openMakePost() {
+    this.setState({makePostStatus: true})
+  }
 
-    componentDidMount() {
-        this.setState({ element: this.props.element })
-    }
+  closeMakePost = () => {
+    this.setState({makePostStatus: false})
+  }
 
-    handleClick = (event) => {
-        this.setState({ menuOpen: event.currentTarget });
-    };
+  sharePost() {
+    //TODO
+  }
 
-    handleClose = () => {
-        this.setState({ menuOpen: null });
-    };
+  openEditPost() {
+    this.setState({editPostStatus: true})
+  }
 
-    handleSwitchChange = (event) => {
-        this.setState({ switchState: !this.state.switchState });
-    }
-
-    handleTitleChange = (e) => {
-        this.setState({ newTitle: e.target.value })
-    }
-
-    handleBodyChange = (e) => {
-        this.setState({ newBody: e.target.value })
-    }
-
-    userRe = (id) => {
-        this.props.history.push(`/profile=${id}`)
-    }
-
-    postRe = (id, comment) => {
-        if (comment) {
-            this.props.history.push(`/post/${id}#comment`)
-        } else {
-            this.props.history.push(`/post/${id}`)
-        }
-
-    }
-
-    openMakePost() {
-        this.setState({ makePostStatus: true })
-    }
-
-    closeMakePost = () => {
-        this.setState({ makePostStatus: false });
-    };
-
-    sharePost() {
-        //TODO
-    }
-
-    openEditPost() {
-        this.setState({ editPostStatus: true })
-    }
-
-    closeEditPost = () => {
-        this.setState({ editPostStatus: false })
-    }
+  closeEditPost = () => {
+    this.setState({editPostStatus: false})
+  }
 
     editPost(postId, newTitle, newBody, newRating) {
         const { title, body, rating } = this.props.element
@@ -323,18 +317,17 @@ export class Post extends Component {
             </>
         )
     }
-}
+  }
 
-const mapStateToProps = (state) => ({
-    user: state.user,
-    auth: state.auth
+const mapStateToProps = state => ({
+  user: state.user,
+  auth: state.auth
 })
 
 const mapActionsToProps = {
-    reloadUserProfile: reloadUserProfile,
-    deletePost,
-    editPost
+  reloadUserProfile: reloadUserProfile,
+  deletePost,
+  editPost
 }
-
 
 export default connect(mapStateToProps, mapActionsToProps)(withStyles(styles)(Post))

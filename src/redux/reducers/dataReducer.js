@@ -1,7 +1,6 @@
-import { DATALOADING, SETCURRENT, SETSEARCHDATA, SETFEEDDATA, DELETEPOST, EDITPOST, SETCURRENTPOST, SETCOMMENTLIST, LIKEPOST, UNLIKEPOST, DELETECOMMENT } from '../types'
+import { DATALOADING, SETPOSTS, DELETEPOST, EDITPOST, SETCOMMENTLIST, LIKEPOST, UNLIKEPOST, DELETECOMMENT } from '../types'
 const initialState = {
-	feed: [],
-	current: [],
+	posts: [],
 	loading: false,
 	loaded: false
 }
@@ -10,31 +9,28 @@ export default function(state = initialState, action){
     switch(action.type){
 		case DATALOADING:
 			return {...state, loading: true, loaded: false}
-		case SETFEEDDATA:
-			console.log("current")
-			return {...state, feed: action.payload, loading: false, loaded: true, current: action.payload}
+		case SETPOSTS:
+			return {...state, posts: action.payload, loading: false, loaded: true}
 		case DELETEPOST:
 			return {...state, feed: state.feed.filter(a => a.postId !== action.payload.id)}
 		case EDITPOST:
-			let idx = state.current.findIndex(post => post.postId === action.payload.id)
-			state.current[idx] = {...state.current[idx], ...action.payload.changes}
+			let idx = state.posts.findIndex(post => post.postId === action.payload.id)
+			state.posts[idx] = {...state.posts[idx], ...action.payload.changes}
 			return {...state}
 		case SETCOMMENTLIST:
-			state.current[0].comments.push(action.payload.newComment)
+			state.posts[0].comments.push(action.payload.newComment)
 			return {...state}
 		case DELETECOMMENT:
-			state.current[0].comments = state.current[0].comments.filter(a => a.id !== action.payload.id)
-			return {...state,}
+			state.posts[0].comments = state.posts[0].comments.filter(a => a.id !== action.payload.id)
+			return {...state}
 		case LIKEPOST: 
-			let likeidx = state.current.findIndex(post => post.postId === action.payload.postId)
-			state.current[likeidx] = {...state.current[likeidx], likeCount: state.current[likeidx].likeCount + 1}
+			let likeidx = state.posts.findIndex(post => post.postId === action.payload.postId)
+			state.posts[likeidx] = {...state.posts[likeidx], likeCount: state.posts[likeidx].likeCount + 1}
 			return {...state}
 		case UNLIKEPOST:
-			let unlikeidx = state.current.findIndex(post => post.postId === action.payload.postId)
-			state.current[unlikeidx] = {...state.current[unlikeidx], likeCount: state.current[unlikeidx].likeCount - 1}
+			let unlikeidx = state.posts.findIndex(post => post.postId === action.payload.postId)
+			state.posts[unlikeidx] = {...state.posts[unlikeidx], likeCount: state.posts[unlikeidx].likeCount - 1}
 			return {...state}
-		case SETCURRENT:
-			return {...state, current: action.payload, loading: false, loaded: true}
 		default:
 			return state
     }
