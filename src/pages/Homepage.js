@@ -81,7 +81,6 @@ export class Homepage extends Component {
                         <PostAddIcon />
                     </IconButton>
                 </div>
-                <Button variant="contained" onClick={this.openSearchUsers} ></Button>
              <SendMusicDialog
                     open={this.state.searchUsersState}
                     onClose={this.closeSearchUsers}
