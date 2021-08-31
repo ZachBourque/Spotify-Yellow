@@ -98,7 +98,7 @@ exports.deleteNotificationsOnCommentDelete = functions.firestore.document("comme
       console.error(err)
       return
     })
-})
+}
 
 exports.onPostDelete = functions.firestore.document("posts/{id}").onDelete((snapshot, context) => {
   const postId = snapshot.data().postId

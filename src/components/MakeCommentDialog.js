@@ -42,6 +42,7 @@ class MakeCommentDialog extends Component {
         this.props.makeComment(this.props.element.postId, this.props.auth.token, this.props.auth.expires, this.props.auth.rtoken, newComment)
         .then(res => {
             this.props.onClose();
+            this.setState({commentBody: '', emptyBodyBoolean: false})
         })
     }
 

@@ -25,6 +25,9 @@ import {thisExpression} from "@babel/types"
 import {deletePost, editPost} from "../redux/actions/dataActions"
 import {reloadUserProfile} from "../redux/actions/userActions"
 import LikeButton from "../components/LikeButton"
+import SendMusicDialog from './SendMusicDialog';
+import { EditPostDialog } from './EditPostDialog';
+import DeletePostDialog from './DeletePostDialog';
 
 const styles = makeStyles(theme => ({
   header: {
@@ -81,7 +84,7 @@ export class Post extends Component {
     } else {
       this.props.history.push(`/post/${id}`)
     }
-  }
+ }
 
   openMakePost() {
     this.setState({makePostStatus: true})
@@ -103,274 +106,218 @@ export class Post extends Component {
     this.setState({editPostStatus: false})
   }
 
-  editPost(postId, newTitle, newBody, newRating) {
-    const {title, body, rating} = this.props.element
-    const {token, expires, rtoken} = this.props.auth
-    let changes = {}
-    if (title != newTitle) {
-      changes.title = newTitle
+    editPost(postId, newTitle, newBody, newRating) {
+        const { title, body, rating } = this.props.element
+        const { token, expires, rtoken } = this.props.auth;
+        let changes = {}
+        if (title != newTitle) {
+            changes.title = newTitle
+        }
+        if (body != newBody) {
+            changes.body = newBody
+        }
+        if (rating != newRating) {
+            changes.rating = newRating
+        }
+        if (JSON.stringify(changes) === "{}") { return };
+
+        this.props.editPost(postId, { update: changes }, token, expires, rtoken)
+        this.setState({ element: { ...this.state.element, ...changes } })
+        this.closeEditPost()
     }
-    if (body != newBody) {
-      changes.body = newBody
-    }
-    if (rating != newRating) {
-      changes.rating = newRating
-    }
-    if (JSON.stringify(changes) === "{}") {
-      return
+
+    openDeletePost() {
+        this.setState({ deletePostStatus: true })
     }
 
-    this.props.editPost(postId, {update: changes}, token, expires, rtoken)
-    this.setState({element: {...this.state.element, ...changes}})
-    this.closeEditPost()
-  }
-
-  openDeletePost() {
-    this.setState({deletePostStatus: true})
-  }
-
-  closeDeletePost = () => {
-    this.setState({deletePostStatus: false})
-  }
-
-  deletePost(postId) {
-    const {token, expires, rtoken} = this.props.auth
-    this.props.deletePost(postId, token, expires, rtoken)
-  }
-
-  getBodyText(element) {
-    let text = ""
-    if (element.body.split("\n").length > 5) {
-      text = element.body.split("\n").slice(0, 4).join("\n") + "..."
-    } else if (element.body.length > 50) {
-      text = element.body.substring(0, 47) + "..."
-    } else {
-      text = element.body
+    closeDeletePost = () => {
+        this.setState({ deletePostStatus: false })
     }
-    return text
-  }
 
-  render() {
-    let {classes} = this.props
-    let {element} = this.props
-    return (
-      <>
-        <Card style={{backgroundColor: "#4d4d4d"}} align="center">
-          <CardHeader
-            avatar={<Avatar src={element.pfp} style={{cursor: "pointer"}} onClick={() => this.userRe(element.authorid)} />}
-            action={
-              <>
-                <IconButton aria-label="settings" aria-controls="simple-menu" aria-haspopup="true" onClick={this.handleClick}>
-                  <MoreVert />
-                </IconButton>
-                <Menu id="simple-menu" anchorEl={this.state.menuOpen} keepMounted open={Boolean(this.state.menuOpen)} onClose={this.handleClose}>
-                  <MenuItem
-                    onClick={() => {
-                      this.handleClose()
-                      this.openMakePost()
-                    }}
-                  >
-                    Make Post On Topic
-                  </MenuItem>
-                  <MenuItem
-                    onClick={() => {
-                      this.handleClose()
-                      this.sharePost()
-                    }}
-                  >
-                    Share
-                  </MenuItem>
-                  {element.authorid == this.props.user.id && (
-                    <MenuItem
-                      onClick={() => {
-                        this.handleClose()
-                        this.openEditPost()
-                      }}
-                    >
-                      <Create />
-                      Edit Post
-                    </MenuItem>
-                  )}
-                  {element.authorid == this.props.user.id && (
-                    <MenuItem
-                      onClick={() => {
-                        this.handleClose()
-                        this.openDeletePost()
-                      }}
-                      style={{color: "red"}}
-                    >
-                      <Delete />
-                      Delete Post
-                    </MenuItem>
-                  )}
-                </Menu>
-              </>
-            }
-            title={
-              <Typography variant="body1" style={{cursor: "pointer", width: "fit-content"}} onClick={() => this.userRe(element.authorid)}>
-                {element.username}
-              </Typography>
-            }
-            style={{backgroundColor: "#D99E2A"}}
-          />
-          {/* Main Content */}
-          <CardContent>
-            <div onClick={() => this.postRe(element.postId)} style={{cursor: "pointer"}}>
-              <Grid container alignItems="center" justify="flex-start" direction="row">
-                {/* Left Half */}
-                <Grid item md={2}>
-                  <CardMedia id="theImage" image={element.pic} component="img" />
-                </Grid>
-                {element.rating > -1 && (
-                  <Grid item md={2}>
-                    <CardMedia image={this.imagesArray[element.rating]} component="img" />
-                  </Grid>
-                )}
-                <Grid item md={2}>
-                  <Grid container direction="column" justify="space-between" alignItems="center">
-                    <Grid item>
-                      <Typography variant="body1">
-                        {element.artist.map?.((e, i) => {
-                          return (
-                            <Fragment key={i}>
-                              {e}
-                              {i == element.artist.length - 1 ? "" : ", "}
-                            </Fragment>
-                          )
-                        }) || element.artist}
-                      </Typography>
-                    </Grid>
-                    <Grid item>
-                      <Typography variant="body1">{element.album}</Typography>
-                    </Grid>
-                    <Grid item>
-                      <Typography variant="body1">{element.track}</Typography>
-                    </Grid>
-                  </Grid>
-                </Grid>
+    openSendMusic() {
+        this.setState({ sendMusicStatus: true })
+    }
 
-                {/* Right Half */}
-                <Grid md={6} item style={{backgroundColor: "#2f2f2f", borderRadius: "5%"}}>
-                  <Grid item>
-                    <Typography variant="h5" style={{maxWidth: "75%"}}>
-                      {element.title}
-                    </Typography>
-                  </Grid>
-                  <Grid item align="center">
-                    {this.getBodyText(element)
-                      .split("\n")
-                      .map((line, index) => {
-                        return index <= 2 ? (
-                          <Typography align="center" style={{maxWidth: "75%"}} key={index}>
-                            {index == 2 ? `${line}...` : line}
-                          </Typography>
-                        ) : (
-                          ""
-                        )
-                      })}
-                  </Grid>
-                </Grid>
-              </Grid>
-            </div>
-            <Divider style={{margin: 10}} />
-            <CardActions disableSpacing>
-              <LikeButton postId={element.postId} />
-              {element.likeCount}
-              <IconButton onClick={() => this.postRe(element.postId)}>
-                <Comment />
-              </IconButton>
-              <Typography variant="body2">{element.commentCount}</Typography>
-              <IconButton>
-                <Share />
-              </IconButton>
-            </CardActions>
-          </CardContent>
-        </Card>
-        {/* MakePost Dialog Box */}
-        <Dialog onClose={this.closeMakePost} aria-labelledby="customized-dialog-title" open={this.state.makePostStatus} maxWidth="md" fullWidth>
-          <DialogContent>
-            <Grid container justify="center">
-              <Grid item>
-                <MakePost
-                  selectedTopic={{
-                    type: element.type,
-                    id: element.spotifyid,
-                    artistName: element.artist,
-                    albumName: element.album,
-                    songName: element.track,
-                    image: element.pic
-                  }}
+    closeSendMusic = () => {
+        this.setState({ sendMusicStatus: false })
+    }
+
+    deletePost(postId) {
+        const { token, expires, rtoken } = this.props.auth;
+        this.props.deletePost(postId, token, expires, rtoken)
+    }
+
+    getBodyText(element) {
+        let text = ""
+        if (element.body.split("\n").length > 5) {
+            text = element.body.split("\n").slice(0, 4).join("\n") + "..."
+        } else if (element.body.length > 50) {
+            text = element.body.substring(0, 47) + "..."
+        } else {
+            text = element.body
+        }
+        return text
+    }
+
+    render() {
+        let { classes } = this.props
+        let { element } = this.props
+        return (
+            <>
+                <Card style={{ backgroundColor: "#4d4d4d" }} align="center">
+                    <CardHeader
+                        avatar={
+                            <Avatar src={element.pfp} style={{ cursor: 'pointer' }} onClick={() => this.userRe(element.authorid)} />
+                        }
+                        action={
+                            <>
+                                <IconButton aria-label="settings" aria-controls="simple-menu" aria-haspopup="true" onClick={this.handleClick}>
+                                    <MoreVert />
+                                </IconButton>
+                                <Menu
+                                    id="simple-menu"
+                                    anchorEl={this.state.menuOpen}
+                                    keepMounted
+                                    open={Boolean(this.state.menuOpen)}
+                                    onClose={this.handleClose}
+                                >
+                                    <MenuItem onClick={() => { this.handleClose(); this.openMakePost(); }}>Make Post On Topic</MenuItem>
+                                    <MenuItem onClick={() => { this.handleClose(); this.openSendMusic(); }}>Recommend Topic To Someone</MenuItem>
+                                    <MenuItem onClick={() => { this.handleClose(); this.sharePost(); }}>Share</MenuItem>
+                                    {element.authorid == this.props.user.id && <MenuItem onClick={() => { this.handleClose(); this.openEditPost(); }}><Create />Edit Post</MenuItem>}
+                                    {element.authorid == this.props.user.id && <MenuItem onClick={() => { this.handleClose(); this.openDeletePost(); }} style={{ color: 'red' }}><Delete />Delete Post</MenuItem>}
+                                </Menu>
+                            </>
+                        }
+                        title={
+                            <Typography variant="body1" style={{ cursor: 'pointer', width: 'fit-content' }} onClick={() => this.userRe(element.authorid)}>
+                                {element.username}
+                            </Typography>
+                        }
+                        style={
+                            { backgroundColor: "#D99E2A" }
+                        }
+                    />
+                    {/* Main Content */}
+                    <CardContent>
+                        <div onClick={() => this.postRe(element.postId)} style={{ cursor: 'pointer' }}>
+
+                            <Grid container alignItems="center" justify="flex-start" direction="row">
+                                {/* Left Half */}
+                                <Grid item md={2}>
+                                    <CardMedia id="theImage" image={element.pic} component="img" />
+                                </Grid>
+                                {element.rating > -1 &&
+                                    <Grid item md={2}>
+                                        <CardMedia image={this.imagesArray[element.rating]} component="img" />
+                                    </Grid>
+                                }
+                                <Grid item md={2}>
+                                    <Grid container direction="column" justify="space-between" alignItems="center">
+                                        <Grid item>
+                                            <Typography variant="body1">{element.artist.map?.((e, i) => {
+                                                return <>{e}{i == element.artist.length - 1 ? '' : ', '}</>
+                                            }) || element.artist}</Typography>
+                                        </Grid>
+                                        <Grid item>
+                                            <Typography variant="body1">{element.album}</Typography>
+                                        </Grid>
+                                        <Grid item>
+                                            <Typography variant="body1">{element.track}</Typography>
+                                        </Grid>
+                                    </Grid>
+                                </Grid>
+
+                                {/* Right Half */}
+                                <Grid md={6} item alignContent="center" justify="space-around" direction="column" style={{ backgroundColor: '#2f2f2f', borderRadius: '5%' }}>
+                                    <Grid item>
+                                        <Typography variant="h5" style={{ maxWidth: '75%' }}>{element.title}</Typography>
+                                    </Grid>
+                                    <Grid item align="center">
+                                        {
+                                            this.getBodyText(element).split("\n").map((line, index) => { return index <= 2 ? <Typography align="center" style={{ maxWidth: '75%' }}>{index == 2 ? `${line}...` : line}</Typography> : '' })
+                                        }
+
+                                    </Grid>
+                                </Grid>
+
+
+                            </Grid>
+                        </div>
+                        <Divider style={{ margin: 10 }} />
+                        <CardActions disableSpacing>
+                            <LikeButton postId={element.postId} />
+                            {element.likeCount}
+                            <IconButton onClick={() => this.postRe(element.postId)}>
+                                <Comment />
+                            </IconButton>
+                            <Typography variant="body2">
+                                {element.commentCount}
+                            </Typography>
+                            <IconButton >
+                                <Share />
+                            </IconButton>
+
+                        </CardActions>
+
+                    </CardContent>
+
+
+                </Card>
+                {/* MakePost Dialog Box */}
+                <Dialog onClose={this.closeMakePost} aria-labelledby="customized-dialog-title" open={this.state.makePostStatus} maxWidth="md" fullWidth>
+                    <DialogContent >
+                        <Grid container justify="center">
+                            <Grid item>
+                                <MakePost selectedTopic={{
+                                    type: element.type,
+                                    id: element.spotifyid,
+                                    artistName: element.artist,
+                                    albumName: element.album,
+                                    songName: element.track,
+                                    image: element.pic,
+                                }} />
+                            </Grid>
+                        </Grid>
+                    </DialogContent>
+                </Dialog>
+
+                {/* DeletePost Dialog Box */}
+                <DeletePostDialog
+                    element={element}
+                    open={this.state.deletePostStatus}
+                    onClose={this.closeDeletePost}
+                    auth={this.props.auth}
+                    deletePost={this.props.deletePost}
+                    history={this.props.history}
                 />
-              </Grid>
-            </Grid>
-          </DialogContent>
-        </Dialog>
-
-        {/* DeletePost Dialog Box */}
-        <Dialog open={this.state.deletePostStatus} onClose={this.closeDeletePost} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
-          <DialogTitle id="alert-dialog-title">{"Are you sure you want to delete this post?"}</DialogTitle>
-          <DialogContent>
-            <DialogContentText id="alert-dialog-description">Once this post is deleted, it cannot be recovered.</DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={this.closeDeletePost} variant="outlined">
-              Cancel
-            </Button>
-            <Button variant="contained" color="secondary" onClick={() => this.deletePost(element.postId)} startIcon={<Delete />}>
-              Delete
-            </Button>
-          </DialogActions>
-        </Dialog>
-
-        {/* EditPost Dialog Box */}
-        <Dialog open={this.state.editPostStatus} onClose={this.closeEditPost} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description" maxWidth="sm" fullWidth>
-          <DialogTitle id="alert-dialog-title">Edit Post:</DialogTitle>
-          <DialogContent>
-            <TextField id="newTitle" label="Post Title" rows={1} fullWidth variant="outlined" defaultValue={element.title} onChange={this.handleTitleChange} />
-
-            <TextField id="newBody" label="Post Body" multiline rows={6} fullWidth variant="outlined" defaultValue={element.body} onChange={this.handleBodyChange} margin="dense" />
-            <Grid container direction="row" justify="center">
-              <Grid item>
-                <Switch checked={this.state.switchState} onChange={this.handleSwitchChange} name="useNumber" inputProps={{"aria-label": "secondary checkbox"}} />
-              </Grid>
-            </Grid>
-            {!this.state.switchState ? (
-              ""
-            ) : (
-              <>
-                <Grid container direction="row" justify="center">
-                  <Grid item>
-                    <img className={classes.rating} src={this.imagesArray[this.state.newRating]} style={{width: "200px", height: "200px"}} />
-                  </Grid>
-                </Grid>
-                <Grid container direction="row" justify="center">
-                  <Grid item>
-                    <IconButton aria-label="minus" onClick={() => this.setState({newRating: this.state.newRating !== 0 ? this.state.newRating - 1 : this.state.newRating})}>
-                      <Remove />
-                    </IconButton>
-                  </Grid>
-                  <Grid item>
-                    <IconButton aria-label="plus" onClick={() => this.setState({newRating: this.state.newRating !== 10 ? this.state.newRating + 1 : this.state.newRating})}>
-                      <Add />
-                    </IconButton>
-                  </Grid>
-                </Grid>
-              </>
-            )}
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={this.closeEditPost} variant="outlined">
-              Cancel
-            </Button>
-            <Button variant="contained" color="primary" endIcon={<Send />} onClick={() => this.editPost(element.postId, this.state.newTitle, this.state.newBody, this.state.newRating > -1 && this.state.switchState ? this.state.newRating : null)}>
-              Confirm
-            </Button>
-          </DialogActions>
-        </Dialog>
-      </>
-    )
+                {/* EditPost Dialog Box */}
+                <EditPostDialog
+                    element={element}
+                    open={this.state.editPostStatus}
+                    onClose={this.closeEditPost}
+                    auth={this.props.auth}
+                    editPost={this.props.editPost}
+                    updateParent={this.updateElement}
+                />
+                <SendMusicDialog
+                    element={{
+                        type: element.type,
+                        id: element.spotifyid,
+                        artistName: element.artist,
+                        albumName: element.album,
+                        songName: element.track,
+                        image: element.pic,
+                        url: `https://open.spotify.com/${element.type}/${element.spotifyid}`
+                    }}
+                    open={this.state.sendMusicStatus}
+                    onClose={this.closeSendMusic}
+                    auth={this.props.auth}
+                />
+            </>
+        )
+    }
   }
-}
 
 const mapStateToProps = state => ({
   user: state.user,

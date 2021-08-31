@@ -15,15 +15,15 @@ const getData = (token, expires, rtoken, dispatch) => {
 }
 
 export const loadUser = (token, expires, rtoken) => (dispatch) => {
-	console.log("loadUser")
-	dispatch({type: USERLOADING})
-	getData(token, expires, rtoken, dispatch)
+    console.log("loadUser")
+    dispatch({type: USERLOADING})
+    getData(token, expires, rtoken, dispatch)
 
 }
 
 export const reloadUserProfile = (token, expires, rtoken) => (dispatch) => {
-	console.log("reloadUserProfile")
-	getData(token, expires, rtoken, dispatch)
+    console.log("reloadUserProfile")
+    getData(token, expires, rtoken, dispatch)
 }
 
 export const editBio = (bio, token, expires, rtoken, history) => (dispatch) => {
@@ -61,9 +61,9 @@ export const markNotificationsRead = (notifications, token, expires, rtoken) => 
 }
 
 export const sendMusic = (url,pic,recipient, token, expires, rtoken) => (dispatch) => {
-	return axios.post("/sendNotification", {url,recipient,pic}, {headers: {token,expires,rtoken}}).then(res => {
-		refresh(res, dispatch)
-	})
+    return axios.post("/sendNotification", {spotifyURL: url,receiveId: recipient,spotifyPic: pic}, {headers: {token,expires,rtoken}}).then(res => {
+        refresh(res, dispatch)
+    })
 }
 
 const refresh = (res, dispatch) => {

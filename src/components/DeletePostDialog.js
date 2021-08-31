@@ -8,11 +8,10 @@ class DeletePostDialog extends Component {
 
 
     state = {
-        element: this.props.element,
     }
 
     componentDidMount() {
-        this.setState({deletingFunction: this.props.comment ? this.props.deleteComment : this.props.deletePost})        
+        this.setState({deletingFunction: this.props.comment ? this.props.deleteComment : this.props.deletePost})
     }
 
     render() {
@@ -37,7 +36,7 @@ class DeletePostDialog extends Component {
                 <Button
                     variant="contained"
                     color="secondary"
-                    onClick={() => {this.state.deletingFunction(this.props.comment ? this.state.element.id : this.state.element.postId , token, expires, rtoken);}}
+                    onClick={() => {this.state.deletingFunction(this.props.comment ? this.props.element.id : this.props.element.postId , token, expires, rtoken); this.props.onClose();}}
                     startIcon={<Delete />}
                 >
                     Delete

@@ -185,18 +185,28 @@ exports.createComment = (req, res) => {
     return res.status(400).json(errors)
   }
 
-  db.collection("comments")
-    .add(newComment)
-    .then(() => {
-      db.collection("posts")
-        .doc(newComment.postId)
-        .update({commentCount: admin.firestore.FieldValue.increment(1)})
-      return Return(req, res, {newComment})
-    })
-    .catch(err => {
-      console.error(err)
-      return res.status(500).json({error: "Error creating post."})
-    })
+  db.doc(`/posts/${newComment.postId}`).get().then(doc => {
+    if (!doc.exists) {
+      return res.status(404).json({ error: "Cannot comment on post that does not exist" })
+    } else {
+
+      var batch = db.batch() //create batch
+      var newCommentRef = db.collection('comments').doc() //make a new empty like document
+      batch.set(newCommentRef, newComment) //set new like document data
+      batch.update(doc.ref, { commentCount: doc.data().commentCount + 1 })
+      batch.commit().then(() => { //commit batch
+        newComment.id = newCommentRef.id;
+        Return(req,res,{newComment})
+      }).catch(err => {
+        console.error(err)
+        return res.status(500).json({ error: "Error committing batch" })
+      })
+
+    }
+  }).catch(err => {
+    console.error(err)
+    return res.status(500).json({ error: "Error getting post" })
+  })
 }
 
 exports.editComment = (req, res) => {
@@ -228,35 +238,33 @@ exports.editComment = (req, res) => {
 }
 
 exports.deleteComment = (req, res) => {
-  db.doc(`/comments/${req.params.commentId}`)
-    .get()
-    .then(doc => {
-      if (!doc.exists) {
-        return res.status(404).json({error: "Could not find comment."})
-      }
-      let comment = doc.data()
-      if (comment.authorid === req.user.id) {
-        doc.ref
-          .delete()
-          .then(() => {
-            db.collection("posts")
-              .doc(comment.postId)
-              .update({commentCount: admin.firestore.FieldValue.increment(-1)})
-            return Return(req, res, {})
-          })
-          .catch(err => {
+  db.doc(`/comments/${req.params.commentId}`).get().then(commentDoc => {
+    if (!commentDoc.exists) {
+      return res.status(404).json({error: "Comment not found"})
+    } else {
+      db.doc(`/posts/${commentDoc.data().postId}`).get().then(postDoc => {
+        if(!postDoc.exists){
+          return res.status(404).json({error: "Post not found"})
+        } else {
+          var batch = db.batch();
+          batch.delete(commentDoc.ref);
+          batch.update(postDoc.ref, {commentCount: postDoc.data().commentCount - 1})
+          batch.commit().then(() => {
+            Return(req,res,{})
+          }).catch(err => {
             console.error(err)
-            return res.status(500).json({error: "Error deleting Comment"})
+            return res.status(500).json({error: "Error committing batch"})
           })
-      } else {
-        console.log(comment.authorid, req.user.id)
-        return res.status(400).json({error: "Comment isnt yours lol"})
-      }
-    })
-    .catch(err => {
-      console.error(err)
-      return res.status(500).json({error: "Could not get comment"})
-    })
+        }
+      }).catch(err => {
+        console.error(err)
+        return res.status(500).json({ error: "Error getting like" })
+      })
+    }
+  }).catch(err => {
+    console.error(err)
+    return res.status(500).json({ error: "Could not get post" })
+  })
 }
 
 exports.likePost = (req, res) => {
@@ -350,3 +358,4 @@ exports.unlikePost = (req, res) => {
       return res.status(500).json({error: "Could not get post"})
     })
 }
+

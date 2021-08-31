@@ -16,6 +16,7 @@ import Typography from "@material-ui/core/Typography"
 import Button from "@material-ui/core/Button"
 import MakePost from "../components/MakePost"
 import UserCard from "../components/UserCard"
+import SendMusicDialog from '../components/SendMusicDialog';
 
 const defaultNumOfPosts = 25
 
