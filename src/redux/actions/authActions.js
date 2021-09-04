@@ -1,31 +1,40 @@
 import axios from "axios"
-import {LOGOUT, SETAUTHDATA, REFRESH_TOKEN, CLEARUSERDATA, LOADTOKEN} from "../types"
+import {LOGOUT, SETAUTHDATA, REFRESH_TOKEN, CLEARUSERDATA, LOADTOKEN, SETSIGNUPERROR, CLEARERRORS} from "../types"
+import {handleError} from "../util"
 
 export const loadDataIntoState = () => dispatch => {
   dispatch({type: SETAUTHDATA, payload: JSON.parse(window.localStorage.getItem("data"))})
 }
 
 export const signUpUser = (data, history) => dispatch => {
+  dispatch({type: CLEARERRORS})
   let now = new Date().getTime()
   if (now > data.expires) {
     history.push("/")
   }
   if (data.pfp) {
-    axios.post("/createUser", {id: data.id, username: data.username, profilepic: "default"}).then(res => {
-      window.localStorage.setItem("data", JSON.stringify({token: data.token, expires: data.expires, rtoken: data.rtoken}))
-      window.localStorage.setItem("cachepfp", data.pfp)
-      dispatch({type: SETAUTHDATA, payload: JSON.parse(window.localStorage.getItem("data"))})
-      history.push(`/profile=${data.id}`)
-    })
-  } else {
-    axios.post("/uploadpic", data.formData).then(res => {
-      axios.post("/createUser", {id: data.id, username: data.username, profilepic: res.data.url}).then(res2 => {
+    axios
+      .post("/createUser", {id: data.id, username: data.username, profilepic: "default"})
+      .then(res => {
         window.localStorage.setItem("data", JSON.stringify({token: data.token, expires: data.expires, rtoken: data.rtoken}))
-        window.localStorage.setItem("cachepfp", res.data.url)
+        window.localStorage.setItem("cachepfp", data.pfp)
         dispatch({type: SETAUTHDATA, payload: JSON.parse(window.localStorage.getItem("data"))})
         history.push(`/profile=${data.id}`)
       })
-    })
+      .catch(err => handleError(err, SETSIGNUPERROR))
+  } else {
+    axios
+      .post("/uploadpic", data.formData)
+      .then(res => {
+        return axios.post("/createUser", {id: data.id, username: data.username, profilepic: res.data.url})
+      })
+      .then(res => {
+        window.localStorage.setItem("data", JSON.stringify({token: data.token, expires: data.expires, rtoken: data.rtoken}))
+        window.localStorage.setItem("cachepfp", res.data.profilepic)
+        dispatch({type: SETAUTHDATA, payload: JSON.parse(window.localStorage.getItem("data"))})
+        history.push(`/profile=${data.id}`)
+      })
+      .catch(err => handleError(err, SETSIGNUPERROR))
   }
 }
 

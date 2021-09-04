@@ -3,8 +3,11 @@ const initialState = {
   errors: {
     dialog: null,
     signup: null,
-    makepost: null,
-    feed: null
+    makePost: null,
+    feed: null,
+    editPost: null,
+    deletePost: null,
+    deleteComment: null
   }
 }
 
