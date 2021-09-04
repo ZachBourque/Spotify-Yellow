@@ -1,6 +1,6 @@
 import {DATALOADING, DELETEPOST, EDITPOST, REFRESH_TOKEN, SETCOMMENTLIST, LIKEPOST, UNLIKEPOST, SETPOSTS, DELETECOMMENT, SETUSERS, SETFEEDERROR, CLEARERRORS} from "../types"
 import axios from "axios"
-import {refresh, handleError} from "../util"
+import {refresh, handleError, checkForFatalError} from "../util"
 
 export const getFeedData = () => dispatch => {
   dispatch({type: DATALOADING})
@@ -14,15 +14,12 @@ export const getFeedData = () => dispatch => {
 }
 
 export const getUsers = () => dispatch => {
-  axios.get("/users").then(res => {
-    dispatch({type: SETUSERS, payload: res.data.users})
-  })
-}
-
-export const reloadFeedData = () => dispatch => {
-  axios.get("/allPosts").then(res => {
-    dispatch({type: SETPOSTS, payload: res.data})
-  })
+  axios
+    .get("/users")
+    .then(res => {
+      dispatch({type: SETUSERS, payload: res.data.users})
+    })
+    .catch(err => console.error(err)) // change this when you figure out what to do with the users
 }
 
 export const setCurrent = arr => dispatch => {
@@ -34,10 +31,13 @@ export const setDataLoading = () => dispatch => {
 }
 
 export const editPost = (postId, update, token, expires, rtoken) => dispatch => {
-  axios.put(`/editPost/${postId}`, update, {headers: {token, expires, rtoken}}).then(res => {
-    refresh(res)
-    dispatch({type: EDITPOST, payload: {id: postId, changes: update.update}})
-  })
+  axios
+    .put(`/editPost/${postId}`, update, {headers: {token, expires, rtoken}})
+    .then(res => {
+      refresh(res)
+      dispatch({type: EDITPOST, payload: {id: postId, changes: update.update}})
+    })
+    .catch(err => handleError(err))
 }
 
 export const deletePost = (postId, token, expires, rtoken) => dispatch => {
@@ -80,15 +80,21 @@ export const setCurrentPost = postId => dispatch => {
 }
 
 export const likePost = (postId, token, expires, rtoken) => dispatch => {
-  axios.get(`/post/${postId}/like`, {headers: {token, expires, rtoken}}).then(res => {
-    refresh(res)
-    dispatch({type: LIKEPOST, payload: {like: res.data.like, postId}})
-  })
+  axios
+    .get(`/post/${postId}/like`, {headers: {token, expires, rtoken}})
+    .then(res => {
+      refresh(res)
+      dispatch({type: LIKEPOST, payload: {like: res.data.like, postId}})
+    })
+    .catch(err => checkForFatalError(err))
 }
 
 export const unlikePost = (postId, token, expires, rtoken) => dispatch => {
-  axios.get(`/post/${postId}/unlike`, {headers: {token, expires, rtoken}}).then(res => {
-    refresh(res)
-    dispatch({type: UNLIKEPOST, payload: {postId}})
-  })
+  axios
+    .get(`/post/${postId}/unlike`, {headers: {token, expires, rtoken}})
+    .then(res => {
+      refresh(res)
+      dispatch({type: UNLIKEPOST, payload: {postId}})
+    })
+    .catch(err => checkForFatalError(err))
 }

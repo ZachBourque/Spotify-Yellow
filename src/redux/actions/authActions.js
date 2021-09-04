@@ -1,5 +1,5 @@
 import axios from "axios"
-import {LOGOUT, SETAUTHDATA, REFRESH_TOKEN, CLEARUSERDATA, LOADTOKEN, SETSIGNUPERROR, CLEARERRORS} from "../types"
+import {LOGOUT, SETAUTHDATA, REFRESH_TOKEN, CLEARUSERDATA, LOADTOKEN, SETSIGNUPERROR, CLEARERRORS, SETDIALOGERROR} from "../types"
 import {handleError} from "../util"
 
 export const loadDataIntoState = () => dispatch => {
@@ -51,12 +51,15 @@ export const refreshToken = (token, expires) => dispatch => {
 
 export const getNewToken = (rtoken, callback) => dispatch => {
   dispatch({type: LOADTOKEN})
-  axios.get("/token", {headers: {rtoken}}).then(res => {
-    let lsdata = JSON.parse(localStorage.getItem("data"))
-    lsdata.token = res.data.token
-    lsdata.expires = res.data.expires
-    localStorage.setItem("data", JSON.stringify(lsdata))
-    dispatch({type: REFRESH_TOKEN, payload: {token: lsdata.token, expires: lsdata.expires}})
-    callback()
-  })
+  axios
+    .get("/token", {headers: {rtoken}})
+    .then(res => {
+      let lsdata = JSON.parse(localStorage.getItem("data"))
+      lsdata.token = res.data.token
+      lsdata.expires = res.data.expires
+      localStorage.setItem("data", JSON.stringify(lsdata))
+      dispatch({type: REFRESH_TOKEN, payload: {token: lsdata.token, expires: lsdata.expires}})
+      callback()
+    })
+    .catch(err => handleError(err, SETDIALOGERROR))
 }
