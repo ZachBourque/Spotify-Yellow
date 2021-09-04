@@ -1,31 +1,39 @@
-import React from 'react'
+import React from "react"
 import {BrowserRouter, Switch, Route, Redirect} from "react-router-dom"
-import Homepage from './pages/Homepage'
-import Home from './pages/Home' 
+import Homepage from "./pages/Homepage"
+import Home from "./pages/Home"
 import Temp from "./pages/temp"
 import Profile from "./pages/Profile"
-import { ThemeProvider, createMuiTheme } from "@material-ui/core/styles"
-import { Container, Paper } from '@material-ui/core';
-import SignUp from './pages/SignUp'
-import { connect } from "react-redux"
-import { loadDataIntoState } from './redux/actions/authActions'
-import { loadUser } from "./redux/actions/userActions"
+import {ThemeProvider, createMuiTheme} from "@material-ui/core/styles"
+import {Container, Paper} from "@material-ui/core"
+import SignUp from "./pages/SignUp"
+import {connect} from "react-redux"
+import {loadDataIntoState} from "./redux/actions/authActions"
+import {loadUser} from "./redux/actions/userActions"
 import $ from "jquery"
-import { Provider } from 'react-redux'
-import store from './redux/store'
+import {Provider} from "react-redux"
+import store from "./redux/store"
 import SelfProfile from "./components/SelfProfile"
-import SmallPost from "./components/SmallPost"
 import BigPost from "./components/BigPost"
 import Settings from "./pages/Settings"
 import axios from "axios"
-import SearchPage from './pages/SearchPage'
+import SearchPage from "./pages/SearchPage"
+import {getUsers} from "./redux/actions/dataActions"
+import Dialog from "@material-ui/core/Dialog"
+import DialogActions from "@material-ui/core/DialogActions"
+import DialogContent from "@material-ui/core/DialogContent"
+import DialogContentText from "@material-ui/core/DialogContentText"
+import DialogTitle from "@material-ui/core/DialogTitle"
+import Button from "@material-ui/core/Button"
 
-axios.defaults.baseURL = "https://us-central1-spotify-yellow-282e0.cloudfunctions.net/api"
+// axios.defaults.baseURL = "https://us-central1-spotify-yellow-282e0.cloudfunctions.net/api"
+axios.defaults.baseURL = "http://localhost:5000/spotify-yellow-282e0/us-central1/api"
+store.dispatch(getUsers())
 $("body").css("margin", 0)
 $("body").css("overflow-x", "hidden")
-var a = JSON.parse(window.localStorage.getItem("data"));
+var a = JSON.parse(window.localStorage.getItem("data"))
 if (a) {
-  if(a.expires && a.token && a.rtoken && localStorage.getItem("cachepfp") ){
+  if (a.expires && a.token && a.rtoken && localStorage.getItem("cachepfp")) {
     console.log("loading")
     store.dispatch(loadDataIntoState())
     store.dispatch(loadUser(a.token, a.expires, a.rtoken))
@@ -35,37 +43,74 @@ if (a) {
 }
 
 class Router extends React.Component {
+  state = {
+    open: false,
+    error: null
+  }
 
-    theme = createMuiTheme({
-        palette: {
-          type: "dark",
-        },
-      });
+  handleClose = () => {
+    this.setState({open: false})
+  }
 
-      render() {
-        return (
-            <Provider store={store}>
-            <ThemeProvider theme={this.theme}>
-            <Paper style={{ height: "auto", minHeight: '100vh'}}>
-            <BrowserRouter>
+  refresh = () => {
+    window.location.reload()
+    this.handleClose()
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.ui.errors.dialog !== this.props.ui.errors.dialog && !this.state.open) {
+      if (this.props.ui.errors.dialog) {
+        this.setState({open: true, error: this.props.ui.errors.dialog})
+      } else {
+        this.setState({open: false, error: null})
+      }
+    }
+  }
+
+  theme = createMuiTheme({
+    palette: {
+      type: "dark"
+    }
+  })
+
+  render() {
+    return (
+      <ThemeProvider theme={this.theme}>
+        <Paper style={{height: "auto", minHeight: "100vh"}}>
+          <BrowserRouter>
             <Route path="/" component={Home} />
             <Switch>
-            <Route path="/profile=:id" component={Profile}/>
-            <Route path="/profile" component={SelfProfile} exact/>
-            <Route path="/" component={Homepage} exact/>
-            <Route path="/signup" component={SignUp}/>
-            <Route path='/temp' component={Temp}/>
-            <Route path='/post/:postID' component={BigPost} />
-            <Route path='/settings' component={Settings}/>
-            <Route path='/search' component={SearchPage}/>
+              <Route path="/profile=:id" component={Profile} />
+              <Route path="/profile" component={SelfProfile} exact />
+              <Route path="/" component={Homepage} exact />
+              <Route path="/signup" component={SignUp} />
+              <Route path="/temp" component={Temp} />
+              <Route path="/post/:postID" component={BigPost} />
+              <Route path="/settings" component={Settings} />
+              <Route path="/search" component={SearchPage} />
             </Switch>
-            </BrowserRouter>
-            </Paper>
-          </ThemeProvider>
-          </Provider>
-        )
-      }
-
+          </BrowserRouter>
+          <Dialog open={this.state.open} onClose={this.handleClose} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
+            <DialogTitle id="alert-dialog-title">{"Error"}</DialogTitle>
+            <DialogContent>
+              <DialogContentText id="alert-dialog-description">{this.state.error}</DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={this.refresh} color="primary" autoFocus>
+                Ok
+              </Button>
+            </DialogActions>
+          </Dialog>
+        </Paper>
+      </ThemeProvider>
+    )
+  }
 }
 
-export default Router
+const mapStateToProps = state => ({
+  ui: state.ui
+})
+
+const mapActionsToProps = {}
+
+export default connect(mapStateToProps, mapActionsToProps)(Router)

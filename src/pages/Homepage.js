@@ -16,7 +16,7 @@ import Typography from "@material-ui/core/Typography"
 import Button from "@material-ui/core/Button"
 import MakePost from "../components/MakePost"
 import UserCard from "../components/UserCard"
-import SendMusicDialog from '../components/SendMusicDialog';
+import SendMusicDialog from "../components/SendMusicDialog"
 
 const defaultNumOfPosts = 25
 
@@ -51,24 +51,31 @@ export class Homepage extends Component {
   render() {
     return (
       <Fragment>
-        <Grid container spacing={3} justify="center" align="center">
-          {this.props.data.loaded &&
-            this.props.data.posts.slice(0, this.state.numOfPosts).map((post, idx) => {
-              return (
-                <Grid item xs={12} key={idx}>
-                  <Grid item xs={6}>
-                    <SmallPost element={post} history={this.props.history} key={post.postId} postId={post.postId} />
+        {this.props.data.loaded ? (
+          <Fragment>
+            <Grid container spacing={3} justify="center" align="center">
+              {this.props.data.posts.slice(0, this.state.numOfPosts).map((post, idx) => {
+                return (
+                  <Grid item xs={12} key={idx}>
+                    <Grid item xs={6}>
+                      <SmallPost element={post} history={this.props.history} key={post.postId} postId={post.postId} />
+                    </Grid>
                   </Grid>
-                </Grid>
-              )
-            })}
-          {this.props.data.loaded && this.state.numOfPosts < 1000 && this.props.data.posts.length > this.state.numOfPosts && <Button onClick={() => this.setState({numOfPosts: this.state.numOfPosts + defaultNumOfPosts})}>Show more.</Button>}
-        </Grid>
-        <div style={{bottom: 20, right: 20, position: "fixed", backgroundColor: "#D99E2A", borderRadius: "50%"}}>
-          <IconButton style={{width: "100%", height: "100%"}} onClick={this.handleClickOpen}>
-            <PostAddIcon />
-          </IconButton>
-        </div>
+                )
+              })}
+              {this.props.data.loaded && this.state.numOfPosts < 1000 && this.props.data.posts.length > this.state.numOfPosts && <Button onClick={() => this.setState({numOfPosts: this.state.numOfPosts + defaultNumOfPosts})}>Show more.</Button>}
+            </Grid>
+            <div style={{bottom: 20, right: 20, position: "fixed", backgroundColor: "#D99E2A", borderRadius: "50%"}}>
+              <IconButton style={{width: "100%", height: "100%"}} onClick={this.handleClickOpen}>
+                <PostAddIcon />
+              </IconButton>
+            </div>
+          </Fragment>
+        ) : this.props.ui.errors.feed ? (
+          <h1>{this.props.ui.errors.feed}</h1>
+        ) : (
+          <h1>Loading...</h1>
+        )}
         <Button variant="contained" onClick={this.openSearchUsers}></Button>
         <SearchUsers open={this.state.searchUsersState} onClose={this.closeSearchUsers} auth={this.props.auth} />
         <Dialog onClose={this.handleClose} aria-labelledby="customized-dialog-title" open={this.state.open} maxWidth="md" fullWidth>
@@ -86,7 +93,8 @@ export class Homepage extends Component {
 }
 
 const mapStateToProps = state => ({
-  data: state.data
+  data: state.data,
+  ui: state.ui
 })
 
 const mapActionsToProps = {

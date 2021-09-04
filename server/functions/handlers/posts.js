@@ -40,6 +40,7 @@ exports.createPost = (req, res) => {
 }
 
 exports.getAllPosts = (req, res) => {
+  console.log("/getAllPosts")
   db.collection("posts")
     .orderBy("createdAt", "desc")
     .limit(1000)
@@ -62,6 +63,7 @@ exports.getAllPosts = (req, res) => {
 }
 
 exports.getPostsByUser = (req, res) => {
+  console.log("/postsByUser")
   const id = req.params.user
   db.collection("posts")
     .where("id", "==", id)
@@ -80,6 +82,7 @@ exports.getPostsByUser = (req, res) => {
 }
 
 exports.getPost = (req, res) => {
+  console.log("/getPost")
   let postData = {}
   db.doc(`/posts/${req.params.postId}`)
     .get()
@@ -185,28 +188,33 @@ exports.createComment = (req, res) => {
     return res.status(400).json(errors)
   }
 
-  db.doc(`/posts/${newComment.postId}`).get().then(doc => {
-    if (!doc.exists) {
-      return res.status(404).json({ error: "Cannot comment on post that does not exist" })
-    } else {
-
-      var batch = db.batch() //create batch
-      var newCommentRef = db.collection('comments').doc() //make a new empty like document
-      batch.set(newCommentRef, newComment) //set new like document data
-      batch.update(doc.ref, { commentCount: doc.data().commentCount + 1 })
-      batch.commit().then(() => { //commit batch
-        newComment.id = newCommentRef.id;
-        Return(req,res,{newComment})
-      }).catch(err => {
-        console.error(err)
-        return res.status(500).json({ error: "Error committing batch" })
-      })
-
-    }
-  }).catch(err => {
-    console.error(err)
-    return res.status(500).json({ error: "Error getting post" })
-  })
+  db.doc(`/posts/${newComment.postId}`)
+    .get()
+    .then(doc => {
+      if (!doc.exists) {
+        return res.status(404).json({error: "Cannot comment on post that does not exist"})
+      } else {
+        var batch = db.batch() //create batch
+        var newCommentRef = db.collection("comments").doc() //make a new empty like document
+        batch.set(newCommentRef, newComment) //set new like document data
+        batch.update(doc.ref, {commentCount: doc.data().commentCount + 1})
+        batch
+          .commit()
+          .then(() => {
+            //commit batch
+            newComment.id = newCommentRef.id
+            Return(req, res, {newComment})
+          })
+          .catch(err => {
+            console.error(err)
+            return res.status(500).json({error: "Error committing batch"})
+          })
+      }
+    })
+    .catch(err => {
+      console.error(err)
+      return res.status(500).json({error: "Error getting post"})
+    })
 }
 
 exports.editComment = (req, res) => {
@@ -238,33 +246,42 @@ exports.editComment = (req, res) => {
 }
 
 exports.deleteComment = (req, res) => {
-  db.doc(`/comments/${req.params.commentId}`).get().then(commentDoc => {
-    if (!commentDoc.exists) {
-      return res.status(404).json({error: "Comment not found"})
-    } else {
-      db.doc(`/posts/${commentDoc.data().postId}`).get().then(postDoc => {
-        if(!postDoc.exists){
-          return res.status(404).json({error: "Post not found"})
-        } else {
-          var batch = db.batch();
-          batch.delete(commentDoc.ref);
-          batch.update(postDoc.ref, {commentCount: postDoc.data().commentCount - 1})
-          batch.commit().then(() => {
-            Return(req,res,{})
-          }).catch(err => {
-            console.error(err)
-            return res.status(500).json({error: "Error committing batch"})
+  db.doc(`/comments/${req.params.commentId}`)
+    .get()
+    .then(commentDoc => {
+      if (!commentDoc.exists) {
+        return res.status(404).json({error: "Comment not found"})
+      } else {
+        db.doc(`/posts/${commentDoc.data().postId}`)
+          .get()
+          .then(postDoc => {
+            if (!postDoc.exists) {
+              return res.status(404).json({error: "Post not found"})
+            } else {
+              var batch = db.batch()
+              batch.delete(commentDoc.ref)
+              batch.update(postDoc.ref, {commentCount: postDoc.data().commentCount - 1})
+              batch
+                .commit()
+                .then(() => {
+                  Return(req, res, {})
+                })
+                .catch(err => {
+                  console.error(err)
+                  return res.status(500).json({error: "Error committing batch"})
+                })
+            }
           })
-        }
-      }).catch(err => {
-        console.error(err)
-        return res.status(500).json({ error: "Error getting like" })
-      })
-    }
-  }).catch(err => {
-    console.error(err)
-    return res.status(500).json({ error: "Could not get post" })
-  })
+          .catch(err => {
+            console.error(err)
+            return res.status(500).json({error: "Error getting like"})
+          })
+      }
+    })
+    .catch(err => {
+      console.error(err)
+      return res.status(500).json({error: "Could not get post"})
+    })
 }
 
 exports.likePost = (req, res) => {
@@ -358,4 +375,3 @@ exports.unlikePost = (req, res) => {
       return res.status(500).json({error: "Could not get post"})
     })
 }
-
