@@ -24,6 +24,7 @@ import DialogContent from "@material-ui/core/DialogContent"
 import DialogContentText from "@material-ui/core/DialogContentText"
 import DialogTitle from "@material-ui/core/DialogTitle"
 import Button from "@material-ui/core/Button"
+import {logout} from "./redux/actions/authActions"
 
 // axios.defaults.baseURL = "https://us-central1-spotify-yellow-282e0.cloudfunctions.net/api"
 axios.defaults.baseURL = "http://localhost:5000/spotify-yellow-282e0/us-central1/api"
@@ -52,6 +53,7 @@ class Router extends React.Component {
   }
 
   refresh = () => {
+    this.props.logout()
     window.location.reload()
     this.handleClose()
   }
@@ -110,6 +112,8 @@ const mapStateToProps = state => ({
   ui: state.ui
 })
 
-const mapActionsToProps = {}
+const mapActionsToProps = {
+  logout
+}
 
 export default connect(mapStateToProps, mapActionsToProps)(Router)

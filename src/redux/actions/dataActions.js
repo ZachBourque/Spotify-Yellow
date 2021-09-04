@@ -1,4 +1,4 @@
-import {DATALOADING, DELETEPOST, EDITPOST, REFRESH_TOKEN, SETCOMMENTLIST, LIKEPOST, UNLIKEPOST, SETPOSTS, DELETECOMMENT, SETUSERS, SETFEEDERROR, CLEARERRORS} from "../types"
+import {DATALOADING, DELETEPOST, EDITPOST, REFRESH_TOKEN, SETCOMMENTLIST, LIKEPOST, UNLIKEPOST, SETPOSTS, DELETECOMMENT, SETUSERS, SETFEEDERROR, CLEARERRORS, SETEDITPOSTERROR, SETDELETEERROR, SETMAKECOMMENTERROR} from "../types"
 import axios from "axios"
 import {refresh, handleError, checkForFatalError} from "../util"
 
@@ -31,23 +31,29 @@ export const setDataLoading = () => dispatch => {
 }
 
 export const editPost = (postId, update, token, expires, rtoken) => dispatch => {
+  dispatch({type: CLEARERRORS})
   axios
     .put(`/editPost/${postId}`, update, {headers: {token, expires, rtoken}})
     .then(res => {
       refresh(res)
       dispatch({type: EDITPOST, payload: {id: postId, changes: update.update}})
     })
-    .catch(err => handleError(err))
+    .catch(err => handleError(err, SETEDITPOSTERROR))
 }
 
 export const deletePost = (postId, token, expires, rtoken) => dispatch => {
-  axios.delete(`/post/${postId}`, {headers: {token, expires, rtoken}}).then(res => {
-    refresh(res)
-    dispatch({type: DELETEPOST, payload: {id: postId}})
-  })
+  dispatch({type: CLEARERRORS})
+  axios
+    .delete(`/post/${postId}`, {headers: {token, expires, rtoken}})
+    .then(res => {
+      refresh(res)
+      dispatch({type: DELETEPOST, payload: {id: postId}})
+    })
+    .catch(err => handleError(err, SETDELETEERROR))
 }
 
 export const deleteComment = (commentId, token, expires, rtoken) => dispatch => {
+  dispatch({type: CLEARERRORS})
   axios
     .delete(`/deleteComment/${commentId}`, {headers: {token, expires, rtoken}})
     .then(res => {
@@ -57,18 +63,18 @@ export const deleteComment = (commentId, token, expires, rtoken) => dispatch => 
     .catch(e => {
       console.log(e)
     })
+    .catch(err => handleError(err, SETDELETEERROR))
 }
 
 export const makeComment = (postId, token, expires, rtoken, newComment) => dispatch => {
+  dispatch({type: CLEARERRORS})
   return axios
     .post(`/post/${postId}/comment`, newComment, {headers: {token, rtoken, expires}})
     .then(res => {
       refresh(res)
       dispatch({type: SETCOMMENTLIST, payload: {newComment: res.data.newComment}})
     })
-    .catch(e => {
-      console.error(e)
-    })
+    .catch(err => handleError(err, SETMAKECOMMENTERROR))
 }
 
 export const setCurrentPost = postId => dispatch => {

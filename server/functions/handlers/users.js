@@ -294,7 +294,7 @@ exports.updatePfp = (req, res) => {
   req.userRef
     .update({profilepic: image})
     .then(() => {
-      return Return(req, res, {})
+      return Return(req, res, {url: image})
     })
     .catch(err => {
       console.error(err)

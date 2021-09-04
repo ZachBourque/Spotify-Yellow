@@ -4,7 +4,7 @@ const allowedPunctuation = "._-"
 const request = require("request")
 
 function isEmpty(string) {
-  return !string || 0 === string.length.trim()
+  return !string || 0 === string.trim().length
 }
 
 exports.validatePost = post => {
