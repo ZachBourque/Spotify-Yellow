@@ -53,7 +53,6 @@ class Router extends React.Component {
   }
 
   refresh = () => {
-    this.props.logout()
     window.location.reload()
     this.handleClose()
   }
@@ -62,8 +61,7 @@ class Router extends React.Component {
     if (prevProps.ui.errors.dialog !== this.props.ui.errors.dialog && !this.state.open) {
       if (this.props.ui.errors.dialog) {
         this.setState({open: true, error: this.props.ui.errors.dialog})
-      } else {
-        this.setState({open: false, error: null})
+        this.props.logout()
       }
     }
   }
@@ -92,7 +90,7 @@ class Router extends React.Component {
             </Switch>
           </BrowserRouter>
           <Dialog open={this.state.open} onClose={this.handleClose} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
-            <DialogTitle id="alert-dialog-title">{"Error"}</DialogTitle>
+            <DialogTitle id="alert-dialog-title">{"Fatal error"}</DialogTitle>
             <DialogContent>
               <DialogContentText id="alert-dialog-description">{this.state.error}</DialogContentText>
             </DialogContent>
