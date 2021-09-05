@@ -1,4 +1,4 @@
-import {SETDIALOGERROR, SETFEEDERROR, CLEARERRORS, SETDELETEERROR, SETSIGNUPERROR, SETEDITPOSTERROR, SETMAKEPOSTERROR, SETUPDATEBIOERROR, SETUPDATEPFPERROR, SETSENDMUSICERROR, SETUPDATEFAVORITESERROR} from "../types"
+import {SETDIALOGERROR, SETFEEDERROR, CLEARERRORS, SETDELETEERROR, SETSIGNUPERROR, SETEDITPOSTERROR, SETMAKEPOSTERROR, SETUPDATEBIOERROR, SETUPDATEPFPERROR, SETSENDMUSICERROR, SETUPDATEFAVORITESERROR, TOGGLEMAKEPOSTDIALOG, TOGGLEMAKECOMMENTDIALOG} from "../types"
 const initialState = {
   errors: {
     dialog: null,
@@ -12,7 +12,13 @@ const initialState = {
     pfp: null,
     favorites: null,
     sendMusic: null
-  }
+  },
+  sendMusicOpen: false,
+  makePostOpen: false,
+  makeCommentOpen: false,
+  editPostOpen: false,
+  deleteOpen: false,
+  sendMusicOpen: false
 }
 
 export default function (state = initialState, action) {
@@ -39,6 +45,10 @@ export default function (state = initialState, action) {
       return {...state, errors: {...state.errors, sendMusic: action.payload}}
     case SETUPDATEFAVORITESERROR:
       return {...state, errors: {...state.errors, favorites: action.payload}}
+    case TOGGLEMAKEPOSTDIALOG:
+      return {...state, makePostOpen: action.payload}
+    case TOGGLEMAKECOMMENTDIALOG:
+      return {...state, makeCommentOpen: action.payload}
     default:
       return state
   }

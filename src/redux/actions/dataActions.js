@@ -1,4 +1,4 @@
-import {DATALOADING, DELETEPOST, EDITPOST, REFRESH_TOKEN, SETCOMMENTLIST, LIKEPOST, UNLIKEPOST, SETPOSTS, DELETECOMMENT, SETUSERS, SETFEEDERROR, CLEARERRORS, SETEDITPOSTERROR, SETDELETEERROR, SETMAKECOMMENTERROR} from "../types"
+import {DATALOADING, DELETEPOST, EDITPOST, REFRESH_TOKEN, SETCOMMENTLIST, LIKEPOST, UNLIKEPOST, SETPOSTS, DELETECOMMENT, SETUSERS, SETFEEDERROR, CLEARERRORS, SETEDITPOSTERROR, SETDELETEERROR, SETMAKECOMMENTERROR, SETMAKEPOSTERROR} from "../types"
 import axios from "axios"
 import {refresh, handleError, checkForFatalError} from "../util"
 
@@ -28,6 +28,20 @@ export const setCurrent = arr => dispatch => {
 
 export const setDataLoading = () => dispatch => {
   dispatch({type: DATALOADING})
+}
+
+export const makePost = (newPost, token, expires, rtoken) => dispatch => {
+  axios
+    .post("/createPost", newPost, {headers: {token, rtoken, expires}})
+    .then(res => {
+      refresh(res)
+
+      window.location.reload()
+    })
+    .catch(err => {
+      console.error(err)
+      handleError(err, SETMAKEPOSTERROR)
+    })
 }
 
 export const editPost = (postId, update, token, expires, rtoken) => dispatch => {
