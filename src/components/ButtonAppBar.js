@@ -171,7 +171,7 @@ function PrimarySearchAppBar(props) {
 
   const submitSearch = e => {
     e.preventDefault()
-    if (!props.auth.token && search === 0) {
+    if (!props.auth.token && search === 1) {
       // proper error handling later
       console.log("cannot search spotify when not logged in")
     }
