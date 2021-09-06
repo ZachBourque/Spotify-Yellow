@@ -8,6 +8,8 @@ import Menu from "@material-ui/core/Menu"
 import MenuItem from "@material-ui/core/MenuItem"
 import IconButton from "@material-ui/core/IconButton"
 import MoreVert from "@material-ui/icons/MoreVert"
+import SendMusicDialog from "./SendMusicDialog"
+import { PostOnTopicDialog } from "./MakePostDialog"
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -34,6 +36,8 @@ const useStyles = makeStyles(theme => ({
 const DisplayData = ({element, id, onClick, maxHeight, maxWidth, ex}) => {
   const classes = useStyles()
   const [anchorEl, setAnchorEl] = useState(null)
+  const [sendMusicStatus, setSendMusicStatus] = useState(false)
+  const [postOnTopicStatus, setPostOnTopicStatus] = useState(false)
 
   const handleClick = event => {
     setAnchorEl(event.currentTarget)
@@ -50,6 +54,22 @@ const DisplayData = ({element, id, onClick, maxHeight, maxWidth, ex}) => {
     })
   }
 
+  const openSendMusic = () => {
+    setSendMusicStatus(true)
+  }
+
+  const closeSendMusic = () => {
+    setSendMusicStatus(false)
+  }
+
+  const openPostOnTopic = () => {
+    setPostOnTopicStatus(true)
+  }
+
+  const closePostOnTopic = () => {
+    setPostOnTopicStatus(false)
+  }
+
   const sendToUser = () => {}
 
   const makePost = () => {}
@@ -57,12 +77,13 @@ const DisplayData = ({element, id, onClick, maxHeight, maxWidth, ex}) => {
   const renderMenu = (
     <Menu id="simple-menu" anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleClose}>
       <MenuItem onClick={copyLink}>Copy Link</MenuItem>
-      <MenuItem onClick={sendToUser}>Send to user</MenuItem>
-      <MenuItem onClick={makePost}>Make post on topic</MenuItem>
+      <MenuItem onClick={() => {handleClose(); openSendMusic(); }}>Send to user</MenuItem>
+      <MenuItem onClick={() => {handleClose();openPostOnTopic();}}>Make post on topic</MenuItem>
     </Menu>
   )
 
   return (
+    <Fragment>
     <Card onClick={onClick ? () => onClick(element) : null} styles={classes.paper} style={{cursor: "pointer", marginBottom: "10px"}} id={id}>
       <CardMedia
         style={{
@@ -112,6 +133,33 @@ const DisplayData = ({element, id, onClick, maxHeight, maxWidth, ex}) => {
         {renderMenu}
       </CardContent>
     </Card>
+    <SendMusicDialog
+    element={{
+        type: element.type,
+        id: element.id,
+        artistName: element.artistName,
+        albumName: element.albumName,
+        songName: element.songName,
+        image: element.image,
+        url: `https://open.spotify.com/${element.type}/${element.id}`
+    }}
+    open={sendMusicStatus}
+    onClose={closeSendMusic}
+/>
+<PostOnTopicDialog
+    element={{
+        type: element.type,
+        id: element.id,
+        artistName: element.artistName,
+        albumName: element.albumName,
+        songName: element.songName,
+        image: element.image,
+        url: `https://open.spotify.com/${element.type}/${element.id}`
+    }}
+    open={postOnTopicStatus}
+    onClose={closePostOnTopic}
+/>
+</Fragment>
   )
 }
 

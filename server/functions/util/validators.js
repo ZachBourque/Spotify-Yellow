@@ -1,4 +1,3 @@
-const { ExposurePlus1Outlined } = require("@material-ui/icons");
 const { post } = require("request");
 
 function isEmpty(string){
