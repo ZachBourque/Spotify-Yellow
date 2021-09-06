@@ -28,6 +28,7 @@ import LikeButton from "../components/LikeButton"
 import SendMusicDialog from './SendMusicDialog';
 import { EditPostDialog } from './EditPostDialog';
 import DeletePostDialog from './DeletePostDialog';
+import MakePostDialog from "./MakePostDialog"
 
 const styles = makeStyles(theme => ({
   header: {
@@ -265,22 +266,17 @@ export class Post extends Component {
 
                 </Card>
                 {/* MakePost Dialog Box */}
-                <Dialog onClose={this.closeMakePost} aria-labelledby="customized-dialog-title" open={this.state.makePostStatus} maxWidth="md" fullWidth>
-                    <DialogContent >
-                        <Grid container justify="center">
-                            <Grid item>
-                                <MakePost selectedTopic={{
-                                    type: element.type,
-                                    id: element.spotifyid,
-                                    artistName: element.artist,
-                                    albumName: element.album,
-                                    songName: element.track,
-                                    image: element.pic,
-                                }} />
-                            </Grid>
-                        </Grid>
-                    </DialogContent>
-                </Dialog>
+                <MakePostDialog
+                element={{type: element.type,
+                    id: element.spotifyid,
+                    artistName: element.artist,
+                    albumName: element.album,
+                    songName: element.track,
+                    image: element.pic
+                }}
+                open={this.state.makePostStatus}
+                onClose={this.closeMakePost}
+                />
 
                 {/* DeletePost Dialog Box */}
                 <DeletePostDialog

@@ -17,6 +17,7 @@ import Button from "@material-ui/core/Button"
 import MakePost from "../components/MakePost"
 import UserCard from "../components/UserCard"
 import SendMusicDialog from '../components/SendMusicDialog';
+import MakePostDialog from "../components/MakePostDialog"
 
 const defaultNumOfPosts = 25
 
@@ -71,15 +72,10 @@ export class Homepage extends Component {
         </div>
         <Button variant="contained" onClick={this.openSearchUsers}></Button>
         <SearchUsers open={this.state.searchUsersState} onClose={this.closeSearchUsers} auth={this.props.auth} />
-        <Dialog onClose={this.handleClose} aria-labelledby="customized-dialog-title" open={this.state.open} maxWidth="md" fullWidth>
-          <DialogContent>
-            <Grid container justify="center">
-              <Grid item>
-                <MakePost />
-              </Grid>
-            </Grid>
-          </DialogContent>
-        </Dialog>
+        <MakePostDialog 
+        open={this.state.open}
+        onClose={this.handleClose}
+        />
       </Fragment>
     )
   }
