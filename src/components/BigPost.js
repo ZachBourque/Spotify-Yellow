@@ -1,6 +1,6 @@
-import {Component, Fragment} from "react"
-import {connect} from "react-redux"
-import {Menu, MenuItem, Avatar, Grid, Typography, Divider, Box, CardHeader, CardMedia, CardContent, CardActions, IconButton, Card, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField} from "@material-ui/core"
+import { Component, Fragment } from "react"
+import { connect } from "react-redux"
+import { Menu, MenuItem, Avatar, Grid, Typography, Divider, Box, CardHeader, CardMedia, CardContent, CardActions, IconButton, Card, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from "@material-ui/core"
 import clsx from "clsx"
 import ThumbUpIcon from "@material-ui/icons/ThumbUp"
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore"
@@ -19,20 +19,21 @@ import Eight from "../assets/8.png"
 import Nine from "../assets/9.png"
 import Ten from "../assets/10.png"
 import withStyles from "@material-ui/core/styles/withStyles"
-import {makeStyles, createMuiTheme} from "@material-ui/core/styles"
+import { makeStyles, createMuiTheme } from "@material-ui/core/styles"
 import axios from "axios"
 import Comment from "./Comment"
 import MakePost from "./MakePost"
 import CommentIcon from "@material-ui/icons/Comment"
 import $ from "jquery"
-import {deletePost, editPost, setCurrentPost} from "../redux/actions/dataActions"
-import {reloadUserProfile} from "../redux/actions/userActions"
+import { deletePost, editPost, setCurrentPost } from "../redux/actions/dataActions"
+import { reloadUserProfile } from "../redux/actions/userActions"
 import EditPostDialog from "./EditPostDialog"
 import DeletePostDialog from "./DeletePostDialog"
 import MakeCommentDialog from "./MakeCommentDialog"
-import {setCurrent, setDataLoading} from "../redux/actions/dataActions"
+import { setCurrent, setDataLoading } from "../redux/actions/dataActions"
 import LikeButton from "./LikeButton"
 import {openMakeCommentDialog, closeMakeCommentDialog, openMakePostDialog, closeMakePostDialog, openEditPostDialog, closeEditPostDialog, openDeleteDialog, closeDeleteDialog, openSendMusicDialog, closeSendMusicDialog} from "../redux/actions/UIActions"
+import { PostOnTopicDialog } from "./MakePostDialog"
 
 const styles = makeStyles(theme => ({
   header: {
@@ -52,7 +53,7 @@ export class Post extends Component {
     const id = this.props.match.params.postID
     //  this.props.makeComment(this.props.element.postId, this.props.auth.token, this.props.auth.expires, this.props.auth.rtoken, newComment)
     this.props.setCurrentPost(id).then(res => {
-      this.setState({isLoading: false})
+      this.setState({ isLoading: false })
     })
   }
 
@@ -61,23 +62,24 @@ export class Post extends Component {
   }
 
   updateElement = newElement => {
-    this.setState({element: newElement})
+    this.setState({ element: newElement })
   }
 
+
   handleClick = event => {
-    this.setState({menuOpen: event.currentTarget})
+    this.setState({ menuOpen: event.currentTarget })
   }
 
   handleClose = () => {
-    this.setState({menuOpen: null})
+    this.setState({ menuOpen: null })
   }
 
   openMakePost() {
-    this.setState({makePostStatus: true})
+    this.setState({ makePostStatus: true })
   }
 
   closeMakePost = () => {
-    this.setState({makePostStatus: false})
+    this.setState({ makePostStatus: false })
   }
 
   sharePost() {
@@ -85,43 +87,41 @@ export class Post extends Component {
   }
 
   openEditPost() {
-    this.setState({editPostStatus: true})
+    this.setState({ editPostStatus: true })
   }
 
   closeEditPost = () => {
-    this.setState({editPostStatus: false})
+    this.setState({ editPostStatus: false })
   }
 
   openDeletePost() {
-    this.setState({deletePostStatus: true})
+    this.setState({ deletePostStatus: true })
   }
 
   closeDeletePost = () => {
-    this.setState({deletePostStatus: false})
+    this.setState({ deletePostStatus: false })
   }
 
   openSendMusic() {
-    this.setState({sendMusicStatus: true})
+    this.setState({ sendMusicStatus: true })
   }
 
   closeSendMusic = () => {
-    this.setState({sendMusicStatus: false})
+    this.setState({ sendMusicStatus: false })
   }
 
   render() {
-    console.log(this.props)
     const {classes} = this.props
     const element = this.props.data.posts[0]
-    console.log(element)
     return this.state.isLoading ? (
       ""
     ) : (
       <Fragment>
         <Grid container justify="center">
           <Grid item xs={6}>
-            <Card style={{backgroundColor: "#4d4d4d"}} align="center">
+            <Card style={{ backgroundColor: "#4d4d4d" }} align="center">
               <CardHeader
-                avatar={<Avatar src={element.pfp} style={{cursor: "pointer"}} onClick={() => this.userRe(element.authorid)} />}
+                avatar={<Avatar src={element.pfp} style={{ cursor: "pointer" }} onClick={() => this.userRe(element.authorid)} />}
                 action={
                   <Fragment>
                     <IconButton aria-label="settings" aria-controls="simple-menu" aria-haspopup="true" onClick={this.handleClick}>
@@ -154,19 +154,19 @@ export class Post extends Component {
                   </Fragment>
                 }
                 title={<Typography variant="h5">{element.username}</Typography>}
-                style={{backgroundColor: "#D99E2A"}}
+                style={{ backgroundColor: "#D99E2A" }}
               />
               {/* Items before divider */}
               <CardContent>
                 <Grid container alignItems="flex-start" justify="space-between" direction="row">
                   <Grid item xs={4}>
                     <a href={`https://open.spotify.com/${element.type}/${element.spotifyid}`}>
-                      <CardMedia image={element.pic} component="img" style={{maxWidth: "250px"}} />
+                      <CardMedia image={element.pic} component="img" style={{ maxWidth: "250px" }} />
                     </a>
                   </Grid>
 
                   <Grid item xs={4}>
-                    <Typography variant="h4" align="center" style={{backgroundColor: "#002984", width: "fit-content", borderRadius: "5%"}}>
+                    <Typography variant="h4" align="center" style={{ backgroundColor: "#002984", width: "fit-content", borderRadius: "5%" }}>
                       {element.artist.map?.((e, i) => {
                         return (
                           <Fragment>
@@ -177,32 +177,32 @@ export class Post extends Component {
                       }) || element.artist}
                     </Typography>
                     <Grid item xs={12}>
-                      <Typography variant="h4" align="center" style={{backgroundColor: "#3f51b5", width: "fit-content", borderRadius: "5%"}}>
+                      <Typography variant="h4" align="center" style={{ backgroundColor: "#3f51b5", width: "fit-content", borderRadius: "5%" }}>
                         {element.album}
                       </Typography>
                     </Grid>
                     <Grid item xs={12}>
-                      <Typography variant="h4" align="center" style={{backgroundColor: "#757de8", width: "fit-content", borderRadius: "5%"}}>
+                      <Typography variant="h4" align="center" style={{ backgroundColor: "#757de8", width: "fit-content", borderRadius: "5%" }}>
                         {element.track}
                       </Typography>
                     </Grid>
                   </Grid>
                   <Grid item xs={4}>
-                    <CardMedia image={this.imagesArray[element.rating]} component="img" style={{maxWidth: "150px"}} />
+                    <CardMedia image={this.imagesArray[element.rating]} component="img" style={{ maxWidth: "150px" }} />
                   </Grid>
                 </Grid>
 
                 {/* Items After divider */}
                 <Grid container justify="center" direction="row">
                   <Grid item xs={12}>
-                    <Divider style={{marginTop: "10px", marginBottom: "10px"}} />
+                    <Divider style={{ marginTop: "10px", marginBottom: "10px" }} />
                   </Grid>
                   <Grid item xs={12}>
                     <Typography variant="h3" align="center">
                       {element.title}
                     </Typography>
                   </Grid>
-                  <Box style={{backgroundColor: "#363434", width: "80%"}} borderRadius={16}>
+                  <Box style={{ backgroundColor: "#363434", width: "80%" }} borderRadius={16}>
                     <Grid item xs={12}>
                       {!this.state.isLoading &&
                         element.body.split("\n").map(line => {
@@ -242,7 +242,21 @@ export class Post extends Component {
         {/* MakeComment Dialog */}
         <MakeCommentDialog onClose={this.props.closeMakeCommentDialog} makeCommentState={this.props.ui.makeCommentOpen} element={element} />
         {/* MakePost Dialog Box */}
-        <Dialog onClose={this.props.closeMakePostDialog} aria-labelledby="customized-dialog-title" open={this.props.ui.makePostOpen} maxWidth="md" fullWidth>
+        <PostOnTopicDialog 
+        element={{
+          type: element.type,
+          id: element.spotifyid,
+          artistName: element.artist,
+          albumName: element.album,
+          songName: element.track,
+          image: element.pic,
+          url: `https://open.spotify.com/${element.type}/${element.spotifyid}`
+        }}
+        open={this.state.makePostStatus} 
+        onClose={this.closeMakePost}
+        />
+          {/* <Dialog onClose={this.closeMakePost} aria-labelledby="customized-dialog-title" open={this.state.makePostStatus} maxWidth="md" fullWidth>
+
           <DialogContent>
             <Grid container justify="center">
               <Grid item>
@@ -260,7 +274,7 @@ export class Post extends Component {
               </Grid>
             </Grid>
           </DialogContent>
-        </Dialog>
+        </Dialog> */}
 
         {/* DeletePost Dialog Box */}
         <DeletePostDialog element={element} open={this.props.ui.deleteOpen} onClose={this.props.closeDeleteDialog} auth={this.props.auth} deletePost={this.props.deletePost} history={this.props.history} />

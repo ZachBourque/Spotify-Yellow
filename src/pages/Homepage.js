@@ -21,6 +21,7 @@ import makeStyles from "@material-ui/core/styles/makeStyles"
 import withStyles from "@material-ui/core/styles/withStyles"
 import FeedSkeleton from "../Skeletons/FeedSkeleton"
 import { openMakePostDialog, closeMakePostDialog } from "../redux/actions/UIActions"
+import MakePostDialog from "../components/MakePostDialog"
 
 const defaultNumOfPosts = 25
 
@@ -97,15 +98,10 @@ export class Homepage extends Component {
         )}
         <Button variant="contained" onClick={this.openSearchUsers}></Button>
         <SearchUsers open={this.state.searchUsersState} onClose={this.closeSearchUsers} auth={this.props.auth} />
-        <Dialog onClose={this.props.closeMakePostDialog} aria-labelledby="customized-dialog-title" open={this.props.ui.makePostOpen} maxWidth="md" fullWidth>
-          <DialogContent>
-            <Grid container justify="center">
-              <Grid item>
-                <MakePost />
-              </Grid>
-            </Grid>
-          </DialogContent>
-        </Dialog>
+        <MakePostDialog 
+        open={this.state.open}
+        onClose={this.handleClose}
+        />
       </Fragment>
     )
   }

@@ -3,7 +3,7 @@ const request = require("request")
 
 const querystring = require("querystring")
 const {validateUser, validateBio, validateFavorites} = require("../util/validators")
-var redirect_uri = "http://localhost:5000/spotify-yellow-282e0/us-central1/api/callback" // Your redirect uri
+var redirect_uri = "https://us-central1-spotify-yellow-282e0.cloudfunctions.net/api/callback" // Your redirect uri
 var client_id = "e5f1276d07b74135956c8b3130f79f3f" // Your client id
 
 var generateRandomString = function (length) {
@@ -19,7 +19,7 @@ var generateRandomString = function (length) {
 exports.login = (req, res) => {
   //remove state??
   var state = generateRandomString(16)
-  var redirect_uri = "http://localhost:5000/spotify-yellow-282e0/us-central1/api/callback" // Your redirect uri
+  var redirect_uri = "https://us-central1-spotify-yellow-282e0.cloudfunctions.net/api/callback" // Your redirect uri
   var client_id = "e5f1276d07b74135956c8b3130f79f3f"
 
   // your application requests authorization

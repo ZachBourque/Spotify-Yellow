@@ -93,20 +93,21 @@ function PrimarySearchAppBar(props) {
     handleMenuClose()
     props.history.push("/settings")
   }
-  const classes = useStyles()
-  const url =
-    "https://accounts.spotify.com/authorize?" +
-    queryString.stringify({
-      response_type: "code",
-      client_id: "e5f1276d07b74135956c8b3130f79f3f",
-      scope: "user-read-private user-read-email user-read-playback-state",
-      redirect_uri: "http://localhost:5000/spotify-yellow-282e0/us-central1/api/callback"
-    })
-  const [anchorEl, setAnchorEl] = useState(null)
-  const isMenuOpen = Boolean(anchorEl)
-  const handleProfileMenuOpen = event => {
-    setAnchorEl(event.currentTarget)
-  }
+
+  const classes = useStyles();
+  const url = 'https://accounts.spotify.com/authorize?' +
+  queryString.stringify({
+    response_type: 'code',
+    client_id: "e5f1276d07b74135956c8b3130f79f3f",
+    scope: 'user-read-private user-read-email user-read-playback-state',
+    redirect_uri: 'https://us-central1-spotify-yellow-282e0.cloudfunctions.net/api/callback'
+  })
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const isMenuOpen = Boolean(anchorEl);
+  const handleProfileMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  
   const handleMenuClose = () => {
     setAnchorEl(null)
   }

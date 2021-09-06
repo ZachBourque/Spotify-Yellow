@@ -1,6 +1,5 @@
 const allowedCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVQXYZ1234567890-._"
 const allowedPunctuation = "._-"
-
 const request = require("request")
 
 function isEmpty(string) {
