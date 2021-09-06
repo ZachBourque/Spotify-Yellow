@@ -26,8 +26,8 @@ import DialogTitle from "@material-ui/core/DialogTitle"
 import Button from "@material-ui/core/Button"
 import {logout} from "./redux/actions/authActions"
 
-// axios.defaults.baseURL = "https://us-central1-spotify-yellow-282e0.cloudfunctions.net/api"
-axios.defaults.baseURL = "http://localhost:5000/spotify-yellow-282e0/us-central1/api"
+axios.defaults.baseURL = "https://us-central1-spotify-yellow-282e0.cloudfunctions.net/api"
+//axios.defaults.baseURL = "http://localhost:5000/spotify-yellow-282e0/us-central1/api"
 store.dispatch(getUsers())
 $("body").css("margin", 0)
 $("body").css("overflow-x", "hidden")
