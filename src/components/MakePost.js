@@ -291,6 +291,7 @@ const MakePost = props => {
             <Button color="primary" variant="contained" onClick={() => sendPost()}>
               Make Post
             </Button>
+            {props.ui.errors.makePost && <Typography variant="body1">{props.ui.errors.makePost}</Typography>}
           </div>
         )}
       </CardContent>
@@ -299,7 +300,8 @@ const MakePost = props => {
 }
 
 const mapStateToProps = state => ({
-  auth: state.auth
+  auth: state.auth,
+  ui: state.ui
 })
 
 const mapActionsToProps = {

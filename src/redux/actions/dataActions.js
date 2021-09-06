@@ -31,6 +31,7 @@ export const setDataLoading = () => dispatch => {
 }
 
 export const makePost = (newPost, token, expires, rtoken) => dispatch => {
+  dispatch({type: CLEARERRORS})
   axios
     .post("/createPost", newPost, {headers: {token, rtoken, expires}})
     .then(res => {

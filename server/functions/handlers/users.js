@@ -125,7 +125,7 @@ exports.createUser = (req, res) => {
   request.get(options, function (error, response, body) {
     if (error || response.statusCode !== 200) {
       error ? console.error(error) : null
-      return res.status(401).json({error: "Error getting spotify data, LOGOUT"})
+      return res.status(401).json({error: "Error getting spotify data", logout: true})
     } else {
       newUser.id = body.id
       db.collection("users")
@@ -316,7 +316,7 @@ exports.getToken = (req, res) => {
   request.post(authOptions, function (error, response, body) {
     if (error || response.statusCode !== 200) {
       error ? console.error(error) : null
-      return res.status(401).json({error: "Error getting refresh token, LOGOUT"})
+      return res.status(401).json({error: "Error getting refresh token", logout: true})
     } else {
       return res.json({token: body.access_token, expires: new Date(new Date().getTime() + (body.expires_in * 1000 - 60000)).getTime()})
     }

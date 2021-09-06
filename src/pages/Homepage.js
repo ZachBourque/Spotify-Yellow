@@ -20,6 +20,7 @@ import SendMusicDialog from "../components/SendMusicDialog"
 import makeStyles from "@material-ui/core/styles/makeStyles"
 import withStyles from "@material-ui/core/styles/withStyles"
 import FeedSkeleton from "../Skeletons/FeedSkeleton"
+import { openMakePostDialog, closeMakePostDialog } from "../redux/actions/UIActions"
 
 const defaultNumOfPosts = 25
 
@@ -47,21 +48,12 @@ export class Homepage extends Component {
   state = {
     numOfPosts: defaultNumOfPosts,
     isLoading: true,
-    open: false,
     searchUsersState: false
   }
 
   componentDidMount() {
     this.props.getFeedData()
     console.log(this.props.classes.message)
-  }
-
-  handleClickOpen = () => {
-    this.setState({open: true})
-  }
-
-  handleClose = () => {
-    this.setState({open: false})
   }
 
   openSearchUsers = () => {
@@ -91,7 +83,7 @@ export class Homepage extends Component {
               {this.props.data.loaded && this.state.numOfPosts < 1000 && this.props.data.posts.length > this.state.numOfPosts && <Button onClick={() => this.setState({numOfPosts: this.state.numOfPosts + defaultNumOfPosts})}>Show more.</Button>}
             </Grid>
             <div className={classes.makePost}>
-              <IconButton style={{width: "100%", height: "100%"}} onClick={this.handleClickOpen}>
+              <IconButton style={{width: "100%", height: "100%"}} onClick={this.props.openMakePostDialog}>
                 <PostAddIcon />
               </IconButton>
             </div>
@@ -105,7 +97,7 @@ export class Homepage extends Component {
         )}
         <Button variant="contained" onClick={this.openSearchUsers}></Button>
         <SearchUsers open={this.state.searchUsersState} onClose={this.closeSearchUsers} auth={this.props.auth} />
-        <Dialog onClose={this.handleClose} aria-labelledby="customized-dialog-title" open={this.state.open} maxWidth="md" fullWidth>
+        <Dialog onClose={this.props.closeMakePostDialog} aria-labelledby="customized-dialog-title" open={this.props.ui.makePostOpen} maxWidth="md" fullWidth>
           <DialogContent>
             <Grid container justify="center">
               <Grid item>
@@ -125,7 +117,9 @@ const mapStateToProps = state => ({
 })
 
 const mapActionsToProps = {
-  getFeedData
+  getFeedData,
+  openMakePostDialog,
+  closeMakePostDialog
 }
 
 export default connect(mapStateToProps, mapActionsToProps)(withStyles(styles)(Homepage))

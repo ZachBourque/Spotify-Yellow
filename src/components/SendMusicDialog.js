@@ -77,7 +77,8 @@ class SearchUsers extends Component {
 
 const mapStateToProps = state => ({
   auth: state.auth,
-  data: state.data
+  data: state.data,
+  ui: state.ui
 })
 
 const mapActionsToProps = {

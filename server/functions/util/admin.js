@@ -18,7 +18,7 @@ const validateUser = (req, res, next) => {
     request.get(options, function (error, response, body) {
       if (error || response.statusCode !== 200) {
         error ? console.error(error) : null
-        return res.status(401).json({error: "Error getting spotify data, LOGOUT"})
+        return res.status(401).json({error: "Error getting spotify data", logout: true})
       } else {
         db.collection("users")
           .where("id", "==", body.id)
@@ -31,7 +31,7 @@ const validateUser = (req, res, next) => {
           })
           .catch(err => {
             console.error(err)
-            return res.status(500).json({error: "Error getting user data, LOGOUT"})
+            return res.status(500).json({error: "Error getting user data"})
           })
       }
     })
@@ -57,7 +57,7 @@ const validateUser = (req, res, next) => {
       if (error || response.statusCode !== 200) {
         error ? console.error(error) : null
         console.log(error, response.statusCode)
-        return res.status(401).json({error: "Error getting refresh token, LOGOUT"})
+        return res.status(401).json({error: "Error getting refresh token", logout: true})
       } else {
         req.auth.token = body.access_token
         req.auth.refreshed = true

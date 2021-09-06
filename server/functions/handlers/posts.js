@@ -25,7 +25,7 @@ exports.createPost = (req, res) => {
   let errors = validatePost(newPost)
 
   if (errors.length > 0) {
-    return res.status(400).json(errors)
+    return res.status(400).json({error: errors[0], errors})
   }
 
   db.collection("posts")
@@ -128,7 +128,6 @@ exports.deletePost = (req, res) => {
             return res.status(500).json({error: "Error deleting post"})
           })
       } else {
-        console.log(post.authorid, req.user.id)
         return res.status(400).json({error: "Post isnt yours lol"})
       }
     })
@@ -142,7 +141,7 @@ exports.editPost = (req, res) => {
   let {errors, update} = validatePostEdit(req.body.update)
 
   if (errors.length > 0) {
-    return res.status(400).json(errors)
+    return res.status(400).json({error: errors[0], errors})
   }
 
   db.doc(`/posts/${req.params.postId}`)
@@ -185,7 +184,7 @@ exports.createComment = (req, res) => {
 
   let errors = validateComment(newComment)
   if (errors.length > 0) {
-    return res.status(400).json(errors)
+    return res.status(400).json({error: errors[0], errors})
   }
 
   db.doc(`/posts/${newComment.postId}`)
