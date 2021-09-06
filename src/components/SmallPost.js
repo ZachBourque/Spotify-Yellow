@@ -135,12 +135,12 @@ export class Post extends Component {
     let {classes} = this.props
     let {element} = this.props
     return (
-      <>
+      <Fragment>
         <Card style={{backgroundColor: "#4d4d4d"}} align="center">
           <CardHeader
             avatar={<Avatar src={element.pfp} style={{cursor: "pointer"}} onClick={() => this.userRe(element.authorid)} />}
             action={
-              <>
+              <Fragment>
                 <IconButton aria-label="settings" aria-controls="simple-menu" aria-haspopup="true" onClick={this.handleClick}>
                   <MoreVert />
                 </IconButton>
@@ -168,7 +168,7 @@ export class Post extends Component {
                     </MenuItem>
                   )}
                 </Menu>
-              </>
+              </Fragment>
             }
             title={
               <Typography variant="body1" style={{cursor: "pointer", width: "fit-content"}} onClick={() => this.userRe(element.authorid)}>
@@ -196,127 +196,67 @@ export class Post extends Component {
                       <Typography variant="body1">
                         {element.artist.map?.((e, i) => {
                           return (
-                            <>
+                            <Fragment>
                               {e}
                               {i == element.artist.length - 1 ? "" : ", "}
-                            </>
-                        }
-                        title={
-                            <Typography variant="body1" style={{ cursor: 'pointer', width: 'fit-content' }} onClick={() => this.userRe(element.authorid)}>
-                                {element.username}
-                            </Typography>
-                        }
-                        style={
-                            { backgroundColor: "#D99E2A" }
-                        }
-                    />
-                    {/* Main Content */}
-                    <CardContent>
-                        <div onClick={() => this.postRe(element.postId)} style={{ cursor: 'pointer' }}>
+                            </Fragment>
+                          )
+                        }) || element.artist}
+                      </Typography>
+                    </Grid>
+                    <Grid item>
+                      <Typography variant="body1">{element.album}</Typography>
+                    </Grid>
+                    <Grid item>
+                      <Typography variant="body1">{element.track}</Typography>
+                    </Grid>
+                  </Grid>
+                </Grid>
 
-                            <Grid container alignItems="center" justify="flex-start" direction="row">
-                                {/* Left Half */}
-                                <Grid item md={2}>
-                                    <CardMedia id="theImage" image={element.pic} component="img" />
-                                </Grid>
-                                {element.rating > -1 &&
-                                    <Grid item md={2}>
-                                        <CardMedia image={this.imagesArray[element.rating]} component="img" />
-                                    </Grid>
-                                }
-                                <Grid item md={2}>
-                                    <Grid container direction="column" justify="space-between" alignItems="center">
-                                        <Grid item>
-                                            <Typography variant="body1">{element.artist.map?.((e, i) => {
-                                                return <>{e}{i == element.artist.length - 1 ? '' : ', '}</>
-                                            }) || element.artist}</Typography>
-                                        </Grid>
-                                        <Grid item>
-                                            <Typography variant="body1">{element.album}</Typography>
-                                        </Grid>
-                                        <Grid item>
-                                            <Typography variant="body1">{element.track}</Typography>
-                                        </Grid>
-                                    </Grid>
-                                </Grid>
-
-                                {/* Right Half */}
-                                <Grid md={6} item alignContent="center" justify="space-around" direction="column" style={{ backgroundColor: '#2f2f2f', borderRadius: '5%' }}>
-                                    <Grid item>
-                                        <Typography variant="h5" style={{ maxWidth: '75%' }}>{element.title}</Typography>
-                                    </Grid>
-                                    <Grid item align="center">
-                                        {
-                                            this.getBodyText(element).split("\n").map((line, index) => { return index <= 2 ? <Typography align="center" style={{ maxWidth: '75%' }}>{index == 2 ? `${line}...` : line}</Typography> : '' })
-                                        }
-
-                                    </Grid>
-                                </Grid>
-
-
-                            </Grid>
-                        </div>
-                        <Divider style={{ margin: 10 }} />
-                        <CardActions disableSpacing>
-                            <LikeButton postId={element.postId} />
-                            {element.likeCount}
-                            <IconButton onClick={() => this.postRe(element.postId)}>
-                                <Comment />
-                            </IconButton>
-                            <Typography variant="body2">
-                                {element.commentCount}
-                            </Typography>
-                            <IconButton >
-                                <Share />
-                            </IconButton>
-
-                        </CardActions>
-
-                    </CardContent>
-
-
-                </Card>
-                {/* MakePost Dialog Box */}
-                <MakePostDialog
-                element={{type: element.type,
-                    id: element.spotifyid,
-                    artistName: element.artist,
-                    albumName: element.album,
-                    songName: element.track,
-                    image: element.pic
-                }}
-                open={this.state.makePostStatus}
-                onClose={this.closeMakePost}
-                />
-
-                {/* DeletePost Dialog Box */}
-                <DeletePostDialog
-                    element={element}
-                    open={this.state.deletePostStatus}
-                    onClose={this.closeDeletePost}
-                    auth={this.props.auth}
-                    deletePost={this.props.deletePost}
-                    history={this.props.history}
-                />
-                {/* EditPost Dialog Box */}
-                <EditPostDialog
-                    element={element}
-                    open={this.state.editPostStatus}
-                    onClose={this.closeEditPost}
-                    auth={this.props.auth}
-                    editPost={this.props.editPost}
-                    updateParent={this.updateElement}
-
-                />
+                {/* Right Half */}
+                <Grid md={6} item alignContent="center" justify="space-around" direction="column" style={{backgroundColor: "#2f2f2f", borderRadius: "5%"}}>
+                  <Grid item>
+                    <Typography variant="h5" style={{maxWidth: "75%"}}>
+                      {element.title}
+                    </Typography>
+                  </Grid>
+                  <Grid item align="center">
+                    {this.getBodyText(element)
+                      .split("\n")
+                      .map((line, index) => {
+                        return index <= 2 ? (
+                          <Typography align="center" style={{maxWidth: "75%"}}>
+                            {index == 2 ? `${line}...` : line}
+                          </Typography>
+                        ) : (
+                          ""
+                        )
+                      })}
+                  </Grid>
+                </Grid>
               </Grid>
-            </Grid>
-          </DialogContent>
-        </Dialog>
+            </div>
+            <Divider style={{margin: 10}} />
+            <CardActions disableSpacing>
+              <LikeButton postId={element.postId} />
+              {element.likeCount}
+              <IconButton onClick={() => this.postRe(element.postId)}>
+                <Comment />
+              </IconButton>
+              <Typography variant="body2">{element.commentCount}</Typography>
+              <IconButton>
+                <Share />
+              </IconButton>
+            </CardActions>
+          </CardContent>
+        </Card>
+        {/* MakePost Dialog Box */}
+        <MakePostDialog element={{type: element.type, id: element.spotifyid, artistName: element.artist, albumName: element.album, songName: element.track, image: element.pic}} open={this.props.ui.makePostOpen} onClose={this.props.closeMakePostDialog} />
 
         {/* DeletePost Dialog Box */}
         <DeletePostDialog element={element} open={this.props.ui.deleteOpen} onClose={this.props.closeDeleteDialog} deletePost={this.props.deletePost} history={this.props.history} />
         {/* EditPost Dialog Box */}
-        <EditPostDialog element={element} open={this.props.ui.editPostOpen} onClose={this.props.closeEditPostDialog} editPost={this.props.editPost} />
+        <EditPostDialog element={element} open={this.state.editPostStatus} onClose={this.closeEditPost} editPost={this.props.editPost} />
         <SendMusicDialog
           element={{
             type: element.type,
@@ -330,7 +270,7 @@ export class Post extends Component {
           open={this.props.ui.sendMusicOpen}
           onClose={this.props.closeSendMusicDialog}
         />
-      </>
+      </Fragment>
     )
   }
 }
