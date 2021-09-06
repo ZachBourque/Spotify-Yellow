@@ -1,77 +1,81 @@
-import { USERLOADING, SETUSERDATA, CLEARUSERDATA, LOGOUT, REFRESH_TOKEN, UPDATEBIO, UPDATEPFP, UPDATEFAVORITES, MARKNOTIFICATIONSREAD } from "../types"
+import {USERLOADING, SETUSERDATA, CLEARERRORS, UPDATEBIO, UPDATEPFP, UPDATEFAVORITES, MARKNOTIFICATIONSREAD, SETSENDMUSICERROR, SETUPDATEPFPERROR, SETUPDATEFAVORITESERROR, SETUPDATEBIOERROR} from "../types"
 import axios from "axios"
+import {checkForFatalError, handleError, refresh} from "../util"
 
 const getData = (token, expires, rtoken, dispatch) => {
-	console.log("getting data")
-	axios.get('/self', {headers: {token, expires, rtoken}}).then(res => {
-		refresh(res, dispatch)
-		if(localStorage.getItem('cachepfp') !== res.data.user.profilepic){
-			localStorage.setItem('cachepfp', res.data.user.profilepic)
-		}
-		dispatch({type: SETUSERDATA, payload: res.data.user})
-	}).catch(err => {
-		console.log(err?.response?.data?.error)
-	})
-}
-
-export const loadUser = (token, expires, rtoken) => (dispatch) => {
-    console.log("loadUser")
-    dispatch({type: USERLOADING})
-    getData(token, expires, rtoken, dispatch)
-
-}
-
-export const reloadUserProfile = (token, expires, rtoken) => (dispatch) => {
-    console.log("reloadUserProfile")
-    getData(token, expires, rtoken, dispatch)
-}
-
-export const editBio = (bio, token, expires, rtoken, history) => (dispatch) => {
-	axios.post("/editBio", {bio}, {headers:{token, expires, rtoken}}).then(res => {
-		refresh(res, dispatch)
-		dispatch({type: UPDATEBIO, payload: {bio}})
-	})
-}
-
-export const editFavorites = (update, token, expires, rtoken) => (dispatch) => {
-	axios.post("/editFavorites", {update}, {headers: {token, expires, rtoken}}).then(res => {
-		refresh(res, dispatch)
-		dispatch({type: UPDATEFAVORITES, payload: update})
-	})
-}
-
-export const updateProfilePic = (token, expires, rtoken, formData) => (dispatch) => {
-	axios.post('/uploadPic', formData).then(res1 => {
-		axios.put('/updatePfp', {url: res1.data.url}, {headers: {token,expires,rtoken}}).then(res => {
-			refresh(res, dispatch)
-			dispatch({type: UPDATEPFP, payload: {pfp: res1.data.url}})
-		}).catch(err => {
-			console.error(err)
-		})
-	}).catch(err => {
-		console.error(err)
-	})
-}
-
-export const markNotificationsRead = (notifications, token, expires, rtoken) => (dispatch) => {
-	axios.post("/notificationsMarkRead", notifications,{headers: {token,expires,rtoken}}).then(res => {
-		refresh(res, dispatch)
-		dispatch({type: MARKNOTIFICATIONSREAD})
-	})
-}
-
-export const sendMusic = (url,pic,recipient, token, expires, rtoken) => (dispatch) => {
-    return axios.post("/sendNotification", {spotifyURL: url,receiveId: recipient,spotifyPic: pic}, {headers: {token,expires,rtoken}}).then(res => {
-        refresh(res, dispatch)
+  axios
+    .get("/self", {headers: {token, expires, rtoken}})
+    .then(res => {
+      refresh(res)
+      if (localStorage.getItem("cachepfp") !== res.data.user.profilepic) {
+        localStorage.setItem("cachepfp", res.data.user.profilepic)
+      }
+      dispatch({type: SETUSERDATA, payload: res.data.user})
     })
+    .catch(err => checkForFatalError(err))
 }
 
-const refresh = (res, dispatch) => {
-	if(res.data.refreshed){
-		let lsdata = JSON.parse(localStorage.getItem("data"))
-		lsdata.token = res.data.token 
-		lsdata.expires = res.data.expires
-		localStorage.setItem("data", JSON.stringify(lsdata))
-		dispatch({type: REFRESH_TOKEN, payload: {token: lsdata.token, expires: lsdata.expires}})
-	}
+export const loadUser = (token, expires, rtoken) => dispatch => {
+  dispatch({type: USERLOADING})
+  getData(token, expires, rtoken, dispatch)
+}
+
+export const reloadUserProfile = (token, expires, rtoken) => dispatch => {
+  getData(token, expires, rtoken, dispatch)
+}
+
+export const editBio = (bio, token, expires, rtoken, history) => dispatch => {
+  dispatch({type: CLEARERRORS})
+  axios
+    .post("/editBio", {bio}, {headers: {token, expires, rtoken}})
+    .then(res => {
+      refresh(res)
+      dispatch({type: UPDATEBIO, payload: {bio}})
+    })
+    .catch(err => handleError(err, SETUPDATEBIOERROR))
+}
+
+export const editFavorites = (update, token, expires, rtoken) => dispatch => {
+  dispatch({type: CLEARERRORS})
+  axios
+    .post("/editFavorites", {update}, {headers: {token, expires, rtoken}})
+    .then(res => {
+      refresh(res)
+      dispatch({type: UPDATEFAVORITES, payload: update})
+    })
+    .catch(err => handleError(err, SETUPDATEFAVORITESERROR))
+}
+
+export const updateProfilePic = (token, expires, rtoken, formData) => dispatch => {
+  dispatch({type: CLEARERRORS})
+  axios
+    .post("/uploadPic", formData)
+    .then(res => {
+      return axios.put("/updatePfp", {url: res.data.url}, {headers: {token, expires, rtoken}})
+    })
+    .then(res => {
+      refresh(res)
+      dispatch({type: UPDATEPFP, payload: {pfp: res.data.url}})
+    })
+    .catch(err => handleError(err, SETUPDATEPFPERROR))
+}
+
+export const markNotificationsRead = (notifications, token, expires, rtoken) => dispatch => {
+  axios
+    .post("/notificationsMarkRead", notifications, {headers: {token, expires, rtoken}})
+    .then(res => {
+      refresh(res)
+      dispatch({type: MARKNOTIFICATIONSREAD})
+    })
+    .catch(err => checkForFatalError(err))
+}
+
+export const sendMusic = (id, type, recipient, token, expires, rtoken) => dispatch => {
+  dispatch({type: CLEARERRORS})
+  return axios
+    .post("/sendNotification", {id, receiveId: recipient, type}, {headers: {token, expires, rtoken}})
+    .then(res => {
+      refresh(res)
+    })
+    .catch(err => handleError(err, SETSENDMUSICERROR))
 }

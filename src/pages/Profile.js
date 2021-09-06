@@ -67,7 +67,8 @@ class Profile extends Component {
     username: null,
     id: null,
     loading: true,
-    self: false
+    self: false,
+    error: null
   }
 
   componentDidMount() {
@@ -101,14 +102,20 @@ class Profile extends Component {
 
   getProfileData = id => {
     this.setState({loading: true, id})
-    axios.get(`/getUser/${id}`).then(res => {
-      this.props.setCurrent(res.data.posts)
-      if (res.data.id === this.props.user.id) {
-        this.setState({...res.data, loading: false, self: true})
-      } else {
-        this.setState({...res.data, loading: false})
-      }
-    })
+    axios
+      .get(`/getUser/${id}`)
+      .then(res => {
+        this.props.setCurrent(res.data.posts)
+        if (res.data.id === this.props.user.id) {
+          this.setState({...res.data, loading: false, self: true})
+        } else {
+          this.setState({...res.data, loading: false})
+        }
+      })
+      .catch(err => {
+        console.error(err)
+        err?.response?.data?.error ? this.setState({loading: false, error: err.response.data.error}) : this.setState({loading: false, error: "An unknown error has occured"})
+      })
   }
 
   getPosts = () => {
@@ -128,6 +135,8 @@ class Profile extends Component {
         <div name={classes.root}>
           {this.state.loading ? (
             <ProfileSkeleton />
+          ) : this.state.error ? (
+            <Typography variant="body1">{this.state.error}</Typography>
           ) : (
             <div style={{marginTop: 15}}>
               <Grid container direction="row" alignItems="center" justify="center" spacing={3}>

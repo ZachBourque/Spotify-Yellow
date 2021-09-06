@@ -34,6 +34,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const DisplayData = ({element, id, onClick, maxHeight, maxWidth, ex}) => {
+  console.log(element)
   const classes = useStyles()
   const [anchorEl, setAnchorEl] = useState(null)
   const [sendMusicStatus, setSendMusicStatus] = useState(false)

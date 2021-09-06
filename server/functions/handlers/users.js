@@ -2,6 +2,7 @@ const {admin, db, client_secret, Return} = require("../util/admin")
 const request = require("request")
 
 const querystring = require("querystring")
+const {validateUser, validateBio, validateFavorites} = require("../util/validators")
 var redirect_uri = "https://us-central1-spotify-yellow-282e0.cloudfunctions.net/api/callback" // Your redirect uri
 var client_id = "e5f1276d07b74135956c8b3130f79f3f" // Your client id
 
@@ -100,7 +101,6 @@ exports.callback = (req, res) => {
 
 exports.createUser = (req, res) => {
   let newUser = {
-    id: req.body.id,
     username: req.body.username,
     profilepic: req.body.profilepic,
     bio: "",
@@ -111,19 +111,39 @@ exports.createUser = (req, res) => {
     posts: []
   }
 
-  db.collection("users")
-    .add(newUser)
-    .then(doc => {
-      newUser.firebaseID = doc.id
-      return res.json(newUser)
-    })
-    .catch(err => {
-      console.error(err)
-      return res.status(500).json({error: "something went wrong"})
-    })
+  let errors = validateUser(newUser)
+  if (errors.length > 0) {
+    return res.status(400).json({error: "Invalid user.", errors})
+  }
+
+  var options = {
+    url: "https://api.spotify.com/v1/me",
+    headers: {Authorization: "Bearer " + req.auth.token},
+    json: true
+  }
+
+  request.get(options, function (error, response, body) {
+    if (error || response.statusCode !== 200) {
+      error ? console.error(error) : null
+      return res.status(401).json({error: "Error getting spotify data", logout: true})
+    } else {
+      newUser.id = body.id
+      db.collection("users")
+        .add(newUser)
+        .then(doc => {
+          newUser.firebaseID = doc.id
+          return res.json(newUser)
+        })
+        .catch(err => {
+          console.error(err)
+          return res.status(500).json({error: "something went wrong"})
+        })
+    }
+  })
 }
 
 exports.getUser = (req, res) => {
+  console.log("/getUser")
   db.collection("users")
     .where("id", "==", req.params.id)
     .orderBy("createdAt", "desc")
@@ -137,6 +157,7 @@ exports.getUser = (req, res) => {
       return db
         .collection("posts")
         .where("authorid", "==", user.id)
+        .orderBy("createdAt", "desc")
         .limit(1000)
         .get()
         .then(posts => {
@@ -154,8 +175,10 @@ exports.getUser = (req, res) => {
 }
 
 exports.getSelf = (req, res) => {
+  console.log("/getSelf")
   db.collection("posts")
     .where("authorid", "==", req.user.id)
+    .orderBy("createdAt", "desc")
     .get()
     .then(snap => {
       req.user.posts = []
@@ -232,8 +255,10 @@ exports.uploadPic = (req, res) => {
 }
 
 exports.editFavorites = (req, res) => {
-  //validate probably lol
-  console.log(req.body)
+  let errors = validateFavorites(req.body.update)
+  if (errors.length > 0) {
+    return res.status(400).json({error: "Invalid favorite list", errors})
+  }
   req.userRef
     .update(req.body.update)
     .then(() => {
@@ -246,7 +271,10 @@ exports.editFavorites = (req, res) => {
 }
 
 exports.editBio = (req, res) => {
-  //validate first
+  let error = validateBio(req.body.bio)
+  if (error) {
+    return res.status(400).json({error})
+  }
   req.userRef
     .update({bio: req.body.bio})
     .then(() => {
@@ -260,10 +288,13 @@ exports.editBio = (req, res) => {
 
 exports.updatePfp = (req, res) => {
   let image = req.body.url
+  if (!image.startsWith("https://firebasestorage.googleapis.com/v0/b/spotify-yellow-282e0.appspot.com/o/")) {
+    return res.status(400).json({error: "Invalid image url"})
+  }
   req.userRef
     .update({profilepic: image})
     .then(() => {
-      return Return(req, res, {})
+      return Return(req, res, {url: image})
     })
     .catch(err => {
       console.error(err)
@@ -272,6 +303,7 @@ exports.updatePfp = (req, res) => {
 }
 
 exports.getToken = (req, res) => {
+  console.log("/getToken")
   var authOptions = {
     url: "https://accounts.spotify.com/api/token",
     headers: {Authorization: "Basic " + new Buffer(client_id + ":" + client_secret).toString("base64")},
@@ -284,7 +316,7 @@ exports.getToken = (req, res) => {
   request.post(authOptions, function (error, response, body) {
     if (error || response.statusCode !== 200) {
       error ? console.error(error) : null
-      return res.status(401).json({error: "Error getting refresh token, LOGOUT"})
+      return res.status(401).json({error: "Error getting refresh token", logout: true})
     } else {
       return res.json({token: body.access_token, expires: new Date(new Date().getTime() + (body.expires_in * 1000 - 60000)).getTime()})
     }
@@ -292,6 +324,7 @@ exports.getToken = (req, res) => {
 }
 
 exports.getUsers = (req, res) => {
+  console.log("/getUsers")
   db.collection("users")
     .get()
     .then(snap => {
@@ -304,6 +337,7 @@ exports.getUsers = (req, res) => {
 }
 
 exports.markNotificationsRead = (req, res) => {
+  console.log("/markNotiRead")
   let batch = db.batch()
   req.body.forEach(id => {
     const notification = db.doc(`/notifications/${id}`)
@@ -325,19 +359,32 @@ exports.sendNotification = (req, res) => {
     createdAt: new Date().toISOString(),
     type: "send",
     read: false,
-    postId: req.body.spotifyURL,
     sender: req.user.id,
     senderName: req.user.username,
-    receiver: req.body.receiveId,
-    pic: req.body.spotifyPic
+    receiver: req.body.receiveId
   }
-  db.collection("notifications")
-    .add(notification)
-    .then(() => {
-      return Return(req, res, {})
-    })
-    .catch(err => {
-      console.error(err)
-      return res.status(500).json({error: "Error adding notification"})
-    })
+  console.log(req.body.type, req.body.id)
+  var options = {
+    url: `https://api.spotify.com/v1/${req.body.type}s/${req.body.id}`,
+    json: true
+  }
+  request.get(options, function (error, response, body) {
+    if (error || response.statusCode !== 200) {
+      error ? console.error(error) : null
+      return res.status(400).json({error: "Could not get spotify data"})
+    } else {
+      console.log(error)
+      notification.pic = body.images[0].url
+      notification.postId = body.href
+      db.collection("notifications")
+        .add(notification)
+        .then(() => {
+          return Return(req, res, {})
+        })
+        .catch(err => {
+          console.error(err)
+          return res.status(500).json({error: "Error adding notification"})
+        })
+    }
+  })
 }

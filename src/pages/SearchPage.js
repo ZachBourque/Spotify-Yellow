@@ -15,19 +15,22 @@ import SmallPost from "../components/SmallPost"
 import RadioGroup from "@material-ui/core/RadioGroup"
 import FormControlLabel from "@material-ui/core/FormControlLabel"
 import Radio from "@material-ui/core/Radio"
-import {setCurrent, setDataLoading} from "../redux/actions/dataActions"
+import {setCurrent, setDataLoading, getFeedData} from "../redux/actions/dataActions"
 import FavoriteCard from "../components/FavoriteCard"
 
 class SearchPage extends Component {
   state = {
+    data: [],
+    error: null,
     loading: true,
     query: queryString.parse(this.props.location.search)["query"],
     id: parseInt(queryString.parse(this.props.location.search)["id"]),
     filter: 0,
     radioState: 0,
-    users: null,
+    users: this.props.data.users,
     posts: null,
     items: null,
+    searched: false,
     s: new Spotify().setAccessToken(this.props.auth.token)
   }
 
@@ -37,12 +40,17 @@ class SearchPage extends Component {
   }
 
   search = async (query, id, filter) => {
-    this.setState({loading: true})
+    this.setState({loading: true, error: null})
     query = query.toLowerCase()
     let display = []
     switch (id) {
       case 1:
-        let {expires, rtoken} = this.props.auth
+        let {expires, rtoken, token, loggedin} = this.props.auth
+
+        if (!loggedin) {
+          this.setState({error: "Cannot search spotify when not logged in.", loading: false})
+          return
+        }
         let now = new Date().getTime()
         if (now > expires) {
           console.log("running")
@@ -51,34 +59,53 @@ class SearchPage extends Component {
           return
         }
         let s = new Spotify()
-        s.setAccessToken(this.props.auth.token)
-        console.log(s)
+        s.setAccessToken(token)
         switch (filter) {
           case 0:
-            let artists = await s.searchArtists(query, {limit: 10})
-            artists.artists.items.forEach(artist => {
-              display.push({type: "artist", id: artist.id, artistName: [artist.name], albumName: null, songName: null, image: artist.images[0]?.url})
-            })
+            s.searchArtists(query, {limit: 10})
+              .then(artists => {
+                artists.artists.items.forEach(artist => {
+                  display.push({type: "artist", id: artist.id, artistName: [artist.name], albumName: null, songName: null, image: artist.images[0]?.url})
+                })
+              })
+              .catch(err => {
+                console.error(err)
+                this.setState({error: "Error getting data"})
+              })
 
             break
           case 1:
-            const result = await fetch(`https://api.spotify.com/v1/search?q=${query}&type=album&market=US&limit=${10}`, {
+            fetch(`https://api.spotify.com/v1/search?q=${query}&type=album&market=US&limit=${10}`, {
               method: "GET",
               headers: {Authorization: "Bearer " + this.props.auth.token}
             })
-            const data = await result.json()
-            if (data.albums) {
-              data.albums.items.forEach(album => {
-                display.push({type: "album", id: album.id, artistName: album.artists.map(e => e.name), albumName: album.name, songName: null, image: album.images[0]?.url})
+              .then(res => {
+                return res.json()
               })
-            }
+              .then(data => {
+                if (data.albums) {
+                  data.albums.items.forEach(album => {
+                    display.push({type: "album", id: album.id, artistName: album.artists.map(e => e.name), albumName: album.name, songName: null, image: album.images[0]?.url})
+                  })
+                }
+              })
+              .catch(err => {
+                console.error(err)
+                this.setState({loading: false, error: "Error getting data"})
+              })
+
             break
           case 2:
-            s.searchTracks(query, {limit: 10}).then(data => {
-              data.tracks.items.forEach(song => {
-                display.push({type: "track", id: song.id, artistName: song.artists.map(e => e.name), albumName: song.album.name, songName: song.name, image: song.images[0]?.url})
+            s.searchTracks(query, {limit: 10})
+              .then(data => {
+                data.tracks.items.forEach(song => {
+                  display.push({type: "track", id: song.id, artistName: song.artists.map(e => e.name), albumName: song.album.name, songName: song.name, image: song.images[0]?.url})
+                })
               })
-            })
+              .catch(err => {
+                console.error(err)
+                this.setState({loading: false, error: "Error getting data"})
+              })
             break
         }
         break
@@ -109,44 +136,36 @@ class SearchPage extends Component {
             display = [...posts.filter(a => a.type.toLowerCase().includes(query))]
             break
         }
-        this.props.setCurrent(display)
         break
     }
     this.setState({data: display, loading: false})
   }
 
   componentDidUpdate() {
+    if (!this.state.users && this.props.data.users) {
+      this.setState({users: this.props.data.users})
+    }
+    if (!this.state.posts && this.props.data.posts?.length > 0) {
+      console.log("setting", this.props.data.posts.length)
+      this.setState({posts: this.props.data.posts})
+    }
     if (!this.state.users || !this.state.posts) {
       return
     }
     let query = queryString.parse(this.props.location.search)["query"]
     let id = parseInt(queryString.parse(this.props.location.search)["id"])
     let filter = parseInt(queryString.parse(this.props.location.search)["filter"])
-    if (query !== this.state.query || id !== this.state.id || filter !== this.state.filter) {
+    if (!this.state.searched || query !== this.state.query || id !== this.state.id || filter !== this.state.filter) {
       console.log("searching")
-      this.setState({query, id, filter, loading: true})
+      this.setState({query, id, filter, loading: true, searched: true})
       this.props.history.push(`/search?query=${query}&id=${id}&filter=${filter}`)
       this.search(query, id, filter)
     }
   }
 
-  componentDidMount = async () => {
-    let query = queryString.parse(this.props.location.search)["query"]
-    let id = parseInt(queryString.parse(this.props.location.search)["id"])
-    let filter = parseInt(queryString.parse(this.props.location.search)["filter"])
-    this.props.setDataLoading()
-    axios.get("/users").then(res => {
-      this.setState({users: res.data.users})
-      if (this.state.posts) {
-        this.search(query, id, filter)
-      }
-    })
-    axios.get("/allPosts").then(res => {
-      this.setState({posts: res.data})
-      if (this.state.users) {
-        this.search(query, id, filter)
-      }
-    })
+  componentDidMount = () => {
+    this.props.setCurrent([])
+    this.props.getFeedData()
   }
 
   tabChange = (event, newValue) => {
@@ -198,6 +217,8 @@ class SearchPage extends Component {
                     return <UserCard user={item} key={idx} history={this.props.history} />
                   })}
               </Fragment>
+            ) : this.state.error ? (
+              <h2 style={{textAlign: "center"}}>{this.state.error}</h2>
             ) : (
               <h2 style={{textAlign: "center"}}>No Results</h2>
             )
@@ -225,7 +246,8 @@ const mapStateToProps = state => ({
 const mapActionsToProps = {
   setDataLoading,
   getNewToken,
-  setCurrent
+  setCurrent,
+  getFeedData
 }
 
 export default connect(mapStateToProps, mapActionsToProps)(SearchPage)
