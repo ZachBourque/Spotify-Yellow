@@ -1,4 +1,4 @@
-import {SETDIALOGERROR, SETFEEDERROR, CLEARERRORS, SETDELETEERROR, SETSIGNUPERROR, SETEDITPOSTERROR, SETMAKEPOSTERROR, SETUPDATEBIOERROR, SETUPDATEPFPERROR, SETSENDMUSICERROR, SETUPDATEFAVORITESERROR, TOGGLEMAKEPOSTDIALOG, TOGGLEMAKECOMMENTDIALOG, TOGGLEEDITPOSTDIALOG, TOGGLEDELETEDIALOG} from "../types"
+import {SETDIALOGERROR, SETFEEDERROR, CLEARERRORS, SETDELETEERROR, SETSIGNUPERROR, SETEDITPOSTERROR, SETMAKEPOSTERROR, SETUPDATEBIOERROR, SETUPDATEPFPERROR, SETSENDMUSICERROR, SETUPDATEFAVORITESERROR, TOGGLEMAKEPOSTDIALOG, TOGGLEMAKECOMMENTDIALOG, TOGGLEEDITPOSTDIALOG, TOGGLEDELETEDIALOG, TOGGLESENDMUSICDIALOG, TOGGLELOGINDIALOG} from "../types"
 const initialState = {
   errors: {
     dialog: null,
@@ -13,12 +13,50 @@ const initialState = {
     favorites: null,
     sendMusic: null
   },
-  sendMusicOpen: false,
-  makePostOpen: false,
-  makeCommentOpen: false,
-  editPostOpen: false,
-  deleteOpen: false,
-  sendMusicOpen: false
+  sendMusic: {
+    open: false,
+    element: {
+      type: null,
+      id: null,
+      artistName: null,
+      albumName: null,
+      songName: null,
+      image: null,
+      url: null
+    }
+  },
+  makePost: {
+    open: false,
+    element: {
+      type: null,
+      id: null,
+      artistName: null,
+      albumName: null,
+      songName: null,
+      image: null
+    }
+  },
+  editPost: {
+    open: false,
+    element: {
+      rating: null,
+      title: null,
+      body: null
+    }
+  },
+  delete: {
+    open: false,
+    element: {
+      comment: null
+    }
+  },
+  makeComment: {
+    open: false,
+    element: null
+  },
+  login: {
+    open: false
+  }
 }
 
 export default function (state = initialState, action) {
@@ -46,13 +84,17 @@ export default function (state = initialState, action) {
     case SETUPDATEFAVORITESERROR:
       return {...state, errors: {...state.errors, favorites: action.payload}}
     case TOGGLEMAKEPOSTDIALOG:
-      return {...state, makePostOpen: action.payload}
+      return action.payload === false ? {...state, makePost: {...initialState.makePost}} : {...state, makePost: {open: true, element: {...action.payload}}}
     case TOGGLEMAKECOMMENTDIALOG:
-      return {...state, makeCommentOpen: action.payload}
+      return action.payload === false ? {...state, makeComment: {...initialState.makeComment}} : {...state, makeComment: {open: true, ...action.payload}}
     case TOGGLEEDITPOSTDIALOG:
-      return {...state, editPostOpen: action.payload}
+      return action.payload === false ? {...state, editPost: {...initialState.editPost}} : {...state, editPost: {open: true, ...action.payload}}
     case TOGGLEDELETEDIALOG:
-      return {...state, deleteOpen: action.payload}
+      return action.payload === false ? {...state, delete: {...initialState.delete}} : {...state, delete: {open: true, element: {...action.payload}}}
+    case TOGGLESENDMUSICDIALOG:
+      return action.payload === false ? {...state, sendMusic: {...initialState.sendMusic}} : {...state, sendMusic: {open: true, element: {...action.payload}}}
+    case TOGGLELOGINDIALOG:
+      return {...state, login: {open: action.payload}}
     default:
       return state
   }

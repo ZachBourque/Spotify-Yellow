@@ -7,6 +7,7 @@ import {sendMusic} from "../redux/actions/userActions"
 import UserCard from "./UserCard"
 import axios from "axios"
 import DisplayData from "./DisplayData"
+import {closeSendMusicDialog} from "../redux/actions/UIActions"
 
 class SearchUsers extends Component {
   state = {
@@ -30,8 +31,7 @@ class SearchUsers extends Component {
     const {id, type} = this.state.topic
     const {token, expires, rtoken} = this.props.auth
     this.props.sendMusic(id, type, this.state.selectedUser.id, token, expires, rtoken).then(res => {
-      console.log("SUCCESS")
-      this.props.onClose()
+      this.props.closeSendMusicDialog()
     })
   }
 
@@ -48,9 +48,9 @@ class SearchUsers extends Component {
 
   render() {
     return (
-      <Dialog open={this.props.open} onClose={this.props.onClose} maxWidth="sm" fullWidth>
+      <Dialog open={this.props.ui.sendMusic.open} onClose={this.props.closeSendMusicDialog} maxWidth="sm" fullWidth>
         <DialogTitle id="">Send Music:</DialogTitle>
-        <DisplayData element={this.state.topic} maxHeight="200px" />
+        <DisplayData element={this.props.ui.sendMusic.element} maxHeight="200px" />
         <DialogContent>
           <TextField autoFocus id="commentBody" fullWidth variant="outlined" value={this.state.searchText} onChange={this.searchTextChanged} autoComplete="off" />
           {this.state.searchText && (
@@ -62,7 +62,7 @@ class SearchUsers extends Component {
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={this.props.onClose} color="default">
+          <Button onClick={this.props.closeSendMusicDialog} color="default">
             Cancel
           </Button>
           <Button onClick={this.handleClick} color="primary" variant="contained">
@@ -82,7 +82,8 @@ const mapStateToProps = state => ({
 })
 
 const mapActionsToProps = {
-  sendMusic
+  sendMusic,
+  closeSendMusicDialog
 }
 
 export default connect(mapStateToProps, mapActionsToProps)(SearchUsers)

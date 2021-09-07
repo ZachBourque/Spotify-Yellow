@@ -2,17 +2,19 @@ import {Dialog, DialogActions, DialogContent, Grid, Button} from "@material-ui/c
 import React, {Component} from "react"
 import {connect} from "react-redux"
 import MakePost from "./MakePost"
+import {closeMakePostDialog} from "../redux/actions/UIActions"
 
 class PostOnTopicDialog extends Component {
   render() {
     let {element} = this.props
+    console.log(element)
     return (
-      <Dialog onClose={this.props.onClose} aria-labelledby="customized-dialog-title" open={this.props.open} maxWidth="sm" fullWidth>
+      <Dialog onClose={this.props.closeMakePostDialog} aria-labelledby="customized-dialog-title" open={this.props.ui.makePost.open} maxWidth="sm" fullWidth>
         <DialogContent>
           <MakePost selectedTopic={element} />
         </DialogContent>
         <DialogActions>
-          <Button onClick={this.props.onClose} color="default">
+          <Button onClick={this.props.closeMakePostDialog} color="default">
             Cancel
           </Button>
         </DialogActions>
@@ -21,8 +23,12 @@ class PostOnTopicDialog extends Component {
   }
 }
 
-const mapStateToProps = state => ({})
+const mapStateToProps = state => ({
+  ui: state.ui
+})
 
-const mapActionsToProps = {}
+const mapActionsToProps = {
+  closeMakePostDialog
+}
 
 export default connect(mapStateToProps, mapActionsToProps)(PostOnTopicDialog)

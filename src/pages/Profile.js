@@ -197,9 +197,6 @@ class Profile extends Component {
                 ) : (
                   <Typography variant="h4">User does not have any favorite songs.</Typography>
                 )}
-                <Grid item xs={8}>
-                  <MakePost />
-                </Grid>
               </Container>
               {/*User's Posts container*/}
               <Grid container spacing={3} align="center">

@@ -22,18 +22,13 @@ import withStyles from "@material-ui/core/styles/withStyles"
 import {makeStyles, createMuiTheme} from "@material-ui/core/styles"
 import axios from "axios"
 import Comment from "./Comment"
-import MakePost from "./MakePost"
 import CommentIcon from "@material-ui/icons/Comment"
 import $ from "jquery"
 import {deletePost, editPost, setCurrentPost} from "../redux/actions/dataActions"
 import {reloadUserProfile} from "../redux/actions/userActions"
-import EditPostDialog from "./EditPostDialog"
-import DeletePostDialog from "./DeletePostDialog"
-import MakeCommentDialog from "./MakeCommentDialog"
 import {setCurrent, setDataLoading} from "../redux/actions/dataActions"
 import LikeButton from "./LikeButton"
-import {openMakeCommentDialog, closeMakeCommentDialog, openMakePostDialog, closeMakePostDialog, openEditPostDialog, closeEditPostDialog, openDeleteDialog, closeDeleteDialog, openSendMusicDialog, closeSendMusicDialog} from "../redux/actions/UIActions"
-import PostOnTopicDialog from "./MakePostDialog"
+import {openMakeCommentDialog, openMakePostDialog, openEditPostDialog, openDeleteDialog, openSendMusicDialog} from "../redux/actions/UIActions"
 import BigPostSkeleton from "../Skeletons/BigPostSkeleton"
 
 const styles = makeStyles(theme => ({
@@ -95,8 +90,22 @@ export class Post extends Component {
                       <MoreVert />
                     </IconButton>
                     <Menu id="simple-menu" anchorEl={this.state.menuOpen} keepMounted open={Boolean(this.state.menuOpen)} onClose={this.handleClose}>
-                      <MenuItem onClick={this.props.openMakePostDialog}>Make Post On Topic</MenuItem>
-                      <MenuItem onClick={this.props.openSendMusicDialog}>Recommend Topic To Someone</MenuItem>
+                      <MenuItem onClick={() => this.props.openMakePostDialog({type: element.type, id: element.spotifyid, artistName: element.artist, albumName: element.album, songName: element.track, image: element.pic})}>Make Post On Topic</MenuItem>
+                      <MenuItem
+                        onClick={() =>
+                          this.props.openSendMusicDialog({
+                            type: element.type,
+                            id: element.spotifyid,
+                            artistName: element.artist,
+                            albumName: element.album,
+                            songName: element.track,
+                            image: element.pic,
+                            url: `https://open.spotify.com/${element.type}/${element.spotifyid}`
+                          })
+                        }
+                      >
+                        Recommend Topic To Someone
+                      </MenuItem>
                       <MenuItem
                         onClick={() => {
                           this.handleClose()
@@ -106,13 +115,13 @@ export class Post extends Component {
                         Share
                       </MenuItem>
                       {element.authorid == this.props.user.id && (
-                        <MenuItem onClick={this.props.openEditPostDialog}>
+                        <MenuItem onClick={() => this.props.openEditPostDialog(element)}>
                           <Create />
                           Edit Post
                         </MenuItem>
                       )}
                       {element.authorid == this.props.user.id && (
-                        <MenuItem onClick={this.props.openDeleteDialog} style={{color: "red"}}>
+                        <MenuItem onClick={() => this.props.openDeleteDialog(element)} style={{color: "red"}}>
                           <Delete />
                           Delete Post
                         </MenuItem>
@@ -185,7 +194,7 @@ export class Post extends Component {
                 <CardActions disableSpacing>
                   <LikeButton postId={element.postId} />
                   {element.likeCount}
-                  <IconButton onClick={this.props.openMakeCommentDialog}>
+                  <IconButton onClick={() => this.props.openMakeCommentDialog({...element})}>
                     <CommentIcon />
                   </IconButton>
                   <IconButton
@@ -206,47 +215,6 @@ export class Post extends Component {
             })}
           </Grid>
         </Grid>
-        {/* MakeComment Dialog */}
-        <MakeCommentDialog onClose={this.props.closeMakeCommentDialog} makeCommentState={this.props.ui.makeCommentOpen} element={element} />
-        {/* MakePost Dialog Box */}
-        <PostOnTopicDialog
-          element={{
-            type: element.type,
-            id: element.spotifyid,
-            artistName: element.artist,
-            albumName: element.album,
-            songName: element.track,
-            image: element.pic,
-            url: `https://open.spotify.com/${element.type}/${element.spotifyid}`
-          }}
-          open={this.props.ui.makePostOpen}
-          onClose={this.props.closeMakePostDialog}
-        />
-        {/* <Dialog onClose={this.closeMakePost} aria-labelledby="customized-dialog-title" open={this.state.makePostStatus} maxWidth="md" fullWidth>
-
-          <DialogContent>
-            <Grid container justify="center">
-              <Grid item>
-                <MakePost
-                  selectedTopic={{
-                    type: element.type,
-                    id: element.spotifyid,
-                    artistName: element.artist,
-                    albumName: element.album,
-                    songName: element.track,
-                    image: element.pic,
-                    url: `https://open.spotify.com/${element.type}/${element.spotifyid}`
-                  }}
-                />
-              </Grid>
-            </Grid>
-          </DialogContent>
-        </Dialog> */}
-
-        {/* DeletePost Dialog Box */}
-        <DeletePostDialog element={element} open={this.props.ui.deleteOpen} onClose={this.props.closeDeleteDialog} auth={this.props.auth} deletePost={this.props.deletePost} history={this.props.history} />
-
-        <EditPostDialog element={element} open={this.props.ui.editPostOpen} onClose={this.props.closeEditPostDialog} auth={this.props.auth} editPost={this.props.editPost} updateParent={this.updateElement} />
       </Fragment>
     )
   }
@@ -265,15 +233,10 @@ const mapActionsToProps = {
   editPost,
   setCurrentPost,
   openMakeCommentDialog,
-  closeMakeCommentDialog,
-  closeMakePostDialog,
   openMakePostDialog,
   openDeleteDialog,
-  closeDeleteDialog,
   openEditPostDialog,
-  closeEditPostDialog,
-  openSendMusicDialog,
-  closeSendMusicDialog
+  openSendMusicDialog
 }
 
 export default connect(mapStateToProps, mapActionsToProps)(withStyles(styles)(Post))

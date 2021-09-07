@@ -94,20 +94,21 @@ function PrimarySearchAppBar(props) {
     props.history.push("/settings")
   }
 
-  const classes = useStyles();
-  const url = 'https://accounts.spotify.com/authorize?' +
-  queryString.stringify({
-    response_type: 'code',
-    client_id: "e5f1276d07b74135956c8b3130f79f3f",
-    scope: 'user-read-private user-read-email user-read-playback-state',
-    redirect_uri: 'https://us-central1-spotify-yellow-282e0.cloudfunctions.net/api/callback'
-  })
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const isMenuOpen = Boolean(anchorEl);
-  const handleProfileMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-  
+  const classes = useStyles()
+  const url =
+    "https://accounts.spotify.com/authorize?" +
+    queryString.stringify({
+      response_type: "code",
+      client_id: "e5f1276d07b74135956c8b3130f79f3f",
+      scope: "user-read-private user-read-email user-read-playback-state",
+      redirect_uri: "https://us-central1-spotify-yellow-282e0.cloudfunctions.net/api/callback"
+    })
+  const [anchorEl, setAnchorEl] = useState(null)
+  const isMenuOpen = Boolean(anchorEl)
+  const handleProfileMenuOpen = event => {
+    setAnchorEl(event.currentTarget)
+  }
+
   const handleMenuClose = () => {
     setAnchorEl(null)
   }
@@ -119,7 +120,6 @@ function PrimarySearchAppBar(props) {
     if (notRead.length > 0) {
       let ids = []
       notRead.forEach(notification => ids.push(notification.notificationId))
-      console.log(ids)
       props.markNotificationsRead(ids, props.auth.token, props.auth.expires, props.auth.rtoken)
     }
     setNotiEl(event.currentTarget)
@@ -174,7 +174,6 @@ function PrimarySearchAppBar(props) {
     e.preventDefault()
     if (!props.auth.token && search === 1) {
       // proper error handling later
-      console.log("cannot search spotify when not logged in")
     }
     if (props.history.location.pathname.includes("search")) {
       const queryParams = queryString.parse(props.history.location.search)

@@ -45,15 +45,14 @@ class SearchPage extends Component {
     let display = []
     switch (id) {
       case 1:
-        let {expires, rtoken, token, loggedin} = this.props.auth
+        let {expires, rtoken, token, loggedIn} = this.props.auth
 
-        if (!loggedin) {
+        if (!loggedIn) {
           this.setState({error: "Cannot search spotify when not logged in.", loading: false})
           return
         }
         let now = new Date().getTime()
         if (now > expires) {
-          console.log("running")
           this.props.getNewToken(rtoken, this.search)
           this.props.auth.expires = 10000000000000000000000000000000000000
           return
@@ -67,13 +66,14 @@ class SearchPage extends Component {
                 artists.artists.items.forEach(artist => {
                   display.push({type: "artist", id: artist.id, artistName: [artist.name], albumName: null, songName: null, image: artist.images[0]?.url})
                 })
+                return this.setDisplay(display)
               })
               .catch(err => {
                 console.error(err)
                 this.setState({error: "Error getting data"})
               })
 
-            break
+            return this.setDisplay(display)
           case 1:
             fetch(`https://api.spotify.com/v1/search?q=${query}&type=album&market=US&limit=${10}`, {
               method: "GET",
@@ -87,6 +87,7 @@ class SearchPage extends Component {
                   data.albums.items.forEach(album => {
                     display.push({type: "album", id: album.id, artistName: album.artists.map(e => e.name), albumName: album.name, songName: null, image: album.images[0]?.url})
                   })
+                  return this.setDisplay(display)
                 }
               })
               .catch(err => {
@@ -94,50 +95,50 @@ class SearchPage extends Component {
                 this.setState({loading: false, error: "Error getting data"})
               })
 
-            break
+            return this.setDisplay(display)
           case 2:
             s.searchTracks(query, {limit: 10})
               .then(data => {
                 data.tracks.items.forEach(song => {
                   display.push({type: "track", id: song.id, artistName: song.artists.map(e => e.name), albumName: song.album.name, songName: song.name, image: song.images[0]?.url})
                 })
+                return this.setDisplay(display)
               })
               .catch(err => {
                 console.error(err)
                 this.setState({loading: false, error: "Error getting data"})
               })
-            break
         }
-        break
       case 2:
         let users = this.state.users
         switch (filter) {
           case 0:
             display = [...users.filter(a => a.username.toLowerCase().includes(query))]
-            break
+            return this.setDisplay(display)
           case 1:
             display = [...users.filter(a => a.bio.toLowerCase().includes(query))]
-            break
+            return this.setDisplay(display)
         }
-        break
       case 0:
         let posts = this.state.posts
         switch (filter) {
           case 0:
             display = [...posts.filter(a => a.title.toLowerCase().includes(query))]
-            break
+            return this.setDisplay(display)
           case 1:
             display = [...posts.filter(a => a.body.toLowerCase().includes(query))]
-            break
+            return this.setDisplay(display)
           case 2:
             display = [...posts.filter(a => a.topic.toLowerCase().includes(query))]
-            break
+            return this.setDisplay(display)
           case 3:
             display = [...posts.filter(a => a.type.toLowerCase().includes(query))]
-            break
+            return this.setDisplay(display)
         }
-        break
     }
+  }
+
+  setDisplay = display => {
     this.setState({data: display, loading: false})
   }
 
@@ -146,7 +147,6 @@ class SearchPage extends Component {
       this.setState({users: this.props.data.users})
     }
     if (!this.state.posts && this.props.data.posts?.length > 0) {
-      console.log("setting", this.props.data.posts.length)
       this.setState({posts: this.props.data.posts})
     }
     if (!this.state.users || !this.state.posts) {
@@ -156,7 +156,6 @@ class SearchPage extends Component {
     let id = parseInt(queryString.parse(this.props.location.search)["id"])
     let filter = parseInt(queryString.parse(this.props.location.search)["filter"])
     if (!this.state.searched || query !== this.state.query || id !== this.state.id || filter !== this.state.filter) {
-      console.log("searching")
       this.setState({query, id, filter, loading: true, searched: true})
       this.props.history.push(`/search?query=${query}&id=${id}&filter=${filter}`)
       this.search(query, id, filter)

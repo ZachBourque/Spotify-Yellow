@@ -18,12 +18,12 @@ import Nine from "../assets/9.png"
 import Ten from "../assets/10.png"
 import {deletePost, editPost} from "../redux/actions/dataActions"
 import {reloadUserProfile} from "../redux/actions/userActions"
+import {closeEditPostDialog} from "../redux/actions/UIActions"
 
 class EditPostDialog extends Component {
   imagesArray = [Zero, One, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten]
 
   state = {
-    element: this.props.element,
     newRating: this.props.element.rating,
     newTitle: this.props.element.title,
     newBody: this.props.element.body,
@@ -45,7 +45,7 @@ class EditPostDialog extends Component {
   }
 
   editPost(postId, newTitle, newBody, newRating) {
-    const {title, body, rating} = this.state.element
+    const {title, body, rating} = this.props.ui.editPost.element
     const {token, expires, rtoken} = this.props.auth
     let changes = {}
     if (title != newTitle) {
@@ -62,14 +62,12 @@ class EditPostDialog extends Component {
     }
 
     this.props.editPost(postId, {update: changes}, token, expires, rtoken)
-    this.setState({element: {...this.state.element, ...changes}})
   }
 
   render() {
-    const {element} = this.state
-    console.log(this.props)
+    const {element} = this.props.ui.editPost
     return (
-      <Dialog open={this.props.open} onClose={this.props.onClose} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description" maxWidth="sm" fullWidth>
+      <Dialog open={this.props.ui.editPost.open} onClose={this.props.closeEditPostDialog} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description" maxWidth="sm" fullWidth>
         <DialogTitle id="alert-dialog-title">Edit Post:</DialogTitle>
         <DialogContent>
           <TextField id="newTitle" label="Post Title" rows={1} fullWidth variant="outlined" defaultValue={element.title} onChange={this.handleTitleChange} />
@@ -105,7 +103,7 @@ class EditPostDialog extends Component {
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={this.props.onClose} variant="outlined">
+          <Button onClick={this.props.closeEditPostDialog} variant="outlined">
             Cancel
           </Button>
           <Button variant="contained" color="primary" endIcon={<Send />} onClick={() => this.editPost(element.postId, this.state.newTitle, this.state.newBody, this.state.newRating > -1 && this.state.switchState ? this.state.newRating : null)}>
@@ -126,7 +124,8 @@ const mapStateToProps = state => ({
 const mapActionsToProps = {
   reloadUserProfile,
   deletePost,
-  editPost
+  editPost,
+  closeEditPostDialog
 }
 
 export default connect(mapStateToProps, mapActionsToProps)(EditPostDialog)
