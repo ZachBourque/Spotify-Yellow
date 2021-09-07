@@ -57,7 +57,6 @@ class SignUp extends React.Component {
   }
 
   componentDidMount() {
-    console.log("mounted")
     const {state} = this.props.location
     if (state && state.isAuthed) {
       this.setState({
@@ -73,7 +72,6 @@ class SignUp extends React.Component {
 
   fileSelectedHandler = event => {
     var file = $("#fileinput").prop("files")[0]
-    console.log("file", file)
     if (file.type.includes("image")) {
       var url = URL.createObjectURL(file)
       this.setState({

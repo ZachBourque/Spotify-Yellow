@@ -75,9 +75,6 @@ export const deleteComment = (commentId, token, expires, rtoken) => dispatch => 
       refresh(res)
       dispatch({type: DELETECOMMENT, payload: {id: commentId}})
     })
-    .catch(e => {
-      console.log(e)
-    })
     .catch(err => handleError(err, SETDELETEERROR))
 }
 

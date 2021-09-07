@@ -61,6 +61,7 @@ const MakePost = props => {
   //Parsed data that is displayed to the user
   const [dataArray, setDataArray] = useState(null)
   //Scene for the post making process
+  console.log("hi", props.selectedTopic)
   const [scene, setScene] = useState(props.selectedTopic ? 1 : 0)
   const [searchError, setSearchError] = useState(null)
   //Scene 1:

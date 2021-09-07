@@ -5,6 +5,7 @@ import {makeComment} from "../redux/actions/dataActions"
 import {getNewToken} from "../redux/actions/authActions"
 import Delete from "@material-ui/icons/Delete"
 import axios from "axios"
+import {closeMakeCommentDialog} from "../redux/actions/UIActions"
 
 class MakeCommentDialog extends Component {
   state = {
@@ -41,14 +42,14 @@ class MakeCommentDialog extends Component {
     }
 
     this.props.makeComment(this.props.element.postId, this.props.auth.token, this.props.auth.expires, this.props.auth.rtoken, newComment).then(res => {
-      this.props.onClose()
+      this.props.closeMakeCommentDialog()
       this.setState({commentBody: "", emptyBodyBoolean: false})
     })
   }
 
   render() {
     return (
-      <Dialog open={this.props.makeCommentState} onClose={this.props.onClose} maxWidth="xs" fullWidth>
+      <Dialog open={this.props.ui.makeComment.open} onClose={this.props.closeMakeCommentDialog} maxWidth="xs" fullWidth>
         <DialogTitle id="" style={{backgroundColor: "#A88F5D"}}>
           Make Comment:
         </DialogTitle>
@@ -62,7 +63,7 @@ class MakeCommentDialog extends Component {
           {this.props.ui.errors.makeComment && <Typography variant="body1">{this.props.ui.errors.makeComment}</Typography>}
         </DialogContent>
         <DialogActions>
-          <Button onClick={this.props.onClose} color="default">
+          <Button onClick={this.props.closeMakeCommentDialog} color="default">
             Cancel
           </Button>
           <Button onClick={this.sendComment} color="primary" variant="contained">
@@ -82,7 +83,8 @@ const mapStateToProps = state => ({
 
 const mapActionsToProps = {
   makeComment,
-  getNewToken
+  getNewToken,
+  closeMakeCommentDialog
 }
 
 export default connect(mapStateToProps, mapActionsToProps)(MakeCommentDialog)

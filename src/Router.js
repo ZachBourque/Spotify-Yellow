@@ -25,6 +25,11 @@ import DialogContentText from "@material-ui/core/DialogContentText"
 import DialogTitle from "@material-ui/core/DialogTitle"
 import Button from "@material-ui/core/Button"
 import {logout} from "./redux/actions/authActions"
+import MakePostDialog from "./components/MakePostDialog"
+import SendMusicDialog from "./components/SendMusicDialog"
+import MakeCommentDialog from "./components/MakeCommentDialog"
+import EditPostDialog from "./components/EditPostDialog"
+import DeletePostDialog from "./components/DeletePostDialog"
 
 axios.defaults.baseURL = "https://us-central1-spotify-yellow-282e0.cloudfunctions.net/api"
 //axios.defaults.baseURL = "http://localhost:5000/spotify-yellow-282e0/us-central1/api"
@@ -34,7 +39,6 @@ $("body").css("overflow-x", "hidden")
 var a = JSON.parse(window.localStorage.getItem("data"))
 if (a) {
   if (a.expires && a.token && a.rtoken && localStorage.getItem("cachepfp")) {
-    console.log("loading")
     store.dispatch(loadDataIntoState())
     store.dispatch(loadUser(a.token, a.expires, a.rtoken))
   } else {
@@ -100,6 +104,11 @@ class Router extends React.Component {
               </Button>
             </DialogActions>
           </Dialog>
+          <MakePostDialog element={JSON.stringify(this.props.ui.makePost.element) === "{}" ? null : this.props.ui.makePost.element} />
+          <MakeCommentDialog element={this.props.ui.makeComment.element} />
+          <EditPostDialog element={this.props.ui.editPost.element} />
+          <DeletePostDialog element={this.props.ui.delete.element} />
+          <SendMusicDialog element={this.props.ui.sendMusic.element} />
         </Paper>
       </ThemeProvider>
     )

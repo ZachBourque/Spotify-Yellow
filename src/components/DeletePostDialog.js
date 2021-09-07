@@ -3,32 +3,31 @@ import {connect} from "react-redux"
 import {Dialog, DialogTitle, DialogContent, DialogActions, Button, DialogContentText, Typography} from "@material-ui/core"
 import Delete from "@material-ui/icons/Delete"
 import {deletePost, deleteComment} from "../redux/actions/dataActions"
+import {closeDeleteDialog} from "../redux/actions/UIActions"
 
 class DeletePostDialog extends Component {
-  state = {}
-
-  componentDidMount() {
-    this.setState({deletingFunction: this.props.comment ? this.props.deleteComment : this.props.deletePost})
+  deletingFunction = () => {
+    return this.props.element.comment ? this.props.deleteComment : this.props.deletePost
   }
 
   render() {
     const {token, expires, rtoken} = this.props.auth
     return (
-      <Dialog open={this.props.open} onClose={this.props.onClose} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
-        <DialogTitle id="alert-dialog-title">Are you sure you want to delete this {this.props.comment ? "comment" : "post"}?</DialogTitle>
+      <Dialog open={this.props.ui.delete.open} onClose={this.props.closeDeleteDialog} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
+        <DialogTitle id="alert-dialog-title">Are you sure you want to delete this {this.props.element.comment ? "comment" : "post"}?</DialogTitle>
         <DialogContent>
-          <DialogContentText id="alert-dialog-description">Once this {this.props.comment ? "comment" : "post"} is deleted, it cannot be recovered.</DialogContentText>
+          <DialogContentText id="alert-dialog-description">Once this {this.props.element.comment ? "comment" : "post"} is deleted, it cannot be recovered.</DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={this.props.onClose} variant="outlined">
+          <Button onClick={this.props.closeDeleteDialog} variant="outlined">
             Cancel
           </Button>
           <Button
             variant="contained"
             color="secondary"
             onClick={() => {
-              this.state.deletingFunction(this.props.comment ? this.props.element.id : this.props.element.postId, token, expires, rtoken)
-              this.props.onClose()
+              this.deletingFunction()(this.props.element.comment ? this.props.element.id : this.props.element.postId, token, expires, rtoken)
+              this.props.closeDeleteDialog()
             }}
             startIcon={<Delete />}
           >
@@ -48,7 +47,8 @@ const mapStateToProps = state => ({
 
 const mapActionsToProps = {
   deletePost,
-  deleteComment
+  deleteComment,
+  closeDeleteDialog
 }
 
 export default connect(mapStateToProps, mapActionsToProps)(DeletePostDialog)

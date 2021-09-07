@@ -14,13 +14,12 @@ import DialogActions from "@material-ui/core/DialogActions"
 import CloseIcon from "@material-ui/icons/Close"
 import Typography from "@material-ui/core/Typography"
 import Button from "@material-ui/core/Button"
-import MakePost from "../components/MakePost"
 import UserCard from "../components/UserCard"
 import SendMusicDialog from "../components/SendMusicDialog"
 import makeStyles from "@material-ui/core/styles/makeStyles"
 import withStyles from "@material-ui/core/styles/withStyles"
 import FeedSkeleton from "../Skeletons/FeedSkeleton"
-import { openMakePostDialog, closeMakePostDialog } from "../redux/actions/UIActions"
+import {openMakePostDialog, closeMakePostDialog} from "../redux/actions/UIActions"
 import MakePostDialog from "../components/MakePostDialog"
 
 const defaultNumOfPosts = 25
@@ -54,7 +53,6 @@ export class Homepage extends Component {
 
   componentDidMount() {
     this.props.getFeedData()
-    console.log(this.props.classes.message)
   }
 
   openSearchUsers = () => {
@@ -84,7 +82,7 @@ export class Homepage extends Component {
               {this.props.data.loaded && this.state.numOfPosts < 1000 && this.props.data.posts.length > this.state.numOfPosts && <Button onClick={() => this.setState({numOfPosts: this.state.numOfPosts + defaultNumOfPosts})}>Show more.</Button>}
             </Grid>
             <div className={classes.makePost}>
-              <IconButton style={{width: "100%", height: "100%"}} onClick={this.props.openMakePostDialog}>
+              <IconButton style={{width: "100%", height: "100%"}} onClick={() => this.props.openMakePostDialog({})}>
                 <PostAddIcon />
               </IconButton>
             </div>
@@ -96,12 +94,6 @@ export class Homepage extends Component {
         ) : (
           <FeedSkeleton class={classes.message} />
         )}
-        <Button variant="contained" onClick={this.openSearchUsers}></Button>
-        <SearchUsers open={this.state.searchUsersState} onClose={this.closeSearchUsers} auth={this.props.auth} />
-        <MakePostDialog 
-        open={this.state.open}
-        onClose={this.handleClose}
-        />
       </Fragment>
     )
   }

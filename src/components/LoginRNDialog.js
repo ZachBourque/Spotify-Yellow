@@ -11,9 +11,7 @@ export class LoginRNDialog extends Component {
             <Dialog onClose={this.props.onClose} aria-labelledby="customized-dialog-title" open={this.props.open} maxWidth="sm" fullWidth>
                 <DialogContent>
 
-                    <MakePost
-                        selectedTopic={element}
-                    />
+            
 
                 </DialogContent>
                 <DialogActions>

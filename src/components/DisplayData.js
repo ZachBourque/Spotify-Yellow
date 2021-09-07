@@ -9,7 +9,9 @@ import MenuItem from "@material-ui/core/MenuItem"
 import IconButton from "@material-ui/core/IconButton"
 import MoreVert from "@material-ui/icons/MoreVert"
 import SendMusicDialog from "./SendMusicDialog"
-import { PostOnTopicDialog } from "./MakePostDialog"
+import PostOnTopicDialog from "./MakePostDialog"
+import {connect} from "react-redux"
+import {openMakePostDialog, closeMakePostDialog, openSendMusicDialog, closeSendMusicDialog} from "../redux/actions/UIActions"
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -33,12 +35,10 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-const DisplayData = ({element, id, onClick, maxHeight, maxWidth, ex}) => {
-  console.log(element)
+const DisplayData = props => {
+  const {element, id, onClick, maxHeight, maxWidth, ex} = props
   const classes = useStyles()
   const [anchorEl, setAnchorEl] = useState(null)
-  const [sendMusicStatus, setSendMusicStatus] = useState(false)
-  const [postOnTopicStatus, setPostOnTopicStatus] = useState(false)
 
   const handleClick = event => {
     setAnchorEl(event.currentTarget)
@@ -55,113 +55,90 @@ const DisplayData = ({element, id, onClick, maxHeight, maxWidth, ex}) => {
     })
   }
 
-  const openSendMusic = () => {
-    setSendMusicStatus(true)
-  }
-
-  const closeSendMusic = () => {
-    setSendMusicStatus(false)
-  }
-
-  const openPostOnTopic = () => {
-    setPostOnTopicStatus(true)
-  }
-
-  const closePostOnTopic = () => {
-    setPostOnTopicStatus(false)
-  }
-
-  const sendToUser = () => {}
-
-  const makePost = () => {}
-
   const renderMenu = (
     <Menu id="simple-menu" anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleClose}>
       <MenuItem onClick={copyLink}>Copy Link</MenuItem>
-      <MenuItem onClick={() => {handleClose(); openSendMusic(); }}>Send to user</MenuItem>
-      <MenuItem onClick={() => {handleClose();openPostOnTopic();}}>Make post on topic</MenuItem>
+      <MenuItem
+        onClick={() =>
+          props.openSendMusicDialog({
+            type: element.type,
+            id: element.spotifyid,
+            artistName: element.artist,
+            albumName: element.album,
+            songName: element.track,
+            image: element.pic,
+            url: `https://open.spotify.com/${element.type}/${element.spotifyid}`
+          })
+        }
+      >
+        Send to user
+      </MenuItem>
+      <MenuItem onClick={() => props.openMakePostDialog({type: element.type, id: element.spotifyid, artistName: element.artist, albumName: element.album, songName: element.track, image: element.pic})}>Make post on topic</MenuItem>
     </Menu>
   )
 
   return (
     <Fragment>
-    <Card onClick={onClick ? () => onClick(element) : null} styles={classes.paper} style={{cursor: "pointer", marginBottom: "10px"}} id={id}>
-      <CardMedia
-        style={{
-          maxHeight: maxHeight,
-          maxWidth: maxWidth
-        }}
-        src={element?.image || "https://media.pitchfork.com/photos/5c7d4c1b4101df3df85c41e5/1:1/w_600/Dababy_BabyOnBaby.jpg"}
-        component="img"
-      />
-      <CardContent>
-        {element?.artistName && (
-          <Fragment>
-            <Typography variant="h4" id={id}>
-              Artist:
-            </Typography>
-            {element.artistName.map((e, i) => {
-              return (
-                <Typography variant="body1">
-                  {e}
-                  {i == element.artistName.length - 1 ? "" : ", "}
-                </Typography>
-              )
-            })}
-          </Fragment>
-        )}
-        {element?.albumName && (
-          <Fragment>
-            <Typography variant="h4" id={id}>
-              Album:
-            </Typography>
-            <Typography variant="body1">{element.albumName}</Typography>
-          </Fragment>
-        )}
-        {element?.songName && (
-          <Fragment>
-            <Typography variant="h4" id={id}>
-              Track:
-            </Typography>
-            <Typography variant="body1">{element.songName}</Typography>
-          </Fragment>
-        )}
-        {ex ? (
-          <IconButton onClick={handleClick}>
-            <MoreVert />
-          </IconButton>
-        ) : null}
-        {renderMenu}
-      </CardContent>
-    </Card>
-    <SendMusicDialog
-    element={{
-        type: element.type,
-        id: element.id,
-        artistName: element.artistName,
-        albumName: element.albumName,
-        songName: element.songName,
-        image: element.image,
-        url: `https://open.spotify.com/${element.type}/${element.id}`
-    }}
-    open={sendMusicStatus}
-    onClose={closeSendMusic}
-/>
-<PostOnTopicDialog
-    element={{
-        type: element.type,
-        id: element.id,
-        artistName: element.artistName,
-        albumName: element.albumName,
-        songName: element.songName,
-        image: element.image,
-        url: `https://open.spotify.com/${element.type}/${element.id}`
-    }}
-    open={postOnTopicStatus}
-    onClose={closePostOnTopic}
-/>
-</Fragment>
+      <Card onClick={onClick ? () => onClick(element) : null} styles={classes.paper} style={{cursor: "pointer", marginBottom: "10px"}} id={id}>
+        <CardMedia
+          style={{
+            maxHeight: maxHeight,
+            maxWidth: maxWidth
+          }}
+          src={element?.image || "https://media.pitchfork.com/photos/5c7d4c1b4101df3df85c41e5/1:1/w_600/Dababy_BabyOnBaby.jpg"}
+          component="img"
+        />
+        <CardContent>
+          {element?.artistName && (
+            <Fragment>
+              <Typography variant="h4" id={id}>
+                Artist:
+              </Typography>
+              {element.artistName.map((e, i) => {
+                return (
+                  <Typography variant="body1">
+                    {e}
+                    {i == element.artistName.length - 1 ? "" : ", "}
+                  </Typography>
+                )
+              })}
+            </Fragment>
+          )}
+          {element?.albumName && (
+            <Fragment>
+              <Typography variant="h4" id={id}>
+                Album:
+              </Typography>
+              <Typography variant="body1">{element.albumName}</Typography>
+            </Fragment>
+          )}
+          {element?.songName && (
+            <Fragment>
+              <Typography variant="h4" id={id}>
+                Track:
+              </Typography>
+              <Typography variant="body1">{element.songName}</Typography>
+            </Fragment>
+          )}
+          {ex ? (
+            <IconButton onClick={handleClick}>
+              <MoreVert />
+            </IconButton>
+          ) : null}
+          {renderMenu}
+        </CardContent>
+      </Card>
+    </Fragment>
   )
 }
 
-export default DisplayData
+const mapStateToProps = state => ({
+  ui: state.ui
+})
+
+const mapActionsToProps = {
+  openMakePostDialog,
+  openSendMusicDialog
+}
+
+export default connect(mapStateToProps, mapActionsToProps)(DisplayData)
