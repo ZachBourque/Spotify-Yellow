@@ -132,140 +132,136 @@ export class Post extends Component {
   }
 
   render() {
-    let {classes} = this.props
     let {element} = this.props
     return (
-      <Fragment>
-        <Card style={{backgroundColor: "#4d4d4d"}} align="center">
-          <CardHeader
-            avatar={<Avatar src={element.pfp} style={{cursor: "pointer"}} onClick={() => this.userRe(element.authorid)} />}
-            action={
-              <Fragment>
-                <IconButton aria-label="settings" aria-controls="simple-menu" aria-haspopup="true" onClick={this.handleClick}>
-                  <MoreVert />
-                </IconButton>
-                <Menu id="simple-menu" anchorEl={this.state.menuOpen} keepMounted open={Boolean(this.state.menuOpen)} onClose={this.handleClose}>
-                  <MenuItem onClick={() => this.props.openMakePostDialog({type: element.type, id: element.spotifyid, artistName: element.artist, albumName: element.album, songName: element.track, image: element.pic})}>Make Post On Topic</MenuItem>
-                  <MenuItem
-                    onClick={() =>
-                      this.props.openSendMusicDialog({
-                        type: element.type,
-                        id: element.spotifyid,
-                        artistName: element.artist,
-                        albumName: element.album,
-                        songName: element.track,
-                        image: element.pic,
-                        url: `https://open.spotify.com/${element.type}/${element.spotifyid}`
-                      })
-                    }
-                  >
-                    Recommend Topic To Someone
+      <Card style={{backgroundColor: "#4d4d4d"}} align="center">
+        <CardHeader
+          avatar={<Avatar src={element.pfp} style={{cursor: "pointer"}} onClick={() => this.userRe(element.authorid)} />}
+          action={
+            <Fragment>
+              <IconButton aria-label="settings" aria-controls="simple-menu" aria-haspopup="true" onClick={this.handleClick}>
+                <MoreVert />
+              </IconButton>
+              <Menu id="simple-menu" anchorEl={this.state.menuOpen} keepMounted open={Boolean(this.state.menuOpen)} onClose={this.handleClose}>
+                <MenuItem onClick={() => this.props.openMakePostDialog({type: element.type, id: element.spotifyid, artistName: element.artist, albumName: element.album, songName: element.track, image: element.pic})}>Make Post On Topic</MenuItem>
+                <MenuItem
+                  onClick={() =>
+                    this.props.openSendMusicDialog({
+                      type: element.type,
+                      id: element.spotifyid,
+                      artistName: element.artist,
+                      albumName: element.album,
+                      songName: element.track,
+                      image: element.pic,
+                      url: `https://open.spotify.com/${element.type}/${element.spotifyid}`
+                    })
+                  }
+                >
+                  Recommend Topic To Someone
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    this.handleClose()
+                    this.sharePost()
+                  }}
+                >
+                  Share
+                </MenuItem>
+                {element.authorid == this.props.user.id && (
+                  <MenuItem onClick={() => this.props.openEditPostDialog(element)}>
+                    <Create />
+                    Edit Post
                   </MenuItem>
-                  <MenuItem
-                    onClick={() => {
-                      this.handleClose()
-                      this.sharePost()
-                    }}
-                  >
-                    Share
-                  </MenuItem>
-                  {element.authorid == this.props.user.id && (
-                    <MenuItem onClick={() => this.props.openEditPostDialog(element)}>
-                      <Create />
-                      Edit Post
-                    </MenuItem>
-                  )}
-                  {element.authorid == this.props.user.id && (
-                    <MenuItem onClick={() => this.props.openDeleteDialog(element)} style={{color: "red"}}>
-                      <Delete />
-                      Delete Post
-                    </MenuItem>
-                  )}
-                </Menu>
-              </Fragment>
-            }
-            title={
-              <Typography variant="body1" style={{cursor: "pointer", width: "fit-content"}} onClick={() => this.userRe(element.authorid)}>
-                {element.username}
-              </Typography>
-            }
-            style={{backgroundColor: "#D99E2A"}}
-          />
-          {/* Main Content */}
-          <CardContent>
-            <div onClick={() => this.postRe(element.postId)} style={{cursor: "pointer"}}>
-              <Grid container alignItems="center" justify="flex-start" direction="row">
-                {/* Left Half */}
-                <Grid item md={2}>
-                  <CardMedia id="theImage" image={element.pic} component="img" />
-                </Grid>
-                {element.rating > -1 && (
-                  <Grid item md={2}>
-                    <CardMedia image={this.imagesArray[element.rating]} component="img" />
-                  </Grid>
                 )}
+                {element.authorid == this.props.user.id && (
+                  <MenuItem onClick={() => this.props.openDeleteDialog(element)} style={{color: "red"}}>
+                    <Delete />
+                    Delete Post
+                  </MenuItem>
+                )}
+              </Menu>
+            </Fragment>
+          }
+          title={
+            <Typography variant="body1" style={{cursor: "pointer", width: "fit-content"}} onClick={() => this.userRe(element.authorid)}>
+              {element.username}
+            </Typography>
+          }
+          style={{backgroundColor: "#D99E2A"}}
+        />
+        {/* Main Content */}
+        <CardContent>
+          <div onClick={() => this.postRe(element.postId)} style={{cursor: "pointer"}}>
+            <Grid container alignItems="center" justify="flex-start" direction="row">
+              {/* Left Half */}
+              <Grid item md={2}>
+                <CardMedia id="theImage" image={element.pic} component="img" />
+              </Grid>
+              {element.rating > -1 && (
                 <Grid item md={2}>
-                  <Grid container direction="column" justify="space-between" alignItems="center">
-                    <Grid item>
-                      <Typography variant="body1">
-                        {element.artist.map?.((e, i) => {
-                          return (
-                            <Fragment>
-                              {e}
-                              {i == element.artist.length - 1 ? "" : ", "}
-                            </Fragment>
-                          )
-                        }) || element.artist}
-                      </Typography>
-                    </Grid>
-                    <Grid item>
-                      <Typography variant="body1">{element.album}</Typography>
-                    </Grid>
-                    <Grid item>
-                      <Typography variant="body1">{element.track}</Typography>
-                    </Grid>
-                  </Grid>
+                  <CardMedia image={this.imagesArray[element.rating]} component="img" />
                 </Grid>
-
-                {/* Right Half */}
-                <Grid md={6} item alignContent="center" justify="space-around" direction="column" style={{backgroundColor: "#2f2f2f", borderRadius: "5%"}}>
+              )}
+              <Grid item md={2}>
+                <Grid container direction="column" justify="space-between" alignItems="center">
                   <Grid item>
-                    <Typography variant="h5" style={{maxWidth: "75%"}}>
-                      {element.title}
+                    <Typography variant="body1">
+                      {element.artist.map?.((e, i) => {
+                        return (
+                          <Fragment>
+                            {e}
+                            {i == element.artist.length - 1 ? "" : ", "}
+                          </Fragment>
+                        )
+                      }) || element.artist}
                     </Typography>
                   </Grid>
-                  <Grid item align="center">
-                    {this.getBodyText(element)
-                      .split("\n")
-                      .map((line, index) => {
-                        return index <= 2 ? (
-                          <Typography align="center" style={{maxWidth: "75%"}}>
-                            {index == 2 ? `${line}...` : line}
-                          </Typography>
-                        ) : (
-                          ""
-                        )
-                      })}
+                  <Grid item>
+                    <Typography variant="body1">{element.album}</Typography>
+                  </Grid>
+                  <Grid item>
+                    <Typography variant="body1">{element.track}</Typography>
                   </Grid>
                 </Grid>
               </Grid>
-            </div>
-            <Divider style={{margin: 10}} />
-            <CardActions disableSpacing>
-              <LikeButton postId={element.postId} />
-              {element.likeCount}
-              <IconButton onClick={() => this.postRe(element.postId)}>
-                <Comment />
-              </IconButton>
-              <Typography variant="body2">{element.commentCount}</Typography>
-              <IconButton>
-                <Share />
-              </IconButton>
-            </CardActions>
-          </CardContent>
-        </Card>
-        {/* MakePost Dialog Box */}
-      </Fragment>
+
+              {/* Right Half */}
+              <Grid md={6} item alignContent="center" justify="space-around" direction="column" style={{backgroundColor: "#2f2f2f", borderRadius: "5%"}}>
+                <Grid item>
+                  <Typography variant="h5" style={{maxWidth: "75%"}}>
+                    {element.title}
+                  </Typography>
+                </Grid>
+                <Grid item align="center">
+                  {this.getBodyText(element)
+                    .split("\n")
+                    .map((line, index) => {
+                      return index <= 2 ? (
+                        <Typography align="center" style={{maxWidth: "75%"}}>
+                          {index == 2 ? `${line}...` : line}
+                        </Typography>
+                      ) : (
+                        ""
+                      )
+                    })}
+                </Grid>
+              </Grid>
+            </Grid>
+          </div>
+          <Divider style={{margin: 10}} />
+          <CardActions disableSpacing>
+            <LikeButton postId={element.postId} />
+            {element.likeCount}
+            <IconButton onClick={() => this.postRe(element.postId)}>
+              <Comment />
+            </IconButton>
+            <Typography variant="body2">{element.commentCount}</Typography>
+            <IconButton>
+              <Share />
+            </IconButton>
+          </CardActions>
+        </CardContent>
+      </Card>
     )
   }
 }

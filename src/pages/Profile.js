@@ -141,7 +141,7 @@ class Profile extends Component {
             <div style={{marginTop: 15}}>
               <Grid container direction="row" alignItems="center" justify="center" spacing={3}>
                 <Grid item>
-                  <img alt="nope" src={this.state.profilepic} width="100" style={{borderRadius: "50%"}} />
+                  <img alt="nope" src={this.state.profilepic} width="100" height="100" style={{borderRadius: "50%"}} />
                 </Grid>
                 <Typography gutterBottom variant="h3">
                   {this.state.username}

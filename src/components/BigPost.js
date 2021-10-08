@@ -26,7 +26,6 @@ import CommentIcon from "@material-ui/icons/Comment"
 import $ from "jquery"
 import {deletePost, editPost, setCurrentPost} from "../redux/actions/dataActions"
 import {reloadUserProfile} from "../redux/actions/userActions"
-import {setCurrent, setDataLoading} from "../redux/actions/dataActions"
 import LikeButton from "./LikeButton"
 import {openMakeCommentDialog, openMakePostDialog, openEditPostDialog, openDeleteDialog, openSendMusicDialog} from "../redux/actions/UIActions"
 import BigPostSkeleton from "../Skeletons/BigPostSkeleton"
@@ -41,13 +40,13 @@ export class Post extends Component {
   imagesArray = [Zero, One, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten]
 
   state = {
-    isLoading: true
+    isLoading: true,
+    menuOpen: false
   }
 
   componentDidMount() {
     const id = this.props.match.params.postID
-    //  this.props.makeComment(this.props.element.postId, this.props.auth.token, this.props.auth.expires, this.props.auth.rtoken, newComment)
-    this.props.setCurrentPost(id).then(res => {
+    this.props.setCurrentPost(id).then(() => {
       this.setState({isLoading: false})
     })
   }

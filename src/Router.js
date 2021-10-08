@@ -31,11 +31,10 @@ import MakeCommentDialog from "./components/MakeCommentDialog"
 import EditPostDialog from "./components/EditPostDialog"
 import DeletePostDialog from "./components/DeletePostDialog"
 
+$("body").css("margin", 0)
 axios.defaults.baseURL = "https://us-central1-spotify-yellow-282e0.cloudfunctions.net/api"
 //axios.defaults.baseURL = "http://localhost:5000/spotify-yellow-282e0/us-central1/api"
 store.dispatch(getUsers())
-$("body").css("margin", 0)
-$("body").css("overflow-x", "hidden")
 var a = JSON.parse(window.localStorage.getItem("data"))
 if (a) {
   if (a.expires && a.token && a.rtoken && localStorage.getItem("cachepfp")) {
@@ -79,7 +78,7 @@ class Router extends React.Component {
   render() {
     return (
       <ThemeProvider theme={this.theme}>
-        <Paper style={{height: "auto", minHeight: "100vh"}}>
+        <Paper style={{height: "auto", minHeight: "100vh", overflowX: "hidden", overflowY: "hidden"}}>
           <BrowserRouter>
             <Route path="/" component={Home} />
             <Switch>
