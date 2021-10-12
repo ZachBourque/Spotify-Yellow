@@ -18,7 +18,7 @@ import UserCard from "../components/UserCard"
 import SendMusicDialog from "../components/SendMusicDialog"
 import makeStyles from "@material-ui/core/styles/makeStyles"
 import withStyles from "@material-ui/core/styles/withStyles"
-import FeedSkeleton from "../Skeletons/FeedSkeleton"
+import SmallPostSkeleton from "../Skeletons/SmallPostSkeleton"
 import {openMakePostDialog, closeMakePostDialog} from "../redux/actions/UIActions"
 import MakePostDialog from "../components/MakePostDialog"
 
@@ -78,13 +78,16 @@ export class Homepage extends Component {
                 <Grid item xs={6}>
                   {this.props.data.loaded ? (
                     <Fragment>
-                      <FeedSkeleton />
                       {this.props.data.posts.slice(0, this.state.numOfPosts).map((post, idx) => {
                         return <SmallPost element={post} history={this.props.history} key={post.postId} postId={post.postId} key={idx} />
                       })}
                     </Fragment>
                   ) : (
-                    <FeedSkeleton />
+                    <Fragment>
+                      {Array.from({length: 5}).map((element, idx) => {
+                        return <SmallPostSkeleton key={idx} />
+                      })}
+                    </Fragment>
                   )}
                 </Grid>
               </Grid>

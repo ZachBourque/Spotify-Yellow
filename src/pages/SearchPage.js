@@ -1,4 +1,6 @@
 import {Button, Grid, Typography} from "@material-ui/core"
+import UserCardSkeleton from "../Skeletons/UserCardSkeleton"
+import DisplayDataSkeleton from "../Skeletons/DisplayDataSkeleton"
 import UserCard from "../components/UserCard"
 import {Component, Fragment} from "react"
 import {connect} from "react-redux"
@@ -17,6 +19,7 @@ import FormControlLabel from "@material-ui/core/FormControlLabel"
 import Radio from "@material-ui/core/Radio"
 import {setCurrent, setDataLoading, getFeedData} from "../redux/actions/dataActions"
 import FavoriteCard from "../components/FavoriteCard"
+import SmallPostSkeleton from "../Skeletons/SmallPostSkeleton"
 
 class SearchPage extends Component {
   state = {
@@ -40,7 +43,7 @@ class SearchPage extends Component {
   }
 
   search = async (query, id, filter) => {
-    this.setState({loading: true, error: null})
+    this.setDisplay([])
     query = query.toLowerCase()
     let display = []
     switch (id) {
@@ -139,7 +142,7 @@ class SearchPage extends Component {
   }
 
   setDisplay = display => {
-    this.setState({data: display, loading: false})
+    this.setState({data: display, loading: false, error: null})
   }
 
   componentDidUpdate() {
@@ -173,21 +176,21 @@ class SearchPage extends Component {
 
   render() {
     let radioArr = [
-      <>
+      <Fragment>
         <FormControlLabel value={0} control={<Radio />} label="Title" />
         <FormControlLabel value={1} control={<Radio />} label="Body" />
         <FormControlLabel value={2} control={<Radio />} label="Topic" />
         <FormControlLabel value={3} control={<Radio />} label="Type" />
-      </>,
-      <>
+      </Fragment>,
+      <Fragment>
         <FormControlLabel value={0} control={<Radio />} label="Artist" />
         <FormControlLabel value={1} control={<Radio />} label="Album/EP" />
         <FormControlLabel value={2} control={<Radio />} label="Track" />
-      </>,
-      <>
+      </Fragment>,
+      <Fragment>
         <FormControlLabel value={0} control={<Radio />} label="Username" />
         <FormControlLabel value={1} control={<Radio />} label="Bio" />
-      </>
+      </Fragment>
     ]
     return (
       <Grid container>
@@ -200,35 +203,61 @@ class SearchPage extends Component {
               <Tab label="Users" />
             </Tabs>
           </AppBar>
-          {!this.state.loading ? (
-            this.state.data.length > 0 ? (
-              <Fragment>
-                {this.state.id === 0 &&
+          {this.state.error ? (
+            <h2 style={{textAlign: "center"}}>{this.state.error}</h2>
+          ) : !this.state.loading && this.state.data.length === 0 ? (
+            <h2 style={{textAlign: "center"}}>No Results</h2>
+          ) : (
+            <Fragment>
+              {this.state.id === 0 &&
+                (this.state.loading ? (
+                  <Fragment>
+                    {Array.from({length: 5}).map((e, i) => {
+                      return <SmallPostSkeleton key={i} />
+                    })}
+                  </Fragment>
+                ) : (
                   this.state.data.map((item, idx) => {
                     return <SmallPost element={item} history={this.props.history} key={idx} postId={item.postId} />
-                  })}
-                {this.state.id === 1 &&
+                  })
+                ))}
+              {this.state.id === 1 &&
+                (this.state.loading ? (
+                  <Fragment>
+                    {Array.from({length: 5}).map((e, i) => {
+                      return <DisplayDataSkeleton key={i} />
+                    })}
+                  </Fragment>
+                ) : (
                   this.state.data.map((item, idx) => {
                     return <DisplayData element={item} id={idx} maxHeight={"200px"} maxWidth={"200px"} key={idx} onClick={() => {}} ex={true} />
-                  })}
-                {this.state.id === 2 &&
-                  this.state.data.map((item, idx) => {
-                    return <UserCard user={item} key={idx} history={this.props.history} />
-                  })}
-              </Fragment>
-            ) : this.state.error ? (
-              <h2 style={{textAlign: "center"}}>{this.state.error}</h2>
-            ) : (
-              <h2 style={{textAlign: "center"}}>No Results</h2>
-            )
-          ) : (
-            <h2 style={{textAlign: "center"}}>Loading...</h2>
+                  })
+                ))}
+              {this.state.id === 2 &&
+                (this.state.loading ? (
+                  <Fragment>
+                    {Array.from({length: 5}).map((e, i) => {
+                      return <UserCardSkeleton key={i} />
+                    })}
+                  </Fragment>
+                ) : (
+                  <Grid container>
+                    {this.state.data.map((item, idx) => {
+                      return (
+                        <Grid item xs={4}>
+                          <UserCard user={item} key={idx} />
+                        </Grid>
+                      )
+                    })}
+                  </Grid>
+                ))}
+            </Fragment>
           )}
         </Grid>
         <Grid item sm>
           <div style={{marginLeft: 20}}>
             <RadioGroup aria-label="gender" name="gender1" value={this.state.filter} onChange={this.handleRadioChange}>
-              {radioArr[this.state.id ? this.state.id : 0]}
+              {radioArr[this.state.id || 0]}
             </RadioGroup>
           </div>
         </Grid>
