@@ -20,7 +20,6 @@ import makeStyles from "@material-ui/core/styles/makeStyles"
 import withStyles from "@material-ui/core/styles/withStyles"
 import SmallPostSkeleton from "../Skeletons/SmallPostSkeleton"
 import {openMakePostDialog, closeMakePostDialog} from "../redux/actions/UIActions"
-import MakePostDialog from "../components/MakePostDialog"
 
 const defaultNumOfPosts = 25
 

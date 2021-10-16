@@ -68,7 +68,7 @@ const SmallPostSkeleton = () => {
           </Grid>
 
           {/* Right Half */}
-          <Grid md={6} item alignContent="center" justify="space-around" direction="column" style={{backgroundColor: "#2f2f2f", borderRadius: "5%"}}>
+          <Grid md={6} item style={{backgroundColor: "#2f2f2f", borderRadius: "5%"}}>
             <Grid item>
               <div style={{backgroundColor: "gray", width: "50%", height: 30, marginBottom: 5, marginTop: 5}} />
             </Grid>

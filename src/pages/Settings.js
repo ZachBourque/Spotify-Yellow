@@ -46,6 +46,12 @@ const Settings = props => {
   }
 
   useEffect(() => {
+    if (!props.auth.loggedIn) {
+      props.history.replace("/")
+    }
+  }, [])
+
+  useEffect(() => {
     if (props.user.loaded && loading) {
       setLoading(false)
     }

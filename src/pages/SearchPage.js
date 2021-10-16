@@ -233,24 +233,31 @@ class SearchPage extends Component {
                     return <DisplayData element={item} id={idx} maxHeight={"200px"} maxWidth={"200px"} key={idx} onClick={() => {}} ex={true} />
                   })
                 ))}
-              {this.state.id === 2 &&
-                (this.state.loading ? (
-                  <Fragment>
-                    {Array.from({length: 5}).map((e, i) => {
-                      return <UserCardSkeleton key={i} />
-                    })}
-                  </Fragment>
-                ) : (
-                  <Grid container>
-                    {this.state.data.map((item, idx) => {
-                      return (
-                        <Grid item xs={4}>
-                          <UserCard user={item} key={idx} />
-                        </Grid>
-                      )
-                    })}
-                  </Grid>
-                ))}
+              {this.state.id === 2 && (
+                <Grid container>
+                  {this.state.loading ? (
+                    <Fragment>
+                      {Array.from({length: 30}).map((e, i) => {
+                        return (
+                          <Grid item xs={4}>
+                            <UserCardSkeleton key={i} />
+                          </Grid>
+                        )
+                      })}
+                    </Fragment>
+                  ) : (
+                    <Fragment>
+                      {this.state.data.slice(0, 30).map((item, idx) => {
+                        return (
+                          <Grid item xs={4}>
+                            <UserCard user={item} key={idx} />
+                          </Grid>
+                        )
+                      })}
+                    </Fragment>
+                  )}
+                </Grid>
+              )}
             </Fragment>
           )}
         </Grid>

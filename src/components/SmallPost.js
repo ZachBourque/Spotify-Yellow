@@ -208,7 +208,7 @@ export class Post extends Component {
                     <Typography variant="body1">
                       {element.artist.map?.((e, i) => {
                         return (
-                          <Fragment>
+                          <Fragment key={i}>
                             {e}
                             {i == element.artist.length - 1 ? "" : ", "}
                           </Fragment>
@@ -226,7 +226,7 @@ export class Post extends Component {
               </Grid>
 
               {/* Right Half */}
-              <Grid md={6} item alignContent="center" justify="space-around" direction="column" style={{backgroundColor: "#2f2f2f", borderRadius: "5%"}}>
+              <Grid md={6} item style={{backgroundColor: "#2f2f2f", borderRadius: "5%"}}>
                 <Grid item>
                   <Typography variant="h5" style={{maxWidth: "75%"}}>
                     {element.title}
@@ -237,7 +237,7 @@ export class Post extends Component {
                     .split("\n")
                     .map((line, index) => {
                       return index <= 2 ? (
-                        <Typography align="center" style={{maxWidth: "75%"}}>
+                        <Typography align="center" style={{maxWidth: "75%"}} key={index}>
                           {index == 2 ? `${line}...` : line}
                         </Typography>
                       ) : (
