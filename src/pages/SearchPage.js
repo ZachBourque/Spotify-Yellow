@@ -11,7 +11,6 @@ import {getNewToken} from "../redux/actions/authActions"
 import AppBar from "@material-ui/core/AppBar"
 import Tabs from "@material-ui/core/Tabs"
 import Tab from "@material-ui/core/Tab"
-import {PersonOutlineSharp} from "@material-ui/icons"
 import DisplayData from "../components/DisplayData"
 import SmallPost from "../components/SmallPost"
 import RadioGroup from "@material-ui/core/RadioGroup"
@@ -38,12 +37,12 @@ class SearchPage extends Component {
   }
 
   handleRadioChange = event => {
-    this.setState({})
     this.props.history.push(`/search?query=${this.state.query}&id=${this.state.id}&filter=${event.target.value}`)
   }
 
   search = async (query, id, filter) => {
-    this.setDisplay([])
+    console.log("searching")
+    this.setLoading()
     query = query.toLowerCase()
     let display = []
     switch (id) {
@@ -75,8 +74,7 @@ class SearchPage extends Component {
                 console.error(err)
                 this.setState({error: "Error getting data"})
               })
-
-            return this.setDisplay(display)
+            break
           case 1:
             fetch(`https://api.spotify.com/v1/search?q=${query}&type=album&market=US&limit=${10}`, {
               method: "GET",
@@ -97,21 +95,17 @@ class SearchPage extends Component {
                 console.error(err)
                 this.setState({loading: false, error: "Error getting data"})
               })
-
-            return this.setDisplay(display)
+            break
           case 2:
-            s.searchTracks(query, {limit: 10})
-              .then(data => {
-                data.tracks.items.forEach(song => {
-                  display.push({type: "track", id: song.id, artistName: song.artists.map(e => e.name), albumName: song.album.name, songName: song.name, image: song.images[0]?.url})
-                })
-                return this.setDisplay(display)
+            s.searchTracks(query, {limit: 10}).then(data => {
+              data.tracks.items.forEach(song => {
+                display.push({type: "track", id: song.id, artistName: song.artists.map(e => e.name), albumName: song.album.name, songName: song.name, image: song.album.images[0].url})
               })
-              .catch(err => {
-                console.error(err)
-                this.setState({loading: false, error: "Error getting data"})
-              })
+              return this.setDisplay(display)
+            })
+            break
         }
+        break
       case 2:
         let users = this.state.users
         switch (filter) {
@@ -122,6 +116,7 @@ class SearchPage extends Component {
             display = [...users.filter(a => a.bio.toLowerCase().includes(query))]
             return this.setDisplay(display)
         }
+        break
       case 0:
         let posts = this.state.posts
         switch (filter) {
@@ -138,11 +133,18 @@ class SearchPage extends Component {
             display = [...posts.filter(a => a.type.toLowerCase().includes(query))]
             return this.setDisplay(display)
         }
+        break
     }
   }
 
   setDisplay = display => {
+    console.log(new Error().stack)
     this.setState({data: display, loading: false, error: null})
+  }
+
+  setLoading = () => {
+    console.log("set true again")
+    this.setState({data: [], loading: true, error: null})
   }
 
   componentDidUpdate() {
@@ -159,6 +161,7 @@ class SearchPage extends Component {
     let id = parseInt(queryString.parse(this.props.location.search)["id"])
     let filter = parseInt(queryString.parse(this.props.location.search)["filter"])
     if (!this.state.searched || query !== this.state.query || id !== this.state.id || filter !== this.state.filter) {
+      console.log("loading true")
       this.setState({query, id, filter, loading: true, searched: true})
       this.props.history.push(`/search?query=${query}&id=${id}&filter=${filter}`)
       this.search(query, id, filter)
@@ -175,6 +178,7 @@ class SearchPage extends Component {
   }
 
   render() {
+    console.log(this.state.loading)
     let radioArr = [
       <Fragment>
         <FormControlLabel value={0} control={<Radio />} label="Title" />
@@ -205,7 +209,7 @@ class SearchPage extends Component {
           </AppBar>
           {this.state.error ? (
             <h2 style={{textAlign: "center"}}>{this.state.error}</h2>
-          ) : !this.state.loading && this.state.data.length === 0 ? (
+          ) : this.state.loading === false && this.state.data.length === 0 ? (
             <h2 style={{textAlign: "center"}}>No Results</h2>
           ) : (
             <Fragment>
@@ -225,12 +229,12 @@ class SearchPage extends Component {
                 (this.state.loading ? (
                   <Fragment>
                     {Array.from({length: 5}).map((e, i) => {
-                      return <DisplayDataSkeleton key={i} />
+                      return <DisplayDataSkeleton key={i} ex maxWidth={"200px"} id={this.state.filter} />
                     })}
                   </Fragment>
                 ) : (
                   this.state.data.map((item, idx) => {
-                    return <DisplayData element={item} id={idx} maxHeight={"200px"} maxWidth={"200px"} key={idx} onClick={() => {}} ex={true} />
+                    return <DisplayData element={item} id={idx} maxHeight={"200px"} maxWidth={"200px"} key={idx} onClick={null} ex={true} />
                   })
                 ))}
               {this.state.id === 2 && (

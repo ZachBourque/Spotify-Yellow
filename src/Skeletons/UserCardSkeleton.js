@@ -12,7 +12,7 @@ function UserCardSkeleton(props) {
             <AccountCircle />
           </Avatar>
         }
-        title={<div style={{backgroundColor: "gray", width: 100, height: 20}} />}
+        title={<div style={{backgroundColor: "gray", width: "60%", height: 17}} />}
         subheader={<div style={{backgroundColor: "gray", height: 15, marginTop: 5, marginBottom: 5, marginRight: 5}} />}
       />
     </Card>

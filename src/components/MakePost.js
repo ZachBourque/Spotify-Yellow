@@ -247,12 +247,11 @@ const MakePost = props => {
               ) : (
                 dataArray?.map((element, index) => {
                   return (
-                    <Grid item xs={6} sm={4} md={2}>
+                    <Grid item>
                       <DisplayData
                         element={element}
                         id={index}
-                        maxHeight="200px"
-                        maxWidth="200px"
+                        maxWidth={225}
                         onClick={() => {
                           setSelectedTopic(dataArray[index])
                           setScene(1)
