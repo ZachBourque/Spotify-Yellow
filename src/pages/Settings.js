@@ -18,6 +18,7 @@ import Grid from "@material-ui/core/Grid"
 import Dialog from "@material-ui/core/Dialog"
 import DialogContent from "@material-ui/core/DialogContent"
 import ClickAwayListener from "@material-ui/core/ClickAwayListener"
+import TextField from "@material-ui/core/TextField"
 
 const styles = makeStyles(theme => ({
   root: {
@@ -41,6 +42,7 @@ const Settings = props => {
   }
 
   const handleClickAway = () => {
+    console.log("click away")
     setNewBio(props.user.bio)
     setOpen(false)
   }
@@ -161,7 +163,18 @@ const Settings = props => {
         <SettingsSkeleton />
       ) : (
         <Fragment>
-          <h2>Settings!</h2>
+          <h1>Settings</h1>
+          <Grid container direction="row">
+            <Grid item>
+              <img src={pfp} alt="cantfind" width="100" />
+            </Grid>
+            <Grid item>
+              <input type="file" id="pfpInput" hidden="hidden" onChange={pfpChange} />
+              <IconButton onClick={clickFileButton} className="button">
+                <EditIcon color="primary" />
+              </IconButton>
+            </Grid>
+          </Grid>
           <Grid container direction="row">
             <Grid item>
               <img src={pfp} alt="cantfind" width="100" />
@@ -185,14 +198,14 @@ const Settings = props => {
           )}
           <Grid container direction="row" alignItems="center">
             <Grid item>
-              <h4>Bio: </h4>
+              <h4 style={{marginRight: 5}}>Bio:</h4>
             </Grid>
-            <Grid item>
-              <ClickAwayListener onClickAway={handleClickAway}>
+            <ClickAwayListener onClickAway={handleClickAway}>
+              <Grid item>
                 <Fragment>
                   {!open && (
                     <Fragment>
-                      <input type="text" autoComplete="off" defaultValue={newBio} disabled />
+                      <TextField autoComplete="off" defaultValue={newBio} disabled multiline type="text" />
                       <IconButton className="button" onClick={handleClick}>
                         <EditIcon color="primary" />
                       </IconButton>
@@ -200,7 +213,7 @@ const Settings = props => {
                   )}
                   {open && (
                     <Fragment>
-                      <input type="text" onChange={() => setNewBio($("openBioInput").val())} autoComplete="off" id="openBioInput" defaultValue={props.user.bio} />
+                      <TextField type="text" onChange={() => setNewBio($("openBioInput").val())} autoComplete="off" id="openBioInput" defaultValue={props.user.bio} style={{width: 300}} />
                       <IconButton className="button" onClick={handleClick}>
                         <EditIcon color="primary" />
                       </IconButton>
@@ -212,11 +225,11 @@ const Settings = props => {
                     </Fragment>
                   )}
                 </Fragment>
-              </ClickAwayListener>
-            </Grid>
+              </Grid>
+            </ClickAwayListener>
           </Grid>
           {props.ui.errors.bio && <Typography variant="body1">{props.ui.errors.bio}</Typography>}
-          <Grid container direction="row" alignItems="center" spacing={3} xs={8} sm={12}>
+          <Grid container direction="row" alignItems="center" spacing={3}>
             <Grid container justify="center">
               {props.ui.errors.favorites && <Typography variant="body1">{props.ui.errors.favorites}</Typography>}
             </Grid>
@@ -226,8 +239,8 @@ const Settings = props => {
             <Grid item>
               {tempFavArtists.map((artist, idx) => {
                 return (
-                  <Fragment>
-                    <FavoriteCard key={idx} name={artist.name} url={artist.url} pic={artist.pic} />
+                  <Fragment key={idx}>
+                    <FavoriteCard name={artist.name} url={artist.url} pic={artist.pic} />
                     <IconButton className="button" onClick={() => removeArtist(artist)}>
                       <HighlightOffIcon />
                     </IconButton>
@@ -253,15 +266,15 @@ const Settings = props => {
               </Fragment>
             )}
           </Grid>
-          <Grid container direction="row" alignItems="center" spacing={3} xs={8} sm={12}>
+          <Grid container direction="row" alignItems="center" spacing={3}>
             <Grid item>
               <Typography variant="h4">Favourite Albums:</Typography>
             </Grid>
             <Grid item>
               {tempFavAlbums.map((album, idx) => {
                 return (
-                  <Fragment>
-                    <FavoriteCard key={idx} name={album.name} url={album.url} pic={album.pic} />
+                  <Fragment key={idx}>
+                    <FavoriteCard name={album.name} url={album.url} pic={album.pic} />
                     <IconButton className="button" onClick={() => removeAlbum(album)}>
                       <HighlightOffIcon />
                     </IconButton>
@@ -287,15 +300,15 @@ const Settings = props => {
               </Fragment>
             )}
           </Grid>
-          <Grid container direction="row" alignItems="center" spacing={3} xs={8} sm={12}>
+          <Grid container direction="row" alignItems="center" spacing={3}>
             <Grid item>
               <Typography variant="h4">Favourite Songs:</Typography>
             </Grid>
             <Grid item>
               {tempFavSongs.map((song, idx) => {
                 return (
-                  <Fragment>
-                    <FavoriteCard key={idx} name={song.name} url={song.url} pic={song.pic} />
+                  <Fragment key={idx}>
+                    <FavoriteCard name={song.name} url={song.url} pic={song.pic} />
                     <IconButton className="button" onClick={() => removeSong(song)}>
                       <HighlightOffIcon />
                     </IconButton>
