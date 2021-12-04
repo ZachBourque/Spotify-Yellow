@@ -31,20 +31,30 @@ const Settings = props => {
   const [loading, setLoading] = useState(true)
   const [pfp, setPfp] = useState(null)
   const [newBio, setNewBio] = useState(props.user.bio)
-  const [open, setOpen] = useState(false)
+  const [newUsername, setNewUsername] = useState(props.user.username)
+  const [bioOpen, setBioOpen] = useState(false)
+  const [usernameOpen, setUsernameOpen] = useState(false)
   const [type, setType] = useState(null)
   const [tempFavArtists, setTempFavArtists] = useState(props.user.favArtists)
   const [tempFavAlbums, setTempFavAlbums] = useState(props.user.favAlbums)
   const [tempFavSongs, setTempFavSongs] = useState(props.user.favSongs)
 
-  const handleClick = () => {
-    setOpen(prev => !prev)
+  const handleBioClick = () => {
+    setBioOpen(prev => !prev)
   }
 
-  const handleClickAway = () => {
-    console.log("click away")
+  const handleBioClickAway = () => {
     setNewBio(props.user.bio)
-    setOpen(false)
+    setBioOpen(false)
+  }
+
+  const handleUsernameClickAway = () => {
+    setNewUsername(props.user.username)
+    setUsernameOpen(false)
+  }
+
+  const handleUsernameClick = () => {
+    setUsernameOpen(prev => !prev)
   }
 
   useEffect(() => {
@@ -57,25 +67,44 @@ const Settings = props => {
     if (props.user.loaded && loading) {
       setLoading(false)
     }
-    setPfp(props.user.profilepic)
-    setNewBio(props.user.bio)
-  }, [props])
+  }, [props.user.loaded])
+
   useEffect(() => {
     setTempFavAlbums(props.user.favAlbums)
   }, [props.user.favAlbums])
+
   useEffect(() => {
     setTempFavArtists(props.user.favArtists)
   }, [props.user.favArtists])
+
   useEffect(() => {
     setTempFavSongs(props.user.favSongs)
   }, [props.user.favSongs])
+
+  useEffect(() => {
+    setNewBio(props.user.bio)
+    handleBioClickAway()
+  }, [props.user.bio])
+
+  useEffect(() => {
+    setNewUsername(props.user.username)
+    handleUsernameClickAway()
+  }, [props.user.username])
+
+  useEffect(() => {
+    setPfp(props.user.profilepic)
+  }, [props.user.profilepic])
+
   const [dialog, setDialog] = useState(false)
   const submitBio = () => {
     //validate data first
     setNewBio(document.getElementById("openBioInput").value)
-    handleClick()
-    props.editBio(document.getElementById("openBioInput").value, props.auth.token, props.auth.expires, props.auth.rtoken, props.history)
+    handleBioClick()
+    props.editBio(document.getElementById("openBioInput").value)
   }
+
+  const submitUsername = () => {}
+
   const pfpChange = () => {
     var file = $("#pfpInput").prop("files")[0]
     if (file.type.includes("image")) {
@@ -90,7 +119,7 @@ const Settings = props => {
     var file = $("#pfpInput").prop("files")[0]
     let formData = new FormData()
     formData.append("image", file, file.name)
-    props.updateProfilePic(props.auth.token, props.auth.expires, props.auth.rtoken, formData)
+    props.updateProfilePic(formData)
   }
   const cancelPfp = () => {
     setPfp(props.user.profilepic)
@@ -131,13 +160,13 @@ const Settings = props => {
     }
   }
   const submitFavAlbums = () => {
-    props.editFavorites({favAlbums: [...tempFavAlbums]}, props.auth.token, props.auth.expires, props.auth.rtoken)
+    props.editFavorites({favAlbums: [...tempFavAlbums]})
   }
   const submitFavSongs = () => {
-    props.editFavorites({favSongs: [...tempFavSongs]}, props.auth.token, props.auth.expires, props.auth.rtoken)
+    props.editFavorites({favSongs: [...tempFavSongs]})
   }
   const submitFavArtists = () => {
-    props.editFavorites({favArtists: [...tempFavArtists]}, props.auth.token, props.auth.expires, props.auth.rtoken)
+    props.editFavorites({favArtists: [...tempFavArtists]})
   }
   const removeAlbum = album => {
     let arr = tempFavAlbums.filter(a => {
@@ -175,17 +204,6 @@ const Settings = props => {
               </IconButton>
             </Grid>
           </Grid>
-          <Grid container direction="row">
-            <Grid item>
-              <img src={pfp} alt="cantfind" width="100" />
-            </Grid>
-            <Grid item>
-              <input type="file" id="pfpInput" hidden="hidden" onChange={pfpChange} />
-              <IconButton onClick={clickFileButton} className="button">
-                <EditIcon color="primary" />
-              </IconButton>
-            </Grid>
-          </Grid>
           {pfp !== props.user.profilepic && (
             <Fragment>
               <Button type="button" onClick={cancelPfp}>
@@ -198,33 +216,60 @@ const Settings = props => {
           )}
           <Grid container direction="row" alignItems="center">
             <Grid item>
+              <h4 style={{marginRight: 5}}>Username:</h4>
+            </Grid>
+            <ClickAwayListener onClickAway={handleUsernameClickAway}>
+              <Grid item>
+                {usernameOpen ? (
+                  <Fragment>
+                    <TextField autoComplete="off" defaultValue={newUsername} disabled multiline type="text" />
+                    <IconButton className="button" onClick={handleUsernameClick}>
+                      <EditIcon color="primary" />
+                    </IconButton>
+                  </Fragment>
+                ) : (
+                  <Fragment>
+                    <TextField type="text" onChange={() => setNewUsername($("openBioInput").val())} autoComplete="off" id="openBioInput" defaultValue={props.user.username} style={{width: 300}} />
+                    <IconButton className="button" onClick={handleUsernameClick}>
+                      <EditIcon color="primary" />
+                    </IconButton>
+                    {props.user.username !== newUsername && (
+                      <Button type="button" onClick={submitUsername}>
+                        Submit
+                      </Button>
+                    )}
+                  </Fragment>
+                )}
+              </Grid>
+            </ClickAwayListener>
+          </Grid>
+          {props.ui.errors.bio && <Typography variant="body1">{props.ui.errors.bio}</Typography>}
+          <Grid container direction="row" alignItems="center">
+            <Grid item>
               <h4 style={{marginRight: 5}}>Bio:</h4>
             </Grid>
-            <ClickAwayListener onClickAway={handleClickAway}>
+            <ClickAwayListener onClickAway={handleBioClickAway}>
               <Grid item>
-                <Fragment>
-                  {!open && (
-                    <Fragment>
-                      <TextField autoComplete="off" defaultValue={newBio} disabled multiline type="text" />
-                      <IconButton className="button" onClick={handleClick}>
-                        <EditIcon color="primary" />
-                      </IconButton>
-                    </Fragment>
-                  )}
-                  {open && (
-                    <Fragment>
-                      <TextField type="text" onChange={() => setNewBio($("openBioInput").val())} autoComplete="off" id="openBioInput" defaultValue={props.user.bio} style={{width: 300}} />
-                      <IconButton className="button" onClick={handleClick}>
-                        <EditIcon color="primary" />
-                      </IconButton>
-                      {props.user.bio !== newBio && (
-                        <Button type="button" onClick={submitBio}>
-                          Submit
-                        </Button>
-                      )}
-                    </Fragment>
-                  )}
-                </Fragment>
+                {bioOpen ? (
+                  <Fragment>
+                    <TextField autoComplete="off" defaultValue={newBio} disabled multiline type="text" />
+                    <IconButton className="button" onClick={handleBioClick}>
+                      <EditIcon color="primary" />
+                    </IconButton>
+                  </Fragment>
+                ) : (
+                  <Fragment>
+                    <TextField type="text" onChange={() => setNewBio($("openBioInput").val())} autoComplete="off" id="openBioInput" defaultValue={props.user.bio} style={{width: 300}} />
+                    <IconButton className="button" onClick={handleBioClick}>
+                      <EditIcon color="primary" />
+                    </IconButton>
+                    {props.user.bio !== newBio && (
+                      <Button type="button" onClick={submitBio}>
+                        Submit
+                      </Button>
+                    )}
+                  </Fragment>
+                )}
               </Grid>
             </ClickAwayListener>
           </Grid>
@@ -330,7 +375,7 @@ const Settings = props => {
                 </Button>
                 <Button type="button" onClick={() => setTempFavSongs(props.user.favSongs)}>
                   Undo
-                </Button>{" "}
+                </Button>
               </Fragment>
             )}
           </Grid>

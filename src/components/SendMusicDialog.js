@@ -29,8 +29,7 @@ class SearchUsers extends Component {
 
   handleClick = () => {
     const {id, type} = this.state.topic
-    const {token, expires, rtoken} = this.props.auth
-    this.props.sendMusic(id, type, this.state.selectedUser.id, token, expires, rtoken).then(res => {
+    this.props.sendMusic(id, type, this.state.selectedUser.id).then(() => {
       this.props.closeSendMusicDialog()
     })
   }

@@ -26,3 +26,8 @@ export const refresh = res => {
     store.dispatch({type: REFRESH_TOKEN, payload: {token: lsdata.token, expires: lsdata.expires}})
   }
 }
+
+export const getAuth = () => {
+  let {token, expires, rtoken} = store.getState().auth
+  return {token, expires, rtoken}
+}

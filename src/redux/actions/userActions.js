@@ -1,6 +1,6 @@
 import {USERLOADING, SETUSERDATA, CLEARERRORS, UPDATEBIO, UPDATEPFP, UPDATEFAVORITES, MARKNOTIFICATIONSREAD, SETSENDMUSICERROR, SETUPDATEPFPERROR, SETUPDATEFAVORITESERROR, SETUPDATEBIOERROR} from "../types"
 import axios from "axios"
-import {checkForFatalError, handleError, refresh} from "../util"
+import {checkForFatalError, handleError, refresh, getAuth} from "../util"
 
 const getData = (token, expires, rtoken, dispatch) => {
   axios
@@ -15,19 +15,21 @@ const getData = (token, expires, rtoken, dispatch) => {
     .catch(err => checkForFatalError(err))
 }
 
-export const loadUser = (token, expires, rtoken) => dispatch => {
+export const loadUser = a => dispatch => {
+  let {token, expires, rtoken} = a
   dispatch({type: USERLOADING})
   getData(token, expires, rtoken, dispatch)
 }
 
-export const reloadUserProfile = (token, expires, rtoken) => dispatch => {
+export const reloadUserProfile = () => dispatch => {
+  let {token, expires, rtoken} = getAuth()
   getData(token, expires, rtoken, dispatch)
 }
 
-export const editBio = (bio, token, expires, rtoken, history) => dispatch => {
+export const editBio = bio => dispatch => {
   dispatch({type: CLEARERRORS})
   axios
-    .post("/editBio", {bio}, {headers: {token, expires, rtoken}})
+    .post("/editBio", {bio}, {headers: getAuth()})
     .then(res => {
       refresh(res)
       dispatch({type: UPDATEBIO, payload: {bio}})
@@ -35,10 +37,10 @@ export const editBio = (bio, token, expires, rtoken, history) => dispatch => {
     .catch(err => handleError(err, SETUPDATEBIOERROR))
 }
 
-export const editFavorites = (update, token, expires, rtoken) => dispatch => {
+export const editFavorites = update => dispatch => {
   dispatch({type: CLEARERRORS})
   axios
-    .post("/editFavorites", {update}, {headers: {token, expires, rtoken}})
+    .post("/editFavorites", {update}, {headers: getAuth()})
     .then(res => {
       refresh(res)
       dispatch({type: UPDATEFAVORITES, payload: update})
@@ -46,12 +48,12 @@ export const editFavorites = (update, token, expires, rtoken) => dispatch => {
     .catch(err => handleError(err, SETUPDATEFAVORITESERROR))
 }
 
-export const updateProfilePic = (token, expires, rtoken, formData) => dispatch => {
+export const updateProfilePic = formData => dispatch => {
   dispatch({type: CLEARERRORS})
   axios
     .post("/uploadPic", formData)
     .then(res => {
-      return axios.put("/updatePfp", {url: res.data.url}, {headers: {token, expires, rtoken}})
+      return axios.put("/updatePfp", {url: res.data.url}, {headers: getAuth()})
     })
     .then(res => {
       refresh(res)
@@ -60,9 +62,9 @@ export const updateProfilePic = (token, expires, rtoken, formData) => dispatch =
     .catch(err => handleError(err, SETUPDATEPFPERROR))
 }
 
-export const markNotificationsRead = (notifications, token, expires, rtoken) => dispatch => {
+export const markNotificationsRead = notifications => dispatch => {
   axios
-    .post("/notificationsMarkRead", notifications, {headers: {token, expires, rtoken}})
+    .post("/notificationsMarkRead", notifications, {headers: getAuth()})
     .then(res => {
       refresh(res)
       dispatch({type: MARKNOTIFICATIONSREAD})
@@ -70,12 +72,16 @@ export const markNotificationsRead = (notifications, token, expires, rtoken) => 
     .catch(err => checkForFatalError(err))
 }
 
-export const sendMusic = (id, type, recipient, token, expires, rtoken) => dispatch => {
+export const sendMusic = (id, type, recipient) => dispatch => {
   dispatch({type: CLEARERRORS})
-  return axios
-    .post("/sendNotification", {id, receiveId: recipient, type}, {headers: {token, expires, rtoken}})
-    .then(res => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let res = await axios.post("/sendNotification", {id, receiveId: recipient, type}, {headers: getAuth()})
       refresh(res)
-    })
-    .catch(err => handleError(err, SETSENDMUSICERROR))
+      resolve()
+    } catch (err) {
+      handleError(err, SETSENDMUSICERROR)
+      reject()
+    }
+  })
 }

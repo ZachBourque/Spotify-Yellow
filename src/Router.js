@@ -38,8 +38,8 @@ store.dispatch(getUsers())
 var a = JSON.parse(window.localStorage.getItem("data"))
 if (a) {
   if (a.expires && a.token && a.rtoken && localStorage.getItem("cachepfp")) {
-    store.dispatch(loadDataIntoState())
-    store.dispatch(loadUser(a.token, a.expires, a.rtoken))
+    store.dispatch(loadDataIntoState(a))
+    store.dispatch(loadUser(a))
   } else {
     localStorage.removeItem("data")
   }

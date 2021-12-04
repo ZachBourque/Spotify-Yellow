@@ -120,7 +120,7 @@ function PrimarySearchAppBar(props) {
     if (notRead.length > 0) {
       let ids = []
       notRead.forEach(notification => ids.push(notification.notificationId))
-      props.markNotificationsRead(ids, props.auth.token, props.auth.expires, props.auth.rtoken)
+      props.markNotificationsRead(ids)
     }
     setNotiEl(event.currentTarget)
   }
