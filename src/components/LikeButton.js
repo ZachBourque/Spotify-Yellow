@@ -13,7 +13,7 @@ class LikeButton extends Component {
 
   likePost = () => {
     if (this.props.auth.loggedIn) {
-      this.props.likePost(this.props.postId, this.props.auth.token, this.props.auth.expires, this.props.auth.rtoken)
+      this.props.likePost(this.props.postId)
     } else {
       //idk
     }
@@ -21,7 +21,7 @@ class LikeButton extends Component {
 
   unlikePost = () => {
     if (this.props.auth.loggedIn) {
-      this.props.unlikePost(this.props.postId, this.props.auth.token, this.props.auth.expires, this.props.auth.rtoken)
+      this.props.unlikePost(this.props.postId)
     } else {
       //idk
     }

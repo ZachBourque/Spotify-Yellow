@@ -219,7 +219,7 @@ const MakePost = props => {
       type: value,
       spotifyid: selectedTopic.id
     }
-    props.makePost(newPost, props.auth.token, props.auth.expires, props.auth.rtoken)
+    props.makePost(newPost)
   }
 
   const handleSwitchChange = event => {

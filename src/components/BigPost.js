@@ -41,14 +41,20 @@ export class Post extends Component {
 
   state = {
     isLoading: true,
-    menuOpen: false
+    menuOpen: false,
+    error: null
   }
 
   componentDidMount() {
     const id = this.props.match.params.postID
-    this.props.setCurrentPost(id).then(() => {
-      this.setState({isLoading: false})
-    })
+    this.props
+      .setCurrentPost(id)
+      .then(() => {
+        this.setState({isLoading: false})
+      })
+      .catch(() => {
+        this.setState({error: "Could not get post."})
+      })
   }
 
   userRe = id => {
@@ -74,7 +80,9 @@ export class Post extends Component {
   render() {
     const {classes} = this.props
     const element = this.props.data.posts[0]
-    return this.state.isLoading ? (
+    return this.state.error ? (
+      <h2 style={{textAlign: "center"}}>{this.state.error}</h2>
+    ) : this.state.isLoading ? (
       <BigPostSkeleton />
     ) : (
       <Fragment>

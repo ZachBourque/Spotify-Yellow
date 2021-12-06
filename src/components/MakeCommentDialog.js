@@ -41,7 +41,7 @@ class MakeCommentDialog extends Component {
       pfp: this.props.user.profilepic
     }
 
-    this.props.makeComment(this.props.element.postId, this.props.auth.token, this.props.auth.expires, this.props.auth.rtoken, newComment).then(res => {
+    this.props.makeComment(this.props.element.postId, newComment).then(res => {
       this.props.closeMakeCommentDialog()
       this.setState({commentBody: "", emptyBodyBoolean: false})
     })

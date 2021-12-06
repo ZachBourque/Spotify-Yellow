@@ -26,7 +26,7 @@ class DeletePostDialog extends Component {
             variant="contained"
             color="secondary"
             onClick={() => {
-              this.deletingFunction()(this.props.element.comment ? this.props.element.id : this.props.element.postId, token, expires, rtoken)
+              this.deletingFunction()(this.props.element.comment ? this.props.element.id : this.props.element.postId)
               this.props.closeDeleteDialog()
             }}
             startIcon={<Delete />}
