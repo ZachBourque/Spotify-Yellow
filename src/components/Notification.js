@@ -25,15 +25,14 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-function Notification(props) {
+function Notification({notification}) {
   const classes = useStyles()
-  let {notification} = props
 
   return (
     <Card className={classes.root} onClick={() => window.open(notification.type !== "send" ? `/post/${notification.postId}` : notification.postId, "_blank", "noopener,noreferrer")}>
-      {notification.type == "send" ? <CardMedia image={notification.pic} component="img" className={classes.image} /> : notification.type == "like" ? <ThumbUp /> : <Comment />}
+      {notification.type == "send" ? <CardMedia image={notification.pic} component="img" className={classes.image} /> : notification.type == "like" ? <ThumbUp className={classes.image} /> : <Comment className={classes.image} />}
       <CardContent>
-        <Typography variant="body1">{`${notification.senderName} ${notification.type == "like" ? "liked your post!" : notification.type == "comment" ? "commented on your post." : "sent you music."}`}</Typography>
+        <Typography variant="body1" style={{fontSize: "100%"}}>{`${notification.senderName} ${notification.type == "like" ? "liked your post!" : notification.type == "comment" ? "left a comment." : "sent you music."}`}</Typography>
       </CardContent>
     </Card>
   )

@@ -144,7 +144,7 @@ function PrimarySearchAppBar(props) {
 
   const notificationId = "notification-menu"
   const renderNotificationMenu = (
-    <Menu anchorEl={notiEl} anchorOrigin={{vertical: "top", horizontal: "right"}} id={notificationId} keepMounted transformOrigin={{vertical: "top", horizontal: "right"}} open={isNotiMenuOpen} onClose={handleNotiMenuClose}>
+    <Menu anchorEl={notiEl} anchorOrigin={{vertical: "top", horizontal: "right"}} id={notificationId} keepMounted transformOrigin={{vertical: "top", horizontal: "right"}} open={isNotiMenuOpen} onClose={handleNotiMenuClose} style={{height: 500, overflowY: "scroll"}}>
       {props?.user?.notifications?.length > 0 ? (
         props?.user?.notifications?.map((notification, idx) => {
           return (

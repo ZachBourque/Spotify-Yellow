@@ -1,5 +1,6 @@
 const allowedCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVQXYZ1234567890-._"
 const allowedPunctuation = "._-"
+const {ExposurePlus1TwoTone} = require("@material-ui/icons")
 const request = require("request")
 
 function isEmpty(string) {
@@ -132,10 +133,32 @@ exports.validateBio = bio => {
   }
 }
 
-exports.validateFavorites = favorites => {
+exports.validateUsername = username => {
+  let errors = []
+  if (isEmpty(username)) {
+    errors.push("Invalid username")
+  } else if (username.length > 20) {
+    errors.push("Username cannot be longer than 20 characters")
+  } else {
+    if (allowedPunctuation.includes(username.charAt(0))) {
+      errors.push("Username cannot start with punctuation")
+    }
+    let i = username.length
+    while (i--) {
+      if (!allowedCharacters.includes(username.charAt(i))) {
+        errors.push("User contains invalid characters")
+        break
+      }
+    }
+  }
+  if (errors.length > 0) return errors[0]
+  return null
+}
+
+exports.validateFavorites = ({favArtists, favAlbums, favTracks}) => {
   let errors = []
 
-  if (Array.isArray(favorites.favArtists)) {
+  if (Array.isArray(favArtists)) {
     if (favArtists.length > 3) {
       errors.push("Too many favorite artists")
     } else {
@@ -147,7 +170,7 @@ exports.validateFavorites = favorites => {
       }
     }
   }
-  if (Array.isArray(favorites.favAlbums)) {
+  if (Array.isArray(favAlbums)) {
     if (favAlbums.length > 3) {
       errors.push("Too many favorite albums")
     } else {
@@ -159,7 +182,7 @@ exports.validateFavorites = favorites => {
       }
     }
   }
-  if (Array.isArray(favorites.favTracks)) {
+  if (Array.isArray(favTracks)) {
     if (favTracks.length > 3) {
       errors.push("Too many favorite tracks")
     } else {

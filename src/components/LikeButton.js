@@ -49,8 +49,7 @@ class LikeButton extends Component {
 }
 
 const mapStateToProps = state => ({
-  user: state.user,
-  auth: state.auth
+  user: state.user
 })
 
 const mapActionsToProps = {

@@ -2,7 +2,7 @@ const {admin, db, client_secret, Return} = require("../util/admin")
 const request = require("request")
 
 const querystring = require("querystring")
-const {validateUser, validateBio, validateFavorites} = require("../util/validators")
+const {validateUser, validateBio, validateFavorites, validateUsername} = require("../util/validators")
 var redirect_uri = "https://us-central1-spotify-yellow-282e0.cloudfunctions.net/api/callback" // Your redirect uri
 var client_id = "e5f1276d07b74135956c8b3130f79f3f" // Your client id
 
@@ -283,6 +283,20 @@ exports.editBio = (req, res) => {
     .catch(err => {
       console.error(err)
       return res.status(500).json({error: "Failed to update bio"})
+    })
+}
+
+exports.updateUsername = (req, res) => {
+  let error = validateUsername(req.body.username)
+  if (error) return res.status(400).json({error})
+  req.userRef
+    .update({username: req.body.username})
+    .then(() => {
+      return Return(req, res, {})
+    })
+    .catch(err => {
+      console.error(err)
+      return res.status(500).json({error: "Failed to update username"})
     })
 }
 

@@ -32,8 +32,8 @@ import EditPostDialog from "./components/EditPostDialog"
 import DeletePostDialog from "./components/DeletePostDialog"
 
 $("body").css("margin", 0)
-axios.defaults.baseURL = "https://us-central1-spotify-yellow-282e0.cloudfunctions.net/api"
-//axios.defaults.baseURL = "http://localhost:5000/spotify-yellow-282e0/us-central1/api"
+//axios.defaults.baseURL = "https://us-central1-spotify-yellow-282e0.cloudfunctions.net/api"
+axios.defaults.baseURL = "http://localhost:5000/spotify-yellow-282e0/us-central1/api"
 store.dispatch(getUsers())
 var a = JSON.parse(window.localStorage.getItem("data"))
 if (a) {

@@ -6,7 +6,7 @@ import FavoriteCard from "../components/FavoriteCard"
 import AddIcon from "@material-ui/icons/Add"
 import withStyles from "@material-ui/core/styles/withStyles"
 import {connect} from "react-redux"
-import {editBio, editFavorites, updateProfilePic} from "../redux/actions/userActions"
+import {editBio, editFavorites, updateProfilePic, updateUsername} from "../redux/actions/userActions"
 import {makeStyles} from "@material-ui/core/styles"
 import Container from "@material-ui/core/Container"
 import EditIcon from "@material-ui/icons/Edit"
@@ -97,13 +97,26 @@ const Settings = props => {
 
   const [dialog, setDialog] = useState(false)
   const submitBio = () => {
-    //validate data first
-    setNewBio(document.getElementById("openBioInput").value)
-    handleBioClick()
-    props.editBio(document.getElementById("openBioInput").value)
+    props
+      .editBio(document.getElementById("openBioInput").value)
+      .then(() => {
+        handleBioClickAway()
+      })
+      .catch(() => {
+        setNewBio(props.user.bio)
+      })
   }
 
-  const submitUsername = () => {}
+  const submitUsername = () => {
+    props
+      .updateUsername(document.getElementById("openUsernameInput").value)
+      .then(() => {
+        handleUsernameClickAway()
+      })
+      .catch(() => {
+        setNewUsername(props.user.username)
+      })
+  }
 
   const pfpChange = () => {
     var file = $("#pfpInput").prop("files")[0]
@@ -220,7 +233,7 @@ const Settings = props => {
             </Grid>
             <ClickAwayListener onClickAway={handleUsernameClickAway}>
               <Grid item>
-                {usernameOpen ? (
+                {!usernameOpen ? (
                   <Fragment>
                     <TextField autoComplete="off" defaultValue={newUsername} disabled multiline type="text" />
                     <IconButton className="button" onClick={handleUsernameClick}>
@@ -229,7 +242,7 @@ const Settings = props => {
                   </Fragment>
                 ) : (
                   <Fragment>
-                    <TextField type="text" onChange={() => setNewUsername($("openBioInput").val())} autoComplete="off" id="openBioInput" defaultValue={props.user.username} style={{width: 300}} />
+                    <TextField type="text" onChange={() => setNewUsername($("openBioInput").val())} autoComplete="off" id="openUsernameInput" defaultValue={props.user.username} style={{width: 300}} />
                     <IconButton className="button" onClick={handleUsernameClick}>
                       <EditIcon color="primary" />
                     </IconButton>
@@ -243,14 +256,14 @@ const Settings = props => {
               </Grid>
             </ClickAwayListener>
           </Grid>
-          {props.ui.errors.bio && <Typography variant="body1">{props.ui.errors.bio}</Typography>}
+          {props.ui.errors.username && <Typography variant="body1">{props.ui.errors.username}</Typography>}
           <Grid container direction="row" alignItems="center">
             <Grid item>
               <h4 style={{marginRight: 5}}>Bio:</h4>
             </Grid>
             <ClickAwayListener onClickAway={handleBioClickAway}>
               <Grid item>
-                {bioOpen ? (
+                {!bioOpen ? (
                   <Fragment>
                     <TextField autoComplete="off" defaultValue={newBio} disabled multiline type="text" />
                     <IconButton className="button" onClick={handleBioClick}>
@@ -403,7 +416,8 @@ const mapStateToProps = state => ({
 const mapActionsToProps = {
   editBio,
   editFavorites,
-  updateProfilePic
+  updateProfilePic,
+  updateUsername
 }
 
 export default connect(mapStateToProps, mapActionsToProps)(Settings)

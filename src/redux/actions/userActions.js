@@ -1,4 +1,4 @@
-import {USERLOADING, SETUSERDATA, CLEARERRORS, UPDATEBIO, UPDATEPFP, UPDATEFAVORITES, MARKNOTIFICATIONSREAD, SETSENDMUSICERROR, SETUPDATEPFPERROR, SETUPDATEFAVORITESERROR, SETUPDATEBIOERROR} from "../types"
+import {USERLOADING, SETUSERDATA, CLEARERRORS, UPDATEBIO, UPDATEPFP, UPDATEFAVORITES, MARKNOTIFICATIONSREAD, SETSENDMUSICERROR, SETUPDATEPFPERROR, SETUPDATEFAVORITESERROR, SETUPDATEBIOERROR, UPDATEUSERNAME, SETUSERNAMEERROR} from "../types"
 import axios from "axios"
 import {checkForFatalError, handleError, refresh, getAuth} from "../util"
 
@@ -28,13 +28,32 @@ export const reloadUserProfile = () => dispatch => {
 
 export const editBio = bio => dispatch => {
   dispatch({type: CLEARERRORS})
-  axios
-    .post("/editBio", {bio}, {headers: getAuth()})
-    .then(res => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let res = await axios.post("/editBio", {bio}, {headers: getAuth()})
       refresh(res)
       dispatch({type: UPDATEBIO, payload: {bio}})
-    })
-    .catch(err => handleError(err, SETUPDATEBIOERROR))
+      resolve()
+    } catch (err) {
+      handleError(err, SETUPDATEBIOERROR)
+      reject()
+    }
+  })
+}
+
+export const updateUsername = username => dispatch => {
+  dispatch({type: CLEARERRORS})
+  return new Promise(async (resolve, reject) => {
+    try {
+      let res = await axios.post("/updateUsername", {username}, {headers: getAuth()})
+      refresh(res)
+      dispatch({type: UPDATEUSERNAME, payload: {username}})
+      resolve()
+    } catch (err) {
+      handleError(err, SETUSERNAMEERROR)
+      reject()
+    }
+  })
 }
 
 export const editFavorites = update => dispatch => {
