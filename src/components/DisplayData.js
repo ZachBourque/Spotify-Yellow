@@ -8,30 +8,14 @@ import Menu from "@material-ui/core/Menu"
 import MenuItem from "@material-ui/core/MenuItem"
 import IconButton from "@material-ui/core/IconButton"
 import MoreVert from "@material-ui/icons/MoreVert"
-import SendMusicDialog from "./SendMusicDialog"
-import PostOnTopicDialog from "./MakePostDialog"
 import {connect} from "react-redux"
+import Grid from "@material-ui/core/Grid"
+import Box from "@material-ui/core/Box"
 import {openMakePostDialog, closeMakePostDialog, openSendMusicDialog, closeSendMusicDialog} from "../redux/actions/UIActions"
 
 const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1
-  },
-  paper: {
-    padding: theme.spacing(2),
-    margin: "auto",
-    textAlign: "center",
-    maxWidth: "300px"
-  },
-  image: {
-    width: 128,
-    height: 128
-  },
-  img: {
-    margin: "auto",
-    display: "block",
-    maxWidth: "100%",
-    maxHeight: "100%"
   }
 }))
 
@@ -77,57 +61,83 @@ const DisplayData = props => {
     </Menu>
   )
 
-  return (
-    <Fragment>
-      <Card onClick={onClick ? () => onClick(element) : null} styles={classes.paper} style={{cursor: "pointer", marginBottom: "10px"}} id={id}>
-        <CardMedia
-          style={{
-            maxHeight: maxHeight,
-            maxWidth: maxWidth
-          }}
-          src={element?.image || "https://media.pitchfork.com/photos/5c7d4c1b4101df3df85c41e5/1:1/w_600/Dababy_BabyOnBaby.jpg"}
-          component="img"
-        />
-        <CardContent>
-          {element?.artistName && (
-            <Fragment>
-              <Typography variant="h4" id={id}>
-                Artist:
-              </Typography>
-              {element.artistName.map((e, i) => {
-                return (
-                  <Typography variant="body1">
-                    {e}
-                    {i == element.artistName.length - 1 ? "" : ", "}
-                  </Typography>
-                )
-              })}
-            </Fragment>
-          )}
-          {element?.albumName && (
-            <Fragment>
-              <Typography variant="h4" id={id}>
-                Album:
-              </Typography>
-              <Typography variant="body1">{element.albumName}</Typography>
-            </Fragment>
-          )}
-          {element?.songName && (
-            <Fragment>
-              <Typography variant="h4" id={id}>
-                Track:
-              </Typography>
-              <Typography variant="body1">{element.songName}</Typography>
-            </Fragment>
-          )}
+  const media = <CardMedia style={{maxWidth: ex ? null : maxWidth}} src={element?.image || "https://media.pitchfork.com/photos/5c7d4c1b4101df3df85c41e5/1:1/w_600/Dababy_BabyOnBaby.jpg"} component="img" />
+
+  const content = (
+    <Box sx={{display: "flex", flexDirection: "column"}}>
+      <CardContent>
+        <div style={{display: "flex"}}>
+          <div style={{display: "block", overflow: "hidden", alignContent: ex ? "left" : "center", width: "100%"}}>
+            {element?.artistName && (
+              <Fragment>
+                <Typography variant="h6" id={id}>
+                  Artist:
+                </Typography>
+                <Typography variant="body1" noWrap gutterBottom>
+                  {element.artistName.map((e, i) => {
+                    return (
+                      <span>
+                        {e}
+                        {i !== element.artistName.length - 1 && ", "}
+                      </span>
+                    )
+                  })}
+                </Typography>
+              </Fragment>
+            )}
+            {element?.albumName && (
+              <Fragment>
+                <Typography variant="h6" id={id}>
+                  Album:
+                </Typography>
+                <Typography variant="body1" noWrap gutterBottom>
+                  {element.albumName}
+                </Typography>
+              </Fragment>
+            )}
+            {element?.songName && (
+              <Fragment>
+                <Typography variant="h6" id={id}>
+                  Track:
+                </Typography>
+                <Typography variant="body1" noWrap gutterBottom>
+                  {element.songName}
+                </Typography>
+              </Fragment>
+            )}
+          </div>
+          <div className={classes.root} />
           {ex ? (
-            <IconButton onClick={handleClick}>
+            <IconButton onClick={handleClick} style={{height: 48}}>
               <MoreVert />
             </IconButton>
           ) : null}
-          {renderMenu}
-        </CardContent>
+        </div>
+      </CardContent>
+    </Box>
+  )
+
+  return (
+    <Fragment>
+      <Card sx={{display: "flex"}} onClick={onClick ? () => onClick(element) : null} style={{cursor: "pointer", marginBottom: "10px", width: "100%"}} id={id}>
+        <Grid container direction="row" alignItems="center">
+          {ex ? (
+            <Grid item xs={4}>
+              {media}
+            </Grid>
+          ) : (
+            <Fragment>{media}</Fragment>
+          )}
+          {ex ? (
+            <Grid item xs={8}>
+              {content}
+            </Grid>
+          ) : (
+            <div style={{width: maxWidth}}>{content}</div>
+          )}
+        </Grid>
       </Card>
+      {renderMenu}
     </Fragment>
   )
 }

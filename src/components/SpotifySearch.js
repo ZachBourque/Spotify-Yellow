@@ -58,10 +58,8 @@ const SpotifySearch = props => {
 
   //Searches Spotify API for Artist
   const searchArtists = query => {
-    let prev = s.searchArtists(query, {limit: 5})
-    prev.then(
-      function (data) {
-        prev = null
+    s.searchArtists(query, {limit: 5})
+      .then(data => {
         if (data) {
           setReturnedData(data.artists.items)
           var tempArray = []
@@ -78,11 +76,11 @@ const SpotifySearch = props => {
           }
           setDataArray(tempArray)
         }
-      },
-      function (err) {
+      })
+      .catch(err => {
         console.error(err)
-      }
-    )
+        //error?
+      })
   }
 
   //Searches Spotify API for album

@@ -9,7 +9,6 @@ import queryString from "query-string"
 import {AlbumOutlined, TimerSharp} from "@material-ui/icons"
 import PropTypes from "prop-types"
 import SmallPost from "../components/SmallPost"
-import SpotifySearch from "../components/SpotifySearch"
 import MakePost from "../components/MakePost"
 import Card from "@material-ui/core/Card"
 import CardMedia from "@material-ui/core/CardMedia"
@@ -141,7 +140,7 @@ class Profile extends Component {
             <div style={{marginTop: 15}}>
               <Grid container direction="row" alignItems="center" justify="center" spacing={3}>
                 <Grid item>
-                  <img alt="nope" src={this.state.profilepic} width="100" style={{borderRadius: "50%"}} />
+                  <img alt="nope" src={this.state.profilepic} width="100" height="100" style={{borderRadius: "50%"}} />
                 </Grid>
                 <Typography gutterBottom variant="h3">
                   {this.state.username}

@@ -1,4 +1,4 @@
-import {SETDIALOGERROR, SETFEEDERROR, CLEARERRORS, SETDELETEERROR, SETSIGNUPERROR, SETEDITPOSTERROR, SETMAKEPOSTERROR, SETUPDATEBIOERROR, SETUPDATEPFPERROR, SETSENDMUSICERROR, SETUPDATEFAVORITESERROR, TOGGLEMAKEPOSTDIALOG, TOGGLEMAKECOMMENTDIALOG, TOGGLEEDITPOSTDIALOG, TOGGLEDELETEDIALOG, TOGGLESENDMUSICDIALOG, TOGGLELOGINDIALOG} from "../types"
+import {SETUSERNAMEERROR, SETDIALOGERROR, SETFEEDERROR, CLEARERRORS, SETDELETEERROR, SETSIGNUPERROR, SETEDITPOSTERROR, SETMAKEPOSTERROR, SETUPDATEBIOERROR, SETUPDATEPFPERROR, SETSENDMUSICERROR, SETUPDATEFAVORITESERROR, TOGGLEMAKEPOSTDIALOG, TOGGLEMAKECOMMENTDIALOG, TOGGLEEDITPOSTDIALOG, TOGGLEDELETEDIALOG, TOGGLESENDMUSICDIALOG, TOGGLELOGINDIALOG} from "../types"
 const initialState = {
   errors: {
     dialog: null,
@@ -11,7 +11,8 @@ const initialState = {
     bio: null,
     pfp: null,
     favorites: null,
-    sendMusic: null
+    sendMusic: null,
+    username: null
   },
   sendMusic: {
     open: false,
@@ -63,6 +64,8 @@ export default function (state = initialState, action) {
   switch (action.type) {
     case SETDIALOGERROR:
       return {...state, errors: {...state.errors, dialog: action.payload}}
+    case SETUSERNAMEERROR:
+      return {...state, errors: {...state.errors, username: action.payload}}
     case SETFEEDERROR:
       return {...state, errors: {...state.errors, feed: action.payload}}
     case CLEARERRORS:

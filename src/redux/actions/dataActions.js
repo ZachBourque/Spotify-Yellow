@@ -1,6 +1,6 @@
 import {DATALOADING, DELETEPOST, EDITPOST, REFRESH_TOKEN, SETCOMMENTLIST, LIKEPOST, UNLIKEPOST, SETPOSTS, DELETECOMMENT, SETUSERS, SETFEEDERROR, CLEARERRORS, SETEDITPOSTERROR, SETDELETEERROR, SETMAKECOMMENTERROR, SETMAKEPOSTERROR} from "../types"
 import axios from "axios"
-import {refresh, handleError, checkForFatalError} from "../util"
+import {refresh, handleError, checkForFatalError, getAuth} from "../util"
 
 export const getFeedData = () => dispatch => {
   dispatch({type: DATALOADING})
@@ -30,10 +30,10 @@ export const setDataLoading = () => dispatch => {
   dispatch({type: DATALOADING})
 }
 
-export const makePost = (newPost, token, expires, rtoken) => dispatch => {
+export const makePost = newPost => dispatch => {
   dispatch({type: CLEARERRORS})
   axios
-    .post("/createPost", newPost, {headers: {token, rtoken, expires}})
+    .post("/createPost", newPost, {headers: getAuth()})
     .then(res => {
       refresh(res)
 
@@ -45,10 +45,10 @@ export const makePost = (newPost, token, expires, rtoken) => dispatch => {
     })
 }
 
-export const editPost = (postId, update, token, expires, rtoken) => dispatch => {
+export const editPost = (postId, update) => dispatch => {
   dispatch({type: CLEARERRORS})
   axios
-    .put(`/editPost/${postId}`, update, {headers: {token, expires, rtoken}})
+    .put(`/editPost/${postId}`, update, {headers: getAuth()})
     .then(res => {
       refresh(res)
       dispatch({type: EDITPOST, payload: {id: postId, changes: update.update}})
@@ -56,10 +56,10 @@ export const editPost = (postId, update, token, expires, rtoken) => dispatch => 
     .catch(err => handleError(err, SETEDITPOSTERROR))
 }
 
-export const deletePost = (postId, token, expires, rtoken) => dispatch => {
+export const deletePost = postId => dispatch => {
   dispatch({type: CLEARERRORS})
   axios
-    .delete(`/post/${postId}`, {headers: {token, expires, rtoken}})
+    .delete(`/post/${postId}`, {headers: getAuth()})
     .then(res => {
       refresh(res)
       dispatch({type: DELETEPOST, payload: {id: postId}})
@@ -67,10 +67,10 @@ export const deletePost = (postId, token, expires, rtoken) => dispatch => {
     .catch(err => handleError(err, SETDELETEERROR))
 }
 
-export const deleteComment = (commentId, token, expires, rtoken) => dispatch => {
+export const deleteComment = commentId => dispatch => {
   dispatch({type: CLEARERRORS})
   axios
-    .delete(`/deleteComment/${commentId}`, {headers: {token, expires, rtoken}})
+    .delete(`/deleteComment/${commentId}`, {headers: getAuth()})
     .then(res => {
       refresh(res)
       dispatch({type: DELETECOMMENT, payload: {id: commentId}})
@@ -78,28 +78,39 @@ export const deleteComment = (commentId, token, expires, rtoken) => dispatch => 
     .catch(err => handleError(err, SETDELETEERROR))
 }
 
-export const makeComment = (postId, token, expires, rtoken, newComment) => dispatch => {
+export const makeComment = (postId, newComment) => dispatch => {
   dispatch({type: CLEARERRORS})
-  return axios
-    .post(`/post/${postId}/comment`, newComment, {headers: {token, rtoken, expires}})
-    .then(res => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let res = axios.post(`/post/${postId}/comment`, newComment, {headers: getAuth()})
       refresh(res)
       dispatch({type: SETCOMMENTLIST, payload: {newComment: res.data.newComment}})
-    })
-    .catch(err => handleError(err, SETMAKECOMMENTERROR))
-}
-
-export const setCurrentPost = postId => dispatch => {
-  return axios.get(`/post/${postId}`).then(res => {
-    const postData = res.data.post
-    postData.postId = postId
-    dispatch({type: SETPOSTS, payload: [postData]})
+      resolve()
+    } catch (err) {
+      handleError(err, SETMAKECOMMENTERROR)
+      reject(err)
+    }
   })
 }
 
-export const likePost = (postId, token, expires, rtoken) => dispatch => {
+export const setCurrentPost = postId => dispatch => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let res = await axios.get(`/post/${postId}`)
+      const postData = res.data.post
+      postData.postId = postId
+      dispatch({type: SETPOSTS, payload: [postData]})
+      resolve()
+    } catch (err) {
+      console.error(err)
+      reject()
+    }
+  })
+}
+
+export const likePost = postId => dispatch => {
   axios
-    .get(`/post/${postId}/like`, {headers: {token, expires, rtoken}})
+    .get(`/post/${postId}/like`, {headers: getAuth()})
     .then(res => {
       refresh(res)
       dispatch({type: LIKEPOST, payload: {like: res.data.like, postId}})
@@ -107,9 +118,9 @@ export const likePost = (postId, token, expires, rtoken) => dispatch => {
     .catch(err => checkForFatalError(err))
 }
 
-export const unlikePost = (postId, token, expires, rtoken) => dispatch => {
+export const unlikePost = postId => dispatch => {
   axios
-    .get(`/post/${postId}/unlike`, {headers: {token, expires, rtoken}})
+    .get(`/post/${postId}/unlike`, {headers: getAuth()})
     .then(res => {
       refresh(res)
       dispatch({type: UNLIKEPOST, payload: {postId}})

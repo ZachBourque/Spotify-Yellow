@@ -1,4 +1,4 @@
-import {USERLOADING, SETUSERDATA, CLEARUSERDATA, UPDATEBIO, UPDATEFAVORITES, UPDATEPFP, LIKEPOST, UNLIKEPOST, MARKNOTIFICATIONSREAD} from "../types"
+import {USERLOADING, SETUSERDATA, CLEARUSERDATA, UPDATEBIO, UPDATEFAVORITES, UPDATEPFP, LIKEPOST, UNLIKEPOST, MARKNOTIFICATIONSREAD, UPDATEUSERNAME} from "../types"
 
 const initialState = {
   profilepic: null,
@@ -25,6 +25,8 @@ export default function (state = initialState, action) {
       return {...action.payload, loading: false, loaded: true}
     case UPDATEBIO:
       return {...state, bio: action.payload.bio}
+    case UPDATEUSERNAME:
+      return {...state, username: action.payload.username}
     case UPDATEFAVORITES:
       return {...state, ...action.payload}
     case UPDATEPFP:
@@ -32,12 +34,7 @@ export default function (state = initialState, action) {
     case LIKEPOST:
       return {...state, likes: [...state.likes, action.payload.like]}
     case UNLIKEPOST:
-      let likes = []
-      if (state.likes.filter(like => like.postId !== action.payload.postId)) {
-        likes = state.likes.filter(like => like.postId !== action.payload.postId)
-      }
-
-      return {...state, likes}
+      return {...state, likes: [...state.likes.filter(like => like.postId !== action.payload.postId)]}
     case MARKNOTIFICATIONSREAD:
       state.notifications.forEach(notification => (notification.read = true))
       return {...state}

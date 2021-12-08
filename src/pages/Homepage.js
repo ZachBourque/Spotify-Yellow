@@ -18,9 +18,8 @@ import UserCard from "../components/UserCard"
 import SendMusicDialog from "../components/SendMusicDialog"
 import makeStyles from "@material-ui/core/styles/makeStyles"
 import withStyles from "@material-ui/core/styles/withStyles"
-import FeedSkeleton from "../Skeletons/FeedSkeleton"
+import SmallPostSkeleton from "../Skeletons/SmallPostSkeleton"
 import {openMakePostDialog, closeMakePostDialog} from "../redux/actions/UIActions"
-import MakePostDialog from "../components/MakePostDialog"
 
 const defaultNumOfPosts = 25
 
@@ -67,18 +66,30 @@ export class Homepage extends Component {
     const {classes} = this.props
     return (
       <Fragment>
-        {this.props.data.loaded ? (
+        {this.props.ui.errors.feed ? (
+          <Typography className={`${classes.message} ${classes.error}`} variant="h2">
+            {this.props.ui.errors.feed}
+          </Typography>
+        ) : (
           <Fragment>
             <Grid container spacing={3} justify="center" align="center">
-              {this.props.data.posts.slice(0, this.state.numOfPosts).map((post, idx) => {
-                return (
-                  <Grid item xs={12} key={idx}>
-                    <Grid item xs={6}>
-                      <SmallPost element={post} history={this.props.history} key={post.postId} postId={post.postId} />
-                    </Grid>
-                  </Grid>
-                )
-              })}
+              <Grid item xs={12}>
+                <Grid item xs={6}>
+                  {this.props.data.loaded ? (
+                    <Fragment>
+                      {this.props.data.posts.slice(0, this.state.numOfPosts).map((post, idx) => {
+                        return <SmallPost element={post} history={this.props.history} key={post.postId} postId={post.postId} key={idx} />
+                      })}
+                    </Fragment>
+                  ) : (
+                    <Fragment>
+                      {Array.from({length: 5}).map((element, idx) => {
+                        return <SmallPostSkeleton key={idx} />
+                      })}
+                    </Fragment>
+                  )}
+                </Grid>
+              </Grid>
               {this.props.data.loaded && this.state.numOfPosts < 1000 && this.props.data.posts.length > this.state.numOfPosts && <Button onClick={() => this.setState({numOfPosts: this.state.numOfPosts + defaultNumOfPosts})}>Show more.</Button>}
             </Grid>
             <div className={classes.makePost}>
@@ -87,12 +98,6 @@ export class Homepage extends Component {
               </IconButton>
             </div>
           </Fragment>
-        ) : this.props.ui.errors.feed ? (
-          <Typography className={`${classes.message} ${classes.error}`} variant="h2">
-            {this.props.ui.errors.feed}
-          </Typography>
-        ) : (
-          <FeedSkeleton class={classes.message} />
         )}
       </Fragment>
     )

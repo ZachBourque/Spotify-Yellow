@@ -61,7 +61,7 @@ class EditPostDialog extends Component {
       return
     }
 
-    this.props.editPost(postId, {update: changes}, token, expires, rtoken)
+    this.props.editPost(postId, {update: changes})
   }
 
   render() {

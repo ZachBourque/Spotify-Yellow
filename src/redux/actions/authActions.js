@@ -2,8 +2,8 @@ import axios from "axios"
 import {LOGOUT, SETAUTHDATA, REFRESH_TOKEN, CLEARUSERDATA, LOADTOKEN, SETSIGNUPERROR, CLEARERRORS, SETDIALOGERROR} from "../types"
 import {handleError} from "../util"
 
-export const loadDataIntoState = () => dispatch => {
-  dispatch({type: SETAUTHDATA, payload: JSON.parse(window.localStorage.getItem("data"))})
+export const loadDataIntoState = a => dispatch => {
+  dispatch({type: SETAUTHDATA, payload: a})
 }
 
 export const signUpUser = (data, history) => dispatch => {

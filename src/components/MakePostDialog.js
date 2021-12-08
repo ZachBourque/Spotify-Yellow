@@ -7,7 +7,6 @@ import {closeMakePostDialog} from "../redux/actions/UIActions"
 class PostOnTopicDialog extends Component {
   render() {
     let {element} = this.props
-    console.log(element)
     return (
       <Dialog onClose={this.props.closeMakePostDialog} aria-labelledby="customized-dialog-title" open={this.props.ui.makePost.open} maxWidth="sm" fullWidth>
         <DialogContent>
