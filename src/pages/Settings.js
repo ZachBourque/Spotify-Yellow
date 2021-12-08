@@ -19,6 +19,7 @@ import Dialog from "@material-ui/core/Dialog"
 import DialogContent from "@material-ui/core/DialogContent"
 import ClickAwayListener from "@material-ui/core/ClickAwayListener"
 import TextField from "@material-ui/core/TextField"
+import Avatar from "@material-ui/core/Avatar"
 
 const styles = makeStyles(theme => ({
   root: {
@@ -208,7 +209,7 @@ const Settings = props => {
           <h1>Settings</h1>
           <Grid container direction="row">
             <Grid item>
-              <img src={pfp} alt="cantfind" width="100" />
+              <Avatar src={pfp} alt="cantfind" style={{width: "100%", height: 100}} />
             </Grid>
             <Grid item>
               <input type="file" id="pfpInput" hidden="hidden" onChange={pfpChange} />

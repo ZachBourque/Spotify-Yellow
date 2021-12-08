@@ -1,4 +1,4 @@
-import React, {Component} from "react"
+import React, {Component, Fragment} from "react"
 import {Container, Avatar, Grid, Paper, Typography} from "@material-ui/core"
 import {makeStyles} from "@material-ui/core/styles"
 import Button from "@material-ui/core/ButtonBase"
@@ -130,17 +130,17 @@ class Profile extends Component {
   render() {
     const {classes} = this.props
     return (
-      <Grid container spacing={3} align="center">
-        <div name={classes.root}>
-          {this.state.loading ? (
-            <ProfileSkeleton />
-          ) : this.state.error ? (
-            <Typography variant="body1">{this.state.error}</Typography>
-          ) : (
+      <Fragment>
+        {this.state.loading ? (
+          <ProfileSkeleton />
+        ) : this.state.error ? (
+          <Typography variant="body1">{this.state.error}</Typography>
+        ) : (
+          <Grid container spacing={3} align="center">
             <div style={{marginTop: 15}}>
               <Grid container direction="row" alignItems="center" justify="center" spacing={3}>
                 <Grid item>
-                  <img alt="nope" src={this.state.profilepic} width="100" height="100" style={{borderRadius: "50%"}} />
+                  <Avatar alt="nope" src={this.state.profilepic} style={{width: "100%", height: 100}} />
                 </Grid>
                 <Typography gutterBottom variant="h3">
                   {this.state.username}
@@ -212,9 +212,9 @@ class Profile extends Component {
                   })}
               </Grid>
             </div>
-          )}
-        </div>
-      </Grid>
+          </Grid>
+        )}
+      </Fragment>
     )
   }
 }
