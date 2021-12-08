@@ -150,7 +150,7 @@ exports.getUser = (req, res) => {
     .limit(1)
     .get()
     .then(snap => {
-      if (!snap.docs[0].exists) {
+      if (snap.docs.length === 0) {
         return res.status(404).json({error: "Could not find user."})
       }
       let user = snap.docs[0].data()
@@ -158,7 +158,7 @@ exports.getUser = (req, res) => {
         .collection("posts")
         .where("authorid", "==", user.id)
         .orderBy("createdAt", "desc")
-        .limit(1000)
+        .limit(100)
         .get()
         .then(posts => {
           user.posts = []
