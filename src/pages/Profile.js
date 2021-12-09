@@ -18,7 +18,7 @@ import {setCurrent} from "../redux/actions/dataActions"
 import axios from "axios"
 import FavoriteCard from "../components/FavoriteCard"
 
-const styles = makeStyles(theme => ({
+const styles = theme => ({
   root: {
     flexGrow: 1
   },
@@ -53,7 +53,7 @@ const styles = makeStyles(theme => ({
   button: {
     maxWidth: 200
   }
-}))
+})
 
 class Profile extends Component {
   state = {
@@ -232,4 +232,4 @@ const mapActionsToProps = {
   setCurrent
 }
 
-export default connect(mapStateToProps, mapActionsToProps)(withStyles(styles)(Profile))
+export default connect(mapStateToProps, mapActionsToProps)(withStyles(styles, {withTheme: true})(Profile))

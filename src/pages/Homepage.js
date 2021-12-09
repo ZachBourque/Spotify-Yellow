@@ -1,25 +1,15 @@
 import {Component, useState, useEffect, Fragment} from "react"
 import {connect} from "react-redux"
-import axios from "axios"
 import SmallPost from "../components/SmallPost"
-import SearchUsers from "../components/SearchUsersDialog"
 import {Grid} from "@material-ui/core"
 import {getFeedData} from "../redux/actions/dataActions"
 import {IconButton} from "@material-ui/core"
 import PostAddIcon from "@material-ui/icons/PostAdd"
-import Dialog from "@material-ui/core/Dialog"
-import DialogTitle from "@material-ui/core/DialogTitle"
-import DialogContent from "@material-ui/core/DialogContent"
-import DialogActions from "@material-ui/core/DialogActions"
-import CloseIcon from "@material-ui/icons/Close"
 import Typography from "@material-ui/core/Typography"
 import Button from "@material-ui/core/Button"
-import UserCard from "../components/UserCard"
-import SendMusicDialog from "../components/SendMusicDialog"
-import makeStyles from "@material-ui/core/styles/makeStyles"
 import withStyles from "@material-ui/core/styles/withStyles"
 import SmallPostSkeleton from "../Skeletons/SmallPostSkeleton"
-import {openMakePostDialog, closeMakePostDialog} from "../redux/actions/UIActions"
+import {openMakePostDialog, closeMakePostDialog, openLoginDialog} from "../redux/actions/UIActions"
 
 const defaultNumOfPosts = 25
 
@@ -62,6 +52,14 @@ export class Homepage extends Component {
     this.setState({searchUsersState: false})
   }
 
+  checkOpenMakePost = () => {
+    if (this.props.auth.loggedIn) {
+      this.props.openMakePostDialog({})
+    } else {
+      this.props.openLoginDialog()
+    }
+  }
+
   render() {
     const {classes} = this.props
     return (
@@ -93,7 +91,7 @@ export class Homepage extends Component {
               {this.props.data.loaded && this.state.numOfPosts < 1000 && this.props.data.posts.length > this.state.numOfPosts && <Button onClick={() => this.setState({numOfPosts: this.state.numOfPosts + defaultNumOfPosts})}>Show more.</Button>}
             </Grid>
             <div className={classes.makePost}>
-              <IconButton style={{width: "100%", height: "100%"}} onClick={() => this.props.openMakePostDialog({})}>
+              <IconButton style={{width: "100%", height: "100%"}} onClick={this.checkOpenMakePost}>
                 <PostAddIcon />
               </IconButton>
             </div>
@@ -106,13 +104,15 @@ export class Homepage extends Component {
 
 const mapStateToProps = state => ({
   data: state.data,
-  ui: state.ui
+  ui: state.ui,
+  auth: state.auth
 })
 
 const mapActionsToProps = {
   getFeedData,
   openMakePostDialog,
-  closeMakePostDialog
+  closeMakePostDialog,
+  openLoginDialog
 }
 
-export default connect(mapStateToProps, mapActionsToProps)(withStyles(styles)(Homepage))
+export default connect(mapStateToProps, mapActionsToProps)(withStyles(styles, {withTheme: true})(Homepage))

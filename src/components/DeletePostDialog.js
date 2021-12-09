@@ -6,17 +6,18 @@ import {deletePost, deleteComment} from "../redux/actions/dataActions"
 import {closeDeleteDialog} from "../redux/actions/UIActions"
 
 class DeletePostDialog extends Component {
+  type = this.props.element.comment ? "comment" : "post"
+
   deletingFunction = () => {
     return this.props.element.comment ? this.props.deleteComment : this.props.deletePost
   }
 
   render() {
-    const {token, expires, rtoken} = this.props.auth
     return (
       <Dialog open={this.props.ui.delete.open} onClose={this.props.closeDeleteDialog} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
-        <DialogTitle id="alert-dialog-title">Are you sure you want to delete this {this.props.element.comment ? "comment" : "post"}?</DialogTitle>
+        <DialogTitle id="alert-dialog-title">Are you sure you want to delete this {this.type}?</DialogTitle>
         <DialogContent>
-          <DialogContentText id="alert-dialog-description">Once this {this.props.element.comment ? "comment" : "post"} is deleted, it cannot be recovered.</DialogContentText>
+          <DialogContentText id="alert-dialog-description">Once this {this.type} is deleted, it cannot be recovered.</DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={this.props.closeDeleteDialog} variant="outlined">
@@ -41,7 +42,6 @@ class DeletePostDialog extends Component {
 }
 
 const mapStateToProps = state => ({
-  auth: state.auth,
   ui: state.ui
 })
 

@@ -38,11 +38,10 @@ export const signUpUser = (data, history) => dispatch => {
   }
 }
 
-export const logout = history => dispatch => {
+export const logout = () => dispatch => {
   localStorage.removeItem("data")
   dispatch({type: LOGOUT})
   dispatch({type: CLEARUSERDATA})
-  history.push("/")
 }
 
 export const refreshToken = (token, expires) => dispatch => {

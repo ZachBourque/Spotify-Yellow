@@ -18,7 +18,7 @@ import {connect} from "react-redux"
 import {signUpUser} from "../redux/actions/authActions"
 import withStyles from "@material-ui/core/styles/withStyles"
 
-const styles = makeStyles(theme => ({
+const styles = theme => ({
   root: {
     "& > *": {
       margin: theme.spacing(1)
@@ -44,7 +44,7 @@ const styles = makeStyles(theme => ({
   submit: {
     margin: theme.spacing(3, 0, 2)
   }
-}))
+})
 
 class SignUp extends React.Component {
   state = {
