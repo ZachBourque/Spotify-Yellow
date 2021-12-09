@@ -83,7 +83,7 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-function PrimarySearchAppBar(props) {
+function NavBar(props) {
   let {user, auth} = props
   const profileRe = () => {
     handleMenuClose()
@@ -131,7 +131,6 @@ function PrimarySearchAppBar(props) {
   const logout = () => {
     handleMenuClose()
     props.logout(props.history)
-    window.location.reload()
   }
   const menuId = "primary-search-account-menu"
   const renderMenu = (
@@ -263,4 +262,4 @@ const mapActionsToProps = {
   markNotificationsRead
 }
 
-export default connect(mapStateToProps, mapActionsToProps)(PrimarySearchAppBar)
+export default connect(mapStateToProps, mapActionsToProps)(NavBar)

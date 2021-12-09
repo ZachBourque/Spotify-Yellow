@@ -1,7 +1,7 @@
 import React from "react"
 import {BrowserRouter, Switch, Route, Redirect} from "react-router-dom"
 import Homepage from "./pages/Homepage"
-import Home from "./pages/Home"
+import ButtonAppBar from "./components/ButtonAppBar"
 import Temp from "./pages/temp"
 import Profile from "./pages/Profile"
 import {ThemeProvider, createMuiTheme} from "@material-ui/core/styles"
@@ -30,10 +30,11 @@ import SendMusicDialog from "./components/SendMusicDialog"
 import MakeCommentDialog from "./components/MakeCommentDialog"
 import EditPostDialog from "./components/EditPostDialog"
 import DeletePostDialog from "./components/DeletePostDialog"
+import LoginRNDialog from "./components/LoginRNDialog"
 
 $("body").css("margin", 0)
-//axios.defaults.baseURL = "https://us-central1-spotify-yellow-282e0.cloudfunctions.net/api"
-axios.defaults.baseURL = "http://localhost:5000/spotify-yellow-282e0/us-central1/api"
+axios.defaults.baseURL = "https://us-central1-spotify-yellow-282e0.cloudfunctions.net/api"
+//axios.defaults.baseURL = "http://localhost:5000/spotify-yellow-282e0/us-central1/api"
 store.dispatch(getUsers())
 var a = JSON.parse(window.localStorage.getItem("data"))
 if (a) {
@@ -80,7 +81,7 @@ class Router extends React.Component {
       <ThemeProvider theme={this.theme}>
         <Paper style={{height: "auto", minHeight: "100vh", overflowX: "hidden", overflowY: "hidden"}}>
           <BrowserRouter>
-            <Route path="/" component={Home} />
+            <Route path="/" component={ButtonAppBar} />
             <Switch>
               <Route path="/profile=:id" component={Profile} />
               <Route path="/profile" component={SelfProfile} exact />
@@ -108,6 +109,7 @@ class Router extends React.Component {
           <EditPostDialog element={this.props.ui.editPost.element} />
           <DeletePostDialog element={this.props.ui.delete.element} />
           <SendMusicDialog element={this.props.ui.sendMusic.element} />
+          <LoginRNDialog />
         </Paper>
       </ThemeProvider>
     )

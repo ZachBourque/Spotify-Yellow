@@ -1,7 +1,5 @@
 const allowedCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVQXYZ1234567890-._"
 const allowedPunctuation = "._-"
-const {ExposurePlus1TwoTone} = require("@material-ui/icons")
-const request = require("request")
 
 function isEmpty(string) {
   return !string || 0 === string.trim().length

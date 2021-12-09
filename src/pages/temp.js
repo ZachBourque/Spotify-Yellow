@@ -14,7 +14,7 @@ const Temp = props => {
   if (hasAccount == "true") {
     localStorage.setItem("data", JSON.stringify({token, rtoken, expires}))
     localStorage.setItem("cachepfp", pfp)
-    props.loadDataIntoState()
+    props.loadDataIntoState({token, expires, rtoken})
     props.loadUser({token, expires, rtoken})
     return <Redirect to="/" />
   }

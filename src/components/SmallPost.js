@@ -1,10 +1,6 @@
 import {Component, Fragment} from "react"
 import {connect} from "react-redux"
 import {Container, Avatar, Grid, Paper, Typography, Divider, Box, CardHeader, CardMedia, CardContent, CardActions, Collapse, IconButton, Card, Menu, MenuItem, Button} from "@material-ui/core"
-import {FormControl, FormLabel, TextField, Switch} from "@material-ui/core"
-import {red} from "@material-ui/core/colors"
-import $ from "jquery"
-import axios from "axios"
 import Zero from "../assets/0.png"
 import One from "../assets/1.png"
 import Two from "../assets/2.png"
@@ -19,23 +15,16 @@ import Ten from "../assets/10.png"
 import withStyles from "@material-ui/core/styles/withStyles"
 import {makeStyles, createMuiTheme} from "@material-ui/core/styles"
 import {ThumbUp, Comment, Share, MoreVert, Create, Delete, PostAddOutlined, Remove, Add, Send} from "@material-ui/icons"
-import {Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle} from "@material-ui/core"
-import MakePost from "./MakePost"
-import {thisExpression} from "@babel/types"
 import {deletePost, editPost} from "../redux/actions/dataActions"
 import {reloadUserProfile} from "../redux/actions/userActions"
 import LikeButton from "../components/LikeButton"
-import SendMusicDialog from "./SendMusicDialog"
-import EditPostDialog from "./EditPostDialog"
-import DeletePostDialog from "./DeletePostDialog"
-import {openSendMusicDialog, openMakePostDialog, openEditPostDialog, openDeleteDialog} from "../redux/actions/UIActions"
-import MakePostDialog from "./MakePostDialog"
+import {openSendMusicDialog, openMakePostDialog, openEditPostDialog, openDeleteDialog, openLoginDialog} from "../redux/actions/UIActions"
 
-const styles = makeStyles(theme => ({
+const styles = theme => ({
   header: {
     backgroundColor: "#FFBB35"
   }
-}))
+})
 
 export class Post extends Component {
   state = {
@@ -131,6 +120,32 @@ export class Post extends Component {
     return text
   }
 
+  checkOpenMakePost = () => {
+    if (this.props.auth.loggedIn) {
+      let {element} = this.props
+      this.props.openMakePostDialog({type: element.type, id: element.spotifyid, artistName: element.artist, albumName: element.album, songName: element.track, image: element.pic})
+    } else {
+      this.props.openLoginDialog()
+    }
+  }
+
+  checkOpenSendMusic = () => {
+    if (this.props.auth.loggedIn) {
+      let {element} = this.props
+      this.props.openSendMusicDialog({
+        type: element.type,
+        id: element.spotifyid,
+        artistName: element.artist,
+        albumName: element.album,
+        songName: element.track,
+        image: element.pic,
+        url: `https://open.spotify.com/${element.type}/${element.spotifyid}`
+      })
+    } else {
+      this.props.openLoginDialog()
+    }
+  }
+
   render() {
     let {element} = this.props
     return (
@@ -143,22 +158,8 @@ export class Post extends Component {
                 <MoreVert />
               </IconButton>
               <Menu id="simple-menu" anchorEl={this.state.menuOpen} keepMounted open={Boolean(this.state.menuOpen)} onClose={this.handleClose}>
-                <MenuItem onClick={() => this.props.openMakePostDialog({type: element.type, id: element.spotifyid, artistName: element.artist, albumName: element.album, songName: element.track, image: element.pic})}>Make Post On Topic</MenuItem>
-                <MenuItem
-                  onClick={() =>
-                    this.props.openSendMusicDialog({
-                      type: element.type,
-                      id: element.spotifyid,
-                      artistName: element.artist,
-                      albumName: element.album,
-                      songName: element.track,
-                      image: element.pic,
-                      url: `https://open.spotify.com/${element.type}/${element.spotifyid}`
-                    })
-                  }
-                >
-                  Recommend Topic To Someone
-                </MenuItem>
+                <MenuItem onClick={this.checkOpenMakePost}>Make Post On Topic</MenuItem>
+                <MenuItem onClick={this.checkOpenSendMusic}>Recommend Topic To Someone</MenuItem>
                 <MenuItem
                   onClick={() => {
                     this.handleClose()
@@ -268,7 +269,7 @@ export class Post extends Component {
 
 const mapStateToProps = state => ({
   user: state.user,
-  auth: state.autha,
+  auth: state.auth,
   ui: state.ui
 })
 
@@ -279,7 +280,8 @@ const mapActionsToProps = {
   openMakePostDialog,
   openEditPostDialog,
   openSendMusicDialog,
-  openDeleteDialog
+  openDeleteDialog,
+  openLoginDialog
 }
 
-export default connect(mapStateToProps, mapActionsToProps)(withStyles(styles)(Post))
+export default connect(mapStateToProps, mapActionsToProps)(withStyles(styles, {withTheme: true})(Post))

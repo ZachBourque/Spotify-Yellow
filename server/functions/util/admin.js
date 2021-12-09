@@ -3,9 +3,9 @@ const admin = require("firebase-admin")
 const request = require("request")
 
 admin.initializeApp()
-const client_secret = functions.config().info.client_secret
+const {client_secret} = functions.config().info
 const db = admin.firestore()
-var client_id = "e5f1276d07b74135956c8b3130f79f3f" // Your client id
+const client_id = "e5f1276d07b74135956c8b3130f79f3f"
 
 const validateUser = (req, res, next) => {
   const getUser = () => {
