@@ -82,7 +82,7 @@ export const makeComment = (postId, newComment) => dispatch => {
   dispatch({type: CLEARERRORS})
   return new Promise(async (resolve, reject) => {
     try {
-      let res = axios.post(`/post/${postId}/comment`, newComment, {headers: getAuth()})
+      let res = await axios.post(`/post/${postId}/comment`, newComment, {headers: getAuth()})
       refresh(res)
       dispatch({type: SETCOMMENTLIST, payload: {newComment: res.data.newComment}})
       resolve()

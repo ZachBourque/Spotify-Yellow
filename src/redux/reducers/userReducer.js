@@ -1,12 +1,12 @@
-import {USERLOADING, SETUSERDATA, CLEARUSERDATA, UPDATEBIO, UPDATEFAVORITES, UPDATEPFP, LIKEPOST, UNLIKEPOST, MARKNOTIFICATIONSREAD, UPDATEUSERNAME} from "../types"
+import {USERLOADING, SETUSERDATA, LOGOUT, UPDATEBIO, UPDATEFAVORITES, UPDATEPFP, LIKEPOST, UNLIKEPOST, MARKNOTIFICATIONSREAD, UPDATEUSERNAME} from "../types"
 
 const initialState = {
   profilepic: null,
   posts: null,
   likes: null,
-  favAlbums: null,
-  favSongs: null,
-  favArtists: null,
+  favAlbums: [],
+  favSongs: [],
+  favArtists: [],
   bio: null,
   username: null,
   id: null,
@@ -17,7 +17,7 @@ const initialState = {
 
 export default function (state = initialState, action) {
   switch (action.type) {
-    case CLEARUSERDATA:
+    case LOGOUT:
       return initialState
     case USERLOADING:
       return {...initialState, loading: true}

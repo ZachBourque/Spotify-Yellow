@@ -5,7 +5,7 @@ import Typography from "@material-ui/core/Typography"
 import FavoriteCard from "../components/FavoriteCard"
 import AddIcon from "@material-ui/icons/Add"
 import {connect} from "react-redux"
-import {editBio, editFavorites, updateProfilePic, updateUsername} from "../redux/actions/userActions"
+import {editBio, editFavorites, updateProfilePic, updateUsername, deleteUser} from "../redux/actions/userActions"
 import {makeStyles} from "@material-ui/core/styles"
 import Container from "@material-ui/core/Container"
 import EditIcon from "@material-ui/icons/Edit"
@@ -16,6 +16,9 @@ import Button from "@material-ui/core/Button"
 import Grid from "@material-ui/core/Grid"
 import Dialog from "@material-ui/core/Dialog"
 import DialogContent from "@material-ui/core/DialogContent"
+import DialogContentText from "@material-ui/core/DialogContentText"
+import DialogActions from "@material-ui/core/DialogActions"
+import DialogTitle from "@material-ui/core/DialogTitle"
 import ClickAwayListener from "@material-ui/core/ClickAwayListener"
 import TextField from "@material-ui/core/TextField"
 import Avatar from "@material-ui/core/Avatar"
@@ -172,33 +175,52 @@ const Settings = props => {
         break
     }
   }
+
   const submitFavAlbums = () => {
     props.editFavorites({favAlbums: [...tempFavAlbums]})
   }
+
   const submitFavSongs = () => {
     props.editFavorites({favSongs: [...tempFavSongs]})
   }
+
   const submitFavArtists = () => {
     props.editFavorites({favArtists: [...tempFavArtists]})
   }
+
   const removeAlbum = album => {
     let arr = tempFavAlbums.filter(a => {
       return a.name !== album.name
     })
     setTempFavAlbums(arr)
   }
+
   const removeSong = song => {
     let arr = tempFavSongs.filter(a => {
       return a.name !== song.name
     })
     setTempFavSongs(arr)
   }
+
   const removeArtist = artist => {
     let arr = tempFavArtists.filter(a => {
       return a.name !== artist.name
     })
     setTempFavArtists(arr)
   }
+
+  const [deleteOpen, setDeleteOpen] = useState(false)
+  const [btnDisabled, setBtnDisabled] = useState(true)
+
+  const openDeleteDialog = () => {
+    setDeleteOpen(true)
+  }
+
+  const closeDeleteDialog = () => {
+    setDeleteOpen(false)
+    setBtnDisabled(true)
+  }
+
   return (
     <Container>
       {loading ? (
@@ -320,7 +342,7 @@ const Settings = props => {
                 </Button>
                 <Button type="button" onClick={() => setTempFavArtists(props.user.favArtists)}>
                   Undo
-                </Button>{" "}
+                </Button>
               </Fragment>
             )}
           </Grid>
@@ -354,7 +376,7 @@ const Settings = props => {
                 </Button>
                 <Button type="button" onClick={() => setTempFavAlbums(props.user.favAlbums)}>
                   Undo
-                </Button>{" "}
+                </Button>
               </Fragment>
             )}
           </Grid>
@@ -403,6 +425,33 @@ const Settings = props => {
           </Dialog>
         </Fragment>
       )}
+      <Button type="button" variant="contained" onClick={openDeleteDialog}>
+        Delete Account
+      </Button>
+      <Dialog open={deleteOpen} onClose={closeDeleteDialog}>
+        <DialogTitle>Are you sure?</DialogTitle>
+        <DialogContent>
+          <DialogContentText>Once you delete your account, your data cannot be recovered. You can, however, make a new account with the same spotify at any time.</DialogContentText>
+          <DialogContentText>Please type "confirm" to confirm your account deletion.</DialogContentText>
+          <TextField
+            autoFocus
+            placeholder="confirm"
+            id="confirmbox"
+            onChange={text => {
+              setBtnDisabled(text.target.value !== "confirm")
+              console.log(text.target.value)
+            }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button type="button" onClick={closeDeleteDialog}>
+            Cancel
+          </Button>
+          <Button type="button" disabled={btnDisabled} onClick={props.deleteUser}>
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   )
 }
@@ -417,7 +466,8 @@ const mapActionsToProps = {
   editBio,
   editFavorites,
   updateProfilePic,
-  updateUsername
+  updateUsername,
+  deleteUser
 }
 
 export default connect(mapStateToProps, mapActionsToProps)(Settings)

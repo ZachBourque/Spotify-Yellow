@@ -1,5 +1,5 @@
 import React from "react"
-import {BrowserRouter, Switch, Route, Redirect} from "react-router-dom"
+import {Switch, Route, Redirect, BrowserRouter} from "react-router-dom"
 import Homepage from "./pages/Homepage"
 import ButtonAppBar from "./components/ButtonAppBar"
 import Temp from "./pages/temp"
@@ -31,20 +31,23 @@ import MakeCommentDialog from "./components/MakeCommentDialog"
 import EditPostDialog from "./components/EditPostDialog"
 import DeletePostDialog from "./components/DeletePostDialog"
 import LoginRNDialog from "./components/LoginRNDialog"
+import Logout from "./pages/Logout"
 
 $("body").css("margin", 0)
 axios.defaults.baseURL = "https://us-central1-spotify-yellow-282e0.cloudfunctions.net/api"
 //axios.defaults.baseURL = "http://localhost:5000/spotify-yellow-282e0/us-central1/api"
-store.dispatch(getUsers())
-var a = JSON.parse(window.localStorage.getItem("data"))
-if (a) {
-  if (a.expires && a.token && a.rtoken && localStorage.getItem("cachepfp")) {
-    store.dispatch(loadDataIntoState(a))
-    store.dispatch(loadUser(a))
-  } else {
-    localStorage.removeItem("data")
+if (window.location.href.split("/")[-1] !== "logout") {
+  var a = JSON.parse(window.localStorage.getItem("data"))
+  if (a) {
+    if (a.expires && a.token && a.rtoken && localStorage.getItem("cachepfp")) {
+      store.dispatch(loadDataIntoState(a))
+      store.dispatch(loadUser(a))
+    } else {
+      localStorage.removeItem("data")
+    }
   }
 }
+store.dispatch(getUsers())
 
 class Router extends React.Component {
   state = {
@@ -54,18 +57,13 @@ class Router extends React.Component {
 
   handleClose = () => {
     this.setState({open: false})
-  }
-
-  refresh = () => {
-    window.location.reload()
-    this.handleClose()
+    window.location.href = "/logout"
   }
 
   componentDidUpdate(prevProps) {
     if (prevProps.ui.errors.dialog !== this.props.ui.errors.dialog && !this.state.open) {
       if (this.props.ui.errors.dialog) {
         this.setState({open: true, error: this.props.ui.errors.dialog})
-        this.props.logout()
       }
     }
   }
@@ -91,6 +89,7 @@ class Router extends React.Component {
               <Route path="/post/:postID" component={BigPost} />
               <Route path="/settings" component={Settings} />
               <Route path="/search" component={SearchPage} />
+              <Route path="/logout" component={Logout} />
             </Switch>
           </BrowserRouter>
           <Dialog open={this.state.open} onClose={this.handleClose} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
@@ -99,7 +98,7 @@ class Router extends React.Component {
               <DialogContentText id="alert-dialog-description">{this.state.error}</DialogContentText>
             </DialogContent>
             <DialogActions>
-              <Button onClick={this.refresh} color="primary" autoFocus>
+              <Button onClick={this.handleClose} color="primary" autoFocus>
                 Ok
               </Button>
             </DialogActions>

@@ -5,10 +5,10 @@ const querystring = require("querystring")
 const {validateUser, validateBio, validateFavorites, validateUsername} = require("../util/validators")
 var client_id = "e5f1276d07b74135956c8b3130f79f3f" // Your client id
 
-let url = "https://spotify-yellow-282e0.web.app/"
-//let url = "http://localhost:3000/"
-var redirect_uri = "https://us-central1-spotify-yellow-282e0.cloudfunctions.net/api/callback" // Your redirect uri
-//var redirect_uri = "http://localhost:5000/spotify-yellow-282e0/us-central1/api/callback"
+//let url = "https://spotify-yellow-282e0.web.app/"
+let url = "http://localhost:3000/"
+//var redirect_uri = "https://us-central1-spotify-yellow-282e0.cloudfunctions.net/api/callback" // Your redirect uri
+var redirect_uri = "http://localhost:5000/spotify-yellow-282e0/us-central1/api/callback"
 
 var generateRandomString = function (length) {
   var text = ""
@@ -123,7 +123,7 @@ exports.createUser = (req, res) => {
 
   var options = {
     url: "https://api.spotify.com/v1/me",
-    headers: {Authorization: "Bearer " + req.auth.token},
+    headers: {Authorization: "Bearer " + req.body.token},
     json: true
   }
 
@@ -406,4 +406,16 @@ exports.sendNotification = (req, res) => {
         })
     }
   })
+}
+
+exports.deleteUser = (req, res) => {
+  req.userRef
+    .delete()
+    .then(() => {
+      Return(req, res, {})
+    })
+    .catch(err => {
+      console.error(err)
+      return res.status(500).json({error: "Error deleting user"})
+    })
 }

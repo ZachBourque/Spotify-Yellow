@@ -85,6 +85,8 @@ const useStyles = makeStyles(theme => ({
 
 function NavBar(props) {
   let {user, auth} = props
+  //const redirect_uri = "https://us-central1-spotify-yellow-282e0.cloudfunctions.net/api/callback"
+  const redirect_uri = "http://localhost:5000/spotify-yellow-282e0/us-central1/api/callback"
   const profileRe = () => {
     handleMenuClose()
     props.history.push("/profile")
@@ -101,7 +103,7 @@ function NavBar(props) {
       response_type: "code",
       client_id: "e5f1276d07b74135956c8b3130f79f3f",
       scope: "user-read-private user-read-email user-read-playback-state",
-      redirect_uri: "https://us-central1-spotify-yellow-282e0.cloudfunctions.net/api/callback"
+      redirect_uri
     })
   const [anchorEl, setAnchorEl] = useState(null)
   const isMenuOpen = Boolean(anchorEl)
@@ -130,7 +132,7 @@ function NavBar(props) {
 
   const logout = () => {
     handleMenuClose()
-    props.logout(props.history)
+    window.location.href = "/logout"
   }
   const menuId = "primary-search-account-menu"
   const renderMenu = (

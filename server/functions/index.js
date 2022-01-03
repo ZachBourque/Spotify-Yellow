@@ -4,7 +4,7 @@ const express = require("express")
 const app = express()
 app.use(cors())
 
-const {login, callback, createUser, getUser, getSelf, uploadPic, editBio, updateUsername, updatePfp, getToken, editFavorites, getUsers, markNotificationsRead, sendNotification} = require("./handlers/users")
+const {login, callback, createUser, getUser, getSelf, uploadPic, editBio, updateUsername, updatePfp, getToken, editFavorites, getUsers, markNotificationsRead, sendNotification, deleteUser} = require("./handlers/users")
 const {validateUser, db} = require("./util/admin")
 const {createPost, getAllPosts, getPostsByUser, getPost, deletePost, editPost, createComment, editComment, deleteComment, likePost, unlikePost} = require("./handlers/posts")
 
@@ -23,7 +23,7 @@ app.get("/token", getToken)
 app.get("/users", getUsers)
 app.post("/notificationsMarkRead", validateUser, markNotificationsRead)
 app.post("/sendNotification", validateUser, sendNotification)
-
+app.delete("/user", validateUser, deleteUser)
 //Post Routes
 app.post("/createPost", validateUser, createPost)
 app.get("/allPosts", getAllPosts)
@@ -38,7 +38,6 @@ app.get("/post/:postId/like", validateUser, likePost)
 app.get("/post/:postId/unlike", validateUser, unlikePost)
 
 exports.createNotificationOnLike = functions.firestore.document("likes/{id}").onCreate(snapshot => {
-  console.log("on like")
   return db
     .doc(`/posts/${snapshot.data().postId}`)
     .get()
@@ -60,7 +59,6 @@ exports.createNotificationOnLike = functions.firestore.document("likes/{id}").on
 })
 
 exports.deleteNotificationOnUnlike = functions.firestore.document("likes/{id}").onDelete(snapshot => {
-  console.log("on unlike")
   return db
     .doc(`/notifications/${snapshot.id}`)
     .delete()
@@ -102,7 +100,7 @@ exports.deleteNotificationsOnCommentDelete = functions.firestore.document("comme
 })
 
 exports.onPostDelete = functions.firestore.document("posts/{id}").onDelete((snapshot, context) => {
-  const postId = snapshot.data().postId
+  const postId = snapshot.id
   const batch = db.batch()
   return db
     .collection("likes")
@@ -158,6 +156,36 @@ exports.onUserImageChange = functions.firestore.document("users/{id}").onUpdate(
   } else {
     console.log("no change " + pfp, change.before.data().profilepic)
   }
+})
+
+exports.onUserDelete = functions.firestore.document("users/{id}").onDelete((snapshot, context) => {
+  let userId = snapshot.data().id
+  console.log(userId)
+  let batch = db.batch()
+  db.collection("posts")
+    .where("authorid", "==", userId)
+    .get()
+    .then(docs => {
+      docs.forEach(doc => {
+        batch.delete(db.doc(`/posts/${doc.id}`))
+      })
+      return db.collection("likes").where("authorid", "==", userId).get()
+    })
+    .then(docs => {
+      docs.forEach(doc => {
+        batch.delete(db.doc(`/likes/${doc.id}`))
+      })
+      return db.collection("comments").where("authorid", "==", userId).get()
+    })
+    .then(docs => {
+      docs.forEach(doc => {
+        batch.delete(db.doc(`/comments/${doc.id}`))
+      })
+      return batch.commit()
+    })
+    .catch(err => {
+      return console.error(err)
+    })
 })
 
 exports.api = functions.https.onRequest(app)
