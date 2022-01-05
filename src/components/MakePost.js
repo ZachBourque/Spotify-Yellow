@@ -1,7 +1,7 @@
 import React, {Component, useState, useEffect} from "react"
 import {TextField, Radio, RadioGroup, FormControlLabel, FormControl, FormLabel, makeStyles, Switch, TextareaAutosize} from "@material-ui/core"
 import Spotify from "spotify-web-api-js"
-import {Container, Avatar, Grid, Paper, Typography, Card, CardHeader, CardContent, Button, Divider} from "@material-ui/core"
+import {Container, Avatar, Grid, Paper, Typography, Card, CardHeader, CardContent, Button, Divider, Box} from "@material-ui/core"
 import DisplayData from "./DisplayData"
 import $ from "jquery"
 import {connect} from "react-redux"
@@ -61,7 +61,6 @@ const MakePost = props => {
   //Parsed data that is displayed to the user
   const [dataArray, setDataArray] = useState(null)
   //Scene for the post making process
-  console.log("hi", props.selectedTopic)
   const [scene, setScene] = useState(props.selectedTopic ? 1 : 0)
   const [searchError, setSearchError] = useState(null)
   //Scene 1:
@@ -84,6 +83,7 @@ const MakePost = props => {
   useEffect(() => {
     searchTextChanged($("#searchText").val())
   }, [value])
+  
   const searchTextChanged = event => {
     //if the event is empty, dont display anything for search results
     if (event == "" || event?.target?.value == "") {
@@ -105,10 +105,6 @@ const MakePost = props => {
 
   const radioChanged = event => {
     setValue(event.target.value)
-  }
-
-  const incrementScene = () => {
-    setScene(scene + 1)
   }
 
   //Searches Spotify API for Artist
@@ -227,7 +223,7 @@ const MakePost = props => {
   }
 
   return (
-    <Card style={{backgroundColor: "#4d4d4d"}} align="center">
+    <Card style={{backgroundColor: "#4d4d4d"}} align="center" style={{"height": "100%"}}>
       <CardHeader title={<Typography variant="h4">Make Post</Typography>} style={{backgroundColor: "#D99E2A"}} />
       <CardContent>
         {scene == 0 && (
@@ -241,7 +237,7 @@ const MakePost = props => {
               <TextField variant="filled" id="searchText" onChange={searchTextChanged} />
             </Grid>
             <Divider style={{margin: "10px"}} />
-            <Grid container justify="center">
+            <Grid container justify="center" >
               {searchError ? (
                 <Typography variant="body1">{searchError}</Typography>
               ) : (
@@ -255,6 +251,7 @@ const MakePost = props => {
                         onClick={() => {
                           setSelectedTopic(dataArray[index])
                           setScene(1)
+                          props.changeScene(1)
                         }}
                       />
                     </Grid>
