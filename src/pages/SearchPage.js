@@ -55,7 +55,8 @@ class SearchPage extends Component {
         }
         let now = new Date().getTime()
         if (now > expires) {
-          this.props.getNewToken(rtoken, this.search)
+          console.log(now, expires, "now > expires")
+          this.props.getNewToken(rtoken, this.search, [query, id, filter])
           this.props.auth.expires = 10000000000000000000000000000000000000
           return
         }
@@ -138,7 +139,6 @@ class SearchPage extends Component {
   }
 
   setDisplay = display => {
-    console.log(new Error().stack)
     this.setState({data: display, loading: false, error: null})
   }
 

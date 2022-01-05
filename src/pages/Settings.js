@@ -26,6 +26,12 @@ import Avatar from "@material-ui/core/Avatar"
 const styles = makeStyles(theme => ({
   root: {
     flexGrow: 1
+  },
+  favoriteText: {
+    width: 325
+  },
+  favoriteHeight: {
+    height: 200
   }
 }))
 
@@ -188,6 +194,10 @@ const Settings = props => {
     props.editFavorites({favArtists: [...tempFavArtists]})
   }
 
+  const submitFavorites = () => {
+    props.editFavorites({favArtists: [...tempFavArtists], favAlbums: [...tempFavAlbums], favSongs: [...tempFavSongs]})
+  }
+
   const removeAlbum = album => {
     let arr = tempFavAlbums.filter(a => {
       return a.name !== album.name
@@ -227,7 +237,9 @@ const Settings = props => {
         <SettingsSkeleton />
       ) : (
         <Fragment>
-          <h1>Settings</h1>
+          <Typography variant="h3" style={{textAlign: "center", marginTop: 20}}>
+            Settings
+          </Typography>
           <Grid container direction="row">
             <Grid item>
               <Avatar src={pfp} alt="cantfind" style={{width: "100%", height: 100}} />
@@ -309,11 +321,11 @@ const Settings = props => {
             </ClickAwayListener>
           </Grid>
           {props.ui.errors.bio && <Typography variant="body1">{props.ui.errors.bio}</Typography>}
-          <Grid container direction="row" alignItems="center" spacing={3}>
+          <Grid container direction="row" alignItems="center" spacing={3} className={classes.favoriteHeight}>
             <Grid container justify="center">
               {props.ui.errors.favorites && <Typography variant="body1">{props.ui.errors.favorites}</Typography>}
             </Grid>
-            <Grid item>
+            <Grid item className={classes.favoriteText}>
               <Typography variant="h4">Favourite Artists:</Typography>
             </Grid>
             <Grid item>
@@ -336,18 +348,13 @@ const Settings = props => {
               </Grid>
             )}
             {tempFavArtists !== props.user.favArtists && (
-              <Fragment>
-                <Button type="button" onClick={submitFavArtists}>
-                  Save
-                </Button>
-                <Button type="button" onClick={() => setTempFavArtists(props.user.favArtists)}>
-                  Undo
-                </Button>
-              </Fragment>
+              <Button type="button" onClick={() => setTempFavArtists(props.user.favArtists)}>
+                Undo
+              </Button>
             )}
           </Grid>
-          <Grid container direction="row" alignItems="center" spacing={3}>
-            <Grid item>
+          <Grid container direction="row" alignItems="center" spacing={3} className={classes.favoriteHeight}>
+            <Grid item className={classes.favoriteText}>
               <Typography variant="h4">Favourite Albums:</Typography>
             </Grid>
             <Grid item>
@@ -370,18 +377,13 @@ const Settings = props => {
               </Grid>
             )}
             {tempFavAlbums !== props.user.favAlbums && (
-              <Fragment>
-                <Button type="button" onClick={submitFavAlbums}>
-                  Save
-                </Button>
-                <Button type="button" onClick={() => setTempFavAlbums(props.user.favAlbums)}>
-                  Undo
-                </Button>
-              </Fragment>
+              <Button type="button" onClick={() => setTempFavAlbums(props.user.favAlbums)}>
+                Undo
+              </Button>
             )}
           </Grid>
-          <Grid container direction="row" alignItems="center" spacing={3}>
-            <Grid item>
+          <Grid container direction="row" alignItems="center" spacing={3} className={classes.favoriteHeight}>
+            <Grid item className={classes.favoriteText}>
               <Typography variant="h4">Favourite Songs:</Typography>
             </Grid>
             <Grid item>
@@ -404,16 +406,12 @@ const Settings = props => {
               </Grid>
             )}
             {tempFavSongs !== props.user.favSongs && (
-              <Fragment>
-                <Button type="button" onClick={submitFavSongs}>
-                  Save
-                </Button>
-                <Button type="button" onClick={() => setTempFavSongs(props.user.favSongs)}>
-                  Undo
-                </Button>
-              </Fragment>
+              <Button type="button" onClick={() => setTempFavSongs(props.user.favSongs)}>
+                Undo
+              </Button>
             )}
           </Grid>
+
           <Dialog onClose={() => setDialog(false)} aria-labelledby="customized-dialog-title" open={dialog} maxWidth="md" fullWidth>
             <DialogContent>
               <Grid container justify="center">
@@ -425,7 +423,18 @@ const Settings = props => {
           </Dialog>
         </Fragment>
       )}
-      <Button type="button" variant="contained" onClick={openDeleteDialog}>
+      <div style={{textAlign: "center", marginTop: 20}}>
+        {tempFavArtists !== props.user.favArtists || tempFavAlbums !== props.user.favAlbums || tempFavSongs !== props.user.favSongs ? (
+          <Button type="button" onClick={submitFavorites}>
+            Save
+          </Button>
+        ) : (
+          <Button type="button" disabled>
+            Save
+          </Button>
+        )}
+      </div>
+      <Button type="button" variant="contained" onClick={openDeleteDialog} style={{marginTop: 40, marginBottom: 50}}>
         Delete Account
       </Button>
       <Dialog open={deleteOpen} onClose={closeDeleteDialog}>

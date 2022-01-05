@@ -48,7 +48,7 @@ export const refreshToken = (token, expires) => dispatch => {
   dispatch({type: REFRESH_TOKEN, payload: {token, expires}})
 }
 
-export const getNewToken = (rtoken, callback) => dispatch => {
+export const getNewToken = (rtoken, callback, args) => dispatch => {
   dispatch({type: LOADTOKEN})
   axios
     .get("/token", {headers: {rtoken}})
@@ -58,7 +58,7 @@ export const getNewToken = (rtoken, callback) => dispatch => {
       lsdata.expires = res.data.expires
       localStorage.setItem("data", JSON.stringify(lsdata))
       dispatch({type: REFRESH_TOKEN, payload: {token: lsdata.token, expires: lsdata.expires}})
-      callback()
+      callback(...args)
     })
     .catch(err => handleError(err, SETDIALOGERROR))
 }

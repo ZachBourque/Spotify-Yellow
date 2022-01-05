@@ -2,6 +2,7 @@ import store from "./store"
 import {SETDIALOGERROR, REFRESH_TOKEN} from "./types"
 
 export const handleError = (err, type) => {
+  console.error(err)
   if (err?.response?.data?.logout) {
     store.dispatch({type: SETDIALOGERROR, payload: err.response.data.error})
   } else if (err?.response?.data?.error) {
