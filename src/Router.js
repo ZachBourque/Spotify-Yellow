@@ -73,8 +73,6 @@ class Router extends React.Component {
   }
 
   makePostObjectIsEmpty = (makePostObject) => {
-    console.log("\n\n\nprops: ", this.props.ui.makePost.element, "\n\n\n\n")
-    console.log("\n\nparam: ", makePostObject, "\n\n\n\n")
     return makePostObject.artistName ? false : true
   }
 

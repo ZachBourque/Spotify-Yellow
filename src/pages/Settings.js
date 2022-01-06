@@ -394,7 +394,7 @@ const Settings = props => {
               </Fragment>
             )}
           </Grid>
-          {dialog && <SpotifySearch onClose={() => setDialog(false)} aria-labelledby="customized-dialog-title" open={dialog} maxWidth="md" fullWidth specifier={type}> </SpotifySearch>}
+          {dialog && <SpotifySearch onClose={() => setDialog(false)} aria-labelledby="customized-dialog-title" open={dialog} maxWidth="md" fullWidth specifier={type} onClick={selectItem}> </SpotifySearch>}
           
         </Fragment>
       )}

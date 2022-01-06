@@ -88,8 +88,6 @@ const MakePostDialog = (props) => {
   s.setAccessToken(token)
 
   useEffect(() => {
-    console.log("selected topic:", props.selectedTopic)
-    console.log("selected topic bool:", Boolean(props.selectedTopic))
     if (props.selectedTopic){
       setSelectedTopic(props.selectedTopic);
       setScene(1);

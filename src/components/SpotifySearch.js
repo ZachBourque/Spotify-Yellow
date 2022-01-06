@@ -163,11 +163,11 @@ const SpotifySearch = props => {
         <Grid container>
           <Grid xs={12}>
             <Card align="center">
-              <CardHeader title={<Typography variant="h4">Search Artists</Typography>} style={{ backgroundColor: "#D99E2A" }} />
-              <FormControl component="fieldset">
+              <CardHeader title={<Typography variant="h4">SEARCH {value.toUpperCase()}S</Typography>} style={{ backgroundColor: "#D99E2A" }} />
+              <FormControl component="fieldset" style={{ minWidth: "50%" }}>
                 {!props.type ? (
                   <RadioGroup aria-label="gender" name="gender1" value={value} onChange={radioChanged}>
-                    <FormControlLabel value={"artist"} disabled={radioDisabledStatus[0]} control={<Radio />} label="Artist" />
+                    <FormControlLabel value="artist" disabled={radioDisabledStatus[0]} control={<Radio />} label="Artist" />
                     <FormControlLabel value="album" disabled={radioDisabledStatus[1]} control={<Radio />} label="Album/EP" />
                     <FormControlLabel value="track" disabled={radioDisabledStatus[2]} control={<Radio />} label="Track" />
                   </RadioGroup>
@@ -178,10 +178,18 @@ const SpotifySearch = props => {
                   <Divider></Divider>
                 </Grid>
                 <br />
-                {dataArray?.map((element, index) =>
-                  <DisplayData element={element} id={index} maxHeight={"200px"} maxWidth={"200px"} onClick={props.onClick} />
-                )}
               </FormControl>
+              <Grid container alignItems="center" justify="center" direction="column">
+                {dataArray?.map((element, index) => {
+                  return (
+                    <>
+                  <Grid item xs={6}>
+                    <DisplayData element={element} id={index} maxHeight={"200px"} maxWidth={"200px"} onClick={props.onClick} />
+                  </Grid>
+                  </>
+                  )
+                })}
+              </Grid>
             </Card>
           </Grid>
         </Grid>

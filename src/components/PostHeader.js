@@ -147,6 +147,7 @@ export class Post extends Component {
                                         Share
                                     </MenuItem>
                                     {element.authorid === this.props.user.id && (
+                                        
                                         <MenuItem onClick={() => this.props.openEditPostDialog(element)}>
                                             <Create />
                                             Edit Post
