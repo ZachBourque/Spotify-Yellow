@@ -10,6 +10,8 @@ let url = "http://localhost:3000/"
 //var redirect_uri = "https://us-central1-spotify-yellow-282e0.cloudfunctions.net/api/callback" // Your redirect uri
 var redirect_uri = "http://localhost:5000/spotify-yellow-282e0/us-central1/api/callback"
 
+const defaultPic = "https://media.pitchfork.com/photos/5c7d4c1b4101df3df85c41e5/1:1/w_600/Dababy_BabyOnBaby.jpg"
+
 var generateRandomString = function (length) {
   var text = ""
   var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
@@ -385,6 +387,7 @@ exports.sendNotification = (req, res) => {
   console.log(req.body.type, req.body.id)
   var options = {
     url: `https://api.spotify.com/v1/${req.body.type}s/${req.body.id}`,
+    headers: {Authorization: "Bearer " + req.auth.token},
     json: true
   }
   request.get(options, function (error, response, body) {
@@ -392,8 +395,17 @@ exports.sendNotification = (req, res) => {
       error ? console.error(error) : null
       return res.status(400).json({error: "Could not get spotify data"})
     } else {
-      console.log(error)
-      notification.pic = body.images[0].url
+      try {
+        notification.pic = body.album.images[0].url
+      } catch {
+        null
+      }
+      try {
+        notification.pic = body.images[0].url
+      } catch {
+        null
+      }
+      if (!notification.pic) notification.pic = defaultPic
       notification.postId = body.href
       db.collection("notifications")
         .add(notification)

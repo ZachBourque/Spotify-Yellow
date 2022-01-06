@@ -14,7 +14,6 @@ class SearchUsers extends Component {
     searchText: "",
     users: this.props.data.users,
     filteredUsers: [],
-    topic: {},
     selectedUser: null
   }
 
@@ -28,9 +27,7 @@ class SearchUsers extends Component {
   }
 
   handleClick = () => {
-    const {id, type} = this.state.topic
-    console.log(id, type, this.state.selectedUser.id)
-    return
+    const {id, type} = this.props.ui.sendMusic.element
     this.props.sendMusic(id, type, this.state.selectedUser.id).then(() => {
       this.props.closeSendMusicDialog()
     })

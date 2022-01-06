@@ -181,6 +181,12 @@ exports.onUserDelete = functions.firestore.document("users/{id}").onDelete((snap
       docs.forEach(doc => {
         batch.delete(db.doc(`/comments/${doc.id}`))
       })
+      return db.collection("notifications").where("receiver", "==", userId).get()
+    })
+    .then(docs => {
+      docs.forEach(doc => {
+        batch.delete(db.doc(`/notifications/${doc.id}`))
+      })
       return batch.commit()
     })
     .catch(err => {

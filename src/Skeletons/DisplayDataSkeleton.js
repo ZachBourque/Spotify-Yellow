@@ -20,8 +20,8 @@ const useStyles = makeStyles(theme => ({
 
 function DisplayDataSkeleton(props) {
   const classes = useStyles()
-  const {maxWidth, ex, id} = props
-  const media = <CardMedia src={"https://media.pitchfork.com/photos/5c7d4c1b4101df3df85c41e5/1:1/w_600/Dababy_BabyOnBaby.jpg"} component="img" />
+  const {maxWidth, ex, id, height} = props
+  const media = <CardMedia src={"https://media.pitchfork.com/photos/5c7d4c1b4101df3df85c41e5/1:1/w_600/Dababy_BabyOnBaby.jpg"} style={{objectFit: "cover", width: "100%", height: height ? height : "100%"}} component="img" />
 
   const content = (
     <Box sx={{display: "flex", flexDirection: "column"}}>
@@ -56,17 +56,17 @@ function DisplayDataSkeleton(props) {
 
   return (
     <Fragment>
-      <Card sx={{display: "flex"}} style={{marginBottom: "10px", width: "100%"}}>
+      <Card sx={{display: "flex"}} style={{width: "100%"}}>
         <Grid container direction="row" justify="center" alignItems="center">
           {ex ? (
-            <Grid item xs={4}>
+            <Grid item xs={6}>
               {media}
             </Grid>
           ) : (
             <Fragment>{media}</Fragment>
           )}
           {ex ? (
-            <Grid item xs={8}>
+            <Grid item xs={6}>
               {content}
             </Grid>
           ) : (

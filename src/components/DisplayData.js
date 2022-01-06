@@ -20,7 +20,7 @@ const useStyles = makeStyles(theme => ({
 }))
 
 const DisplayData = props => {
-  const {element, id, onClick, maxHeight, maxWidth, ex} = props
+  const {element, id, onClick, height, maxWidth, ex} = props
   const classes = useStyles()
   const [anchorEl, setAnchorEl] = useState(null)
 
@@ -43,17 +43,18 @@ const DisplayData = props => {
     <Menu id="simple-menu" anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleClose}>
       <MenuItem onClick={copyLink}>Copy Link</MenuItem>
       <MenuItem
-        onClick={() =>
+        onClick={() => {
+          console.log(element)
           props.openSendMusicDialog({
             type: element.type,
-            id: element.spotifyid,
-            artistName: element.artist,
-            albumName: element.album,
-            songName: element.track,
-            image: element.pic,
+            id: element.id,
+            artistName: element.artistName,
+            albumName: element.albumName,
+            songName: element.songName,
+            image: element.image,
             url: `https://open.spotify.com/${element.type}/${element.spotifyid}`
           })
-        }
+        }}
       >
         Send to user
       </MenuItem>
@@ -61,7 +62,7 @@ const DisplayData = props => {
     </Menu>
   )
 
-  const media = <CardMedia style={{maxWidth: ex ? null : maxWidth}} src={element?.image || "https://media.pitchfork.com/photos/5c7d4c1b4101df3df85c41e5/1:1/w_600/Dababy_BabyOnBaby.jpg"} component="img" />
+  const media = <CardMedia style={{objectFit: "cover", width: "100%", height: height ? height : "100%"}} src={element?.image || "https://media.pitchfork.com/photos/5c7d4c1b4101df3df85c41e5/1:1/w_600/Dababy_BabyOnBaby.jpg"} component="img" />
 
   const content = (
     <Box sx={{display: "flex", flexDirection: "column"}}>
@@ -119,17 +120,17 @@ const DisplayData = props => {
 
   return (
     <Fragment>
-      <Card sx={{display: "flex"}} onClick={onClick ? () => onClick(element) : null} style={{cursor: "pointer", marginBottom: "10px", width: "100%"}} id={id}>
-        <Grid container direction="row" alignItems="center">
+      <Card onClick={onClick && !ex ? () => onClick(element) : null} style={{cursor: onClick && !ex ? "pointer" : "default", width: "100%"}} id={id}>
+        <Grid container direction="row" alignItems="center" justify="center">
           {ex ? (
-            <Grid item xs={4}>
+            <Grid item xs={6} onClick={ex ? () => onClick(element) : null} style={{cursor: ex ? "pointer" : "default"}}>
               {media}
             </Grid>
           ) : (
             <Fragment>{media}</Fragment>
           )}
           {ex ? (
-            <Grid item xs={8}>
+            <Grid item xs={6}>
               {content}
             </Grid>
           ) : (
