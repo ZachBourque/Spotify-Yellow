@@ -415,12 +415,11 @@ const Settings = props => {
               </Button>
             )}
           </Grid>
-
           <Dialog onClose={() => setDialog(false)} aria-labelledby="customized-dialog-title" open={dialog} maxWidth="md" fullWidth>
             <DialogContent>
               <Grid container justify="center">
                 <Grid item>
-                   <SpotifySearch onClose={() => setDialog(false)} aria-labelledby="customized-dialog-title" open={dialog} maxWidth="md" fullWidth specifier={type}/>
+                   <SpotifySearch onClose={() => setDialog(false)} aria-labelledby="customized-dialog-title" open={dialog} maxWidth="md" fullWidth specifier={type} onClick={selectItem}/>
                 </Grid>
               </Grid>
             </DialogContent>

@@ -21,6 +21,8 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore"
 const BigPostSkeleton = () => {
   return (
     <>
+    <Grid container justify="center">
+      <Grid item xs={10}>
       <Card style={{ backgroundColor: "#4d4d4d" }} align="center">
         <CardHeader
           avatar={
@@ -109,6 +111,8 @@ const BigPostSkeleton = () => {
         {/*comment skeletons*/}
 
       </div>
+      </Grid>
+      </Grid>
     </>
   )
 }
