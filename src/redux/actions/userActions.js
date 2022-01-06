@@ -1,4 +1,4 @@
-import {USERLOADING, SETUSERDATA, CLEARERRORS, UPDATEBIO, UPDATEPFP, UPDATEFAVORITES, MARKNOTIFICATIONSREAD, SETSENDMUSICERROR, SETUPDATEPFPERROR, SETUPDATEFAVORITESERROR, SETUPDATEBIOERROR, UPDATEUSERNAME, SETUSERNAMEERROR} from "../types"
+import {USERLOADING, SETUSERDATA, CLEARERRORS, UPDATEBIO, UPDATEPFP, UPDATEFAVORITES, MARKNOTIFICATIONSREAD, SETSENDMUSICERROR, SETUPDATEPFPERROR, SETUPDATEFAVORITESERROR, SETUPDATEBIOERROR, UPDATEUSERNAME, SETUSERNAMEERROR, LOGOUT} from "../types"
 import axios from "axios"
 import {checkForFatalError, handleError, refresh, getAuth} from "../util"
 
@@ -102,5 +102,12 @@ export const sendMusic = (id, type, recipient) => dispatch => {
       handleError(err, SETSENDMUSICERROR)
       reject()
     }
+  })
+}
+
+export const deleteUser = () => dispatch => {
+  dispatch({type: CLEARERRORS})
+  axios.delete("/user", {headers: getAuth()}).then(() => {
+    window.location.href = "/logout"
   })
 }

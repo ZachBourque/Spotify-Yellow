@@ -1,5 +1,5 @@
 import axios from "axios"
-import {LOGOUT, SETAUTHDATA, REFRESH_TOKEN, CLEARUSERDATA, LOADTOKEN, SETSIGNUPERROR, CLEARERRORS, SETDIALOGERROR} from "../types"
+import {LOGOUT, SETAUTHDATA, REFRESH_TOKEN, LOADTOKEN, SETSIGNUPERROR, CLEARERRORS, SETDIALOGERROR} from "../types"
 import {handleError} from "../util"
 
 export const loadDataIntoState = a => dispatch => {
@@ -14,41 +14,41 @@ export const signUpUser = (data, history) => dispatch => {
   }
   if (data.pfp) {
     axios
-      .post("/createUser", {id: data.id, username: data.username, profilepic: "default"})
+      .post("/createUser", {id: data.id, username: data.username, profilepic: "default", token: data.token})
       .then(res => {
         window.localStorage.setItem("data", JSON.stringify({token: data.token, expires: data.expires, rtoken: data.rtoken}))
         window.localStorage.setItem("cachepfp", data.pfp)
         dispatch({type: SETAUTHDATA, payload: JSON.parse(window.localStorage.getItem("data"))})
-        history.push(`/profile=${data.id}`)
+        window.location.href = `/profile=${data.id}`
       })
       .catch(err => handleError(err, SETSIGNUPERROR))
   } else {
     axios
       .post("/uploadpic", data.formData)
       .then(res => {
-        return axios.post("/createUser", {id: data.id, username: data.username, profilepic: res.data.url})
+        return axios.post("/createUser", {id: data.id, username: data.username, profilepic: res.data.url, token: data.token})
       })
       .then(res => {
         window.localStorage.setItem("data", JSON.stringify({token: data.token, expires: data.expires, rtoken: data.rtoken}))
         window.localStorage.setItem("cachepfp", res.data.profilepic)
         dispatch({type: SETAUTHDATA, payload: JSON.parse(window.localStorage.getItem("data"))})
-        history.push(`/profile=${data.id}`)
+        window.location.href = `/profile=${data.id}`
       })
       .catch(err => handleError(err, SETSIGNUPERROR))
   }
 }
 
 export const logout = () => dispatch => {
-  localStorage.removeItem("data")
   dispatch({type: LOGOUT})
-  dispatch({type: CLEARUSERDATA})
+  localStorage.removeItem("data")
+  localStorage.removeItem("cachepfp")
 }
 
 export const refreshToken = (token, expires) => dispatch => {
   dispatch({type: REFRESH_TOKEN, payload: {token, expires}})
 }
 
-export const getNewToken = (rtoken, callback) => dispatch => {
+export const getNewToken = (rtoken, callback, args) => dispatch => {
   dispatch({type: LOADTOKEN})
   axios
     .get("/token", {headers: {rtoken}})
@@ -58,7 +58,7 @@ export const getNewToken = (rtoken, callback) => dispatch => {
       lsdata.expires = res.data.expires
       localStorage.setItem("data", JSON.stringify(lsdata))
       dispatch({type: REFRESH_TOKEN, payload: {token: lsdata.token, expires: lsdata.expires}})
-      callback()
+      callback(...args)
     })
     .catch(err => handleError(err, SETDIALOGERROR))
 }

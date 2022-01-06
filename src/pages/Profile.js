@@ -136,7 +136,7 @@ class Profile extends Component {
         ) : this.state.error ? (
           <Typography variant="body1">{this.state.error}</Typography>
         ) : (
-          <Grid container spacing={3} align="center">
+          <Grid container spacing={3} align="center" alignItems="center">
             <div style={{marginTop: 15}}>
               <Grid container direction="row" alignItems="center" justify="center" spacing={3}>
                 <Grid item>
@@ -146,59 +146,51 @@ class Profile extends Component {
                   {this.state.username}
                 </Typography>
               </Grid>
-              {this.state.bio.length > 0 ? (
+              {this.state.bio.length > 0 && (
                 <Grid container alignItems="center" justify="center">
                   {this.state.bio.split("\n").map((line, idx) => {
                     return <p key={idx}>{line}</p>
                   })}
                 </Grid>
-              ) : null}
-              <Container>
-                {this.state.favArtists.length > 0 ? (
-                  <Grid container direction="row" alignItems="center" spacing={3} xs={8} sm={12}>
-                    <Grid item>
-                      <Typography variant="h4">Favourite Artists:</Typography>
-                    </Grid>
+              )}
+              {this.state.favArtists.length > 0 && (
+                <Fragment>
+                  <Typography variant="h4">Favourite Artists:</Typography>
+                  <Grid container direction="row" align="center" justify="center" spacing={3} xs={8} sm={12}>
                     <Grid item>
                       {this.state.favArtists.map((artist, idx) => {
                         return <FavoriteCard key={idx} name={artist.name} url={artist.url} pic={artist.pic} />
                       })}
                     </Grid>
                   </Grid>
-                ) : (
-                  <Typography variant="h4">User does not have any favorite artists.</Typography>
-                )}
-                {this.state.favAlbums.length > 0 ? (
-                  <Grid container direction="row" alignItems="center" spacing={3} xs={8} sm={12}>
-                    <Grid item>
-                      <Typography variant="h4">Favourite Albums:</Typography>
-                    </Grid>
+                </Fragment>
+              )}
+              {this.state.favAlbums.length > 0 && (
+                <Fragment>
+                  <Typography variant="h4">Favourite Albums:</Typography>
+                  <Grid container direction="row" alignItems="center" justify="center" spacing={3} xs={8} sm={12}>
                     <Grid item>
                       {this.state.favAlbums.map((album, idx) => {
                         return <FavoriteCard key={idx} name={album.name} url={album.url} pic={album.pic} />
                       })}
                     </Grid>
                   </Grid>
-                ) : (
-                  <Typography variant="h4">User does not have any favorite albums.</Typography>
-                )}
-                {this.state.favSongs.length > 0 ? (
-                  <Grid container direction="row" alignItems="center" spacing={3} xs={8} sm={12}>
-                    <Grid item>
-                      <Typography variant="h4">Favourite Songs:</Typography>
-                    </Grid>
+                </Fragment>
+              )}
+              {this.state.favSongs.length > 0 && (
+                <Fragment>
+                  <Typography variant="h4">Favourite Songs:</Typography>
+                  <Grid container direction="row" alignItems="center" justify="center" spacing={3} xs={8} sm={12}>
                     <Grid item>
                       {this.state.favSongs.map((song, idx) => {
                         return <FavoriteCard key={idx} name={song.name} url={song.url} pic={song.pic} />
                       })}
                     </Grid>
                   </Grid>
-                ) : (
-                  <Typography variant="h4">User does not have any favorite songs.</Typography>
-                )}
-              </Container>
+                </Fragment>
+              )}
               {/*User's Posts container*/}
-              <Grid container spacing={3} align="center">
+              <Grid container spacing={3} align="center" style={{marginBottom: 30}}>
                 {!this.props.data.loading &&
                   this.props.data.loaded &&
                   this.props.data.posts.map(post => {

@@ -41,7 +41,6 @@ class SearchPage extends Component {
   }
 
   search = async (query, id, filter) => {
-    console.log("searching")
     this.setLoading()
     query = query.toLowerCase()
     let display = []
@@ -55,7 +54,8 @@ class SearchPage extends Component {
         }
         let now = new Date().getTime()
         if (now > expires) {
-          this.props.getNewToken(rtoken, this.search)
+          console.log(now, expires, "now > expires")
+          this.props.getNewToken(rtoken, this.search, [query, id, filter])
           this.props.auth.expires = 10000000000000000000000000000000000000
           return
         }
@@ -138,12 +138,10 @@ class SearchPage extends Component {
   }
 
   setDisplay = display => {
-    console.log(new Error().stack)
     this.setState({data: display, loading: false, error: null})
   }
 
   setLoading = () => {
-    console.log("set true again")
     this.setState({data: [], loading: true, error: null})
   }
 
@@ -161,7 +159,6 @@ class SearchPage extends Component {
     let id = parseInt(queryString.parse(this.props.location.search)["id"])
     let filter = parseInt(queryString.parse(this.props.location.search)["filter"])
     if (!this.state.searched || query !== this.state.query || id !== this.state.id || filter !== this.state.filter) {
-      console.log("loading true")
       this.setState({query, id, filter, loading: true, searched: true})
       this.props.history.push(`/search?query=${query}&id=${id}&filter=${filter}`)
       this.search(query, id, filter)
@@ -178,7 +175,6 @@ class SearchPage extends Component {
   }
 
   render() {
-    console.log(this.state.loading)
     let radioArr = [
       <Fragment>
         <FormControlLabel value={0} control={<Radio />} label="Title" />
@@ -225,18 +221,29 @@ class SearchPage extends Component {
                     return <SmallPost element={item} history={this.props.history} key={idx} postId={item.postId} />
                   })
                 ))}
-              {this.state.id === 1 &&
-                (this.state.loading ? (
-                  <Fragment>
-                    {Array.from({length: 5}).map((e, i) => {
-                      return <DisplayDataSkeleton key={i} ex maxWidth={"200px"} id={this.state.filter} />
-                    })}
-                  </Fragment>
-                ) : (
-                  this.state.data.map((item, idx) => {
-                    return <DisplayData element={item} id={idx} maxHeight={"200px"} maxWidth={"200px"} key={idx} onClick={null} ex={true} />
-                  })
-                ))}
+              {this.state.id === 1 && (
+                <Grid container>
+                  {this.state.loading ? (
+                    <Fragment>
+                      {Array.from({length: 10}).map((e, i) => {
+                        return (
+                          <Grid item xs={12} xl={6}>
+                            <DisplayDataSkeleton key={i} ex maxWidth={"400px"} height="225px" id={this.state.filter} />
+                          </Grid>
+                        )
+                      })}
+                    </Fragment>
+                  ) : (
+                    this.state.data.map((item, idx) => {
+                      return (
+                        <Grid item xs={12} xl={6} style={{alignSelf: "center", height: 225}}>
+                          <DisplayData element={item} id={idx} height={"225px"} maxWidth={"400px"} key={idx} onClick={() => window.open(`https://open.spotify.com/${item.type}/${item.id}`)} ex={true} />
+                        </Grid>
+                      )
+                    })
+                  )}
+                </Grid>
+              )}
               {this.state.id === 2 && (
                 <Grid container>
                   {this.state.loading ? (

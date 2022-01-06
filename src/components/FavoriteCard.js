@@ -14,7 +14,8 @@ const styles = makeStyles(theme => ({
     maxWidth: 200,
     margin: "auto",
     flexDirection: "column",
-    height: 175
+    height: 175,
+    backgroundColor: "#404040"
   },
   button: {
     maxWidth: 200

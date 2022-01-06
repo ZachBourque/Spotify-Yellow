@@ -14,7 +14,6 @@ class SearchUsers extends Component {
     searchText: "",
     users: this.props.data.users,
     filteredUsers: [],
-    topic: {},
     selectedUser: null
   }
 
@@ -28,7 +27,7 @@ class SearchUsers extends Component {
   }
 
   handleClick = () => {
-    const {id, type} = this.state.topic
+    const {id, type} = this.props.ui.sendMusic.element
     this.props.sendMusic(id, type, this.state.selectedUser.id).then(() => {
       this.props.closeSendMusicDialog()
     })
@@ -49,8 +48,9 @@ class SearchUsers extends Component {
     return (
       <Dialog open={this.props.ui.sendMusic.open} onClose={this.props.closeSendMusicDialog} maxWidth="sm" fullWidth>
         <DialogTitle id="">Send Music:</DialogTitle>
-        <DisplayData element={this.props.ui.sendMusic.element} maxHeight="200px" />
+        <DisplayData element={this.props.ui.sendMusic.element} maxWidth="300px" height="300px" />
         <DialogContent>
+          {this.props.ui.errors.sendMusic && <Typography variant="body">{this.props.ui.errors.sendMusic}</Typography>}
           <TextField autoFocus id="commentBody" fullWidth variant="outlined" value={this.state.searchText} onChange={this.searchTextChanged} autoComplete="off" />
           {this.state.searchText && (
             <Card>
