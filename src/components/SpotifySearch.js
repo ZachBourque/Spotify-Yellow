@@ -159,10 +159,10 @@ const SpotifySearch = props => {
 
   return (
     <Dialog open={props.open} onClose={props.onClose} maxWidth="md" fullWidth>
-      <DialogContent>
+      <DialogContent style={{overflowY: "scroll"}}>
         <Grid container>
           <Grid xs={12}>
-            <Card align="center">
+            <Card align="center" style={{minHeight: "85vh"}}>
               <CardHeader title={<Typography variant="h4">SEARCH {value.toUpperCase()}S</Typography>} style={{ backgroundColor: "#D99E2A" }} />
               <FormControl component="fieldset" style={{ minWidth: "50%" }}>
                 {!props.type ? (
