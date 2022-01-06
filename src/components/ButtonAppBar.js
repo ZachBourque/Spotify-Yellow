@@ -189,7 +189,7 @@ function NavBar(props) {
         <Toolbar>
           <Typography className={classes.title} variant="h6" noWrap>
             <a onClick={() => props.history.push("/")} style={{cursor: "pointer"}}>
-              <span>Spotify Yellow</span>
+              <span>Spotlight</span>
             </a>
           </Typography>
           <div className={classes.grow} />
