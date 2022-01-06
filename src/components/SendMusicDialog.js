@@ -48,7 +48,7 @@ class SearchUsers extends Component {
     return (
       <Dialog open={this.props.ui.sendMusic.open} onClose={this.props.closeSendMusicDialog} maxWidth="sm" fullWidth>
         <DialogTitle id="">Send Music:</DialogTitle>
-        <DisplayData element={this.props.ui.sendMusic.element} maxWidth="300px" />
+        <DisplayData element={this.props.ui.sendMusic.element} maxWidth="300px" height="300px" />
         <DialogContent>
           {this.props.ui.errors.sendMusic && <Typography variant="body">{this.props.ui.errors.sendMusic}</Typography>}
           <TextField autoFocus id="commentBody" fullWidth variant="outlined" value={this.state.searchText} onChange={this.searchTextChanged} autoComplete="off" />

@@ -62,7 +62,7 @@ const DisplayData = props => {
     </Menu>
   )
 
-  const media = <CardMedia style={{objectFit: "cover", width: "100%", height: height ? height : "100%"}} src={element?.image || "https://media.pitchfork.com/photos/5c7d4c1b4101df3df85c41e5/1:1/w_600/Dababy_BabyOnBaby.jpg"} component="img" />
+  const media = <CardMedia style={{objectFit: "cover", width: "100%", maxWidth, height: height ? height : "100%"}} src={element?.image || "https://media.pitchfork.com/photos/5c7d4c1b4101df3df85c41e5/1:1/w_600/Dababy_BabyOnBaby.jpg"} component="img" />
 
   const content = (
     <Box sx={{display: "flex", flexDirection: "column"}}>
