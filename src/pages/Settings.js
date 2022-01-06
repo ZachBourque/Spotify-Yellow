@@ -43,7 +43,7 @@ const Settings = props => {
   const [newUsername, setNewUsername] = useState(props.user.username)
   const [bioOpen, setBioOpen] = useState(false)
   const [usernameOpen, setUsernameOpen] = useState(false)
-  const [type, setType] = useState(null)
+  const [type, setType] = useState("")
   const [tempFavArtists, setTempFavArtists] = useState(props.user.favArtists)
   const [tempFavAlbums, setTempFavAlbums] = useState(props.user.favAlbums)
   const [tempFavSongs, setTempFavSongs] = useState(props.user.favSongs)
@@ -148,21 +148,25 @@ const Settings = props => {
     $("#pfpInput").val("")
   }
   const searchArtist = () => {
-    setType("artist")
-    setDialog(true)
+    type !== "artist" ? setType("artist") : setDialog(true);
   }
   const searchAlbum = () => {
-    setType("album")
-    setDialog(true)
+    type !== "album" ? setType("album") : setDialog(true);
   }
   const searchSong = () => {
-    setType("track")
-    setDialog(true)
+    type !== "track" ? setType("track") : setDialog(true);
   }
+
+  useEffect(() => {
+    if(type !== ""){
+      setDialog(true)
+    }
+  }, [type])
 
   const selectItem = item => {
     setDialog(false)
     let newArray = []
+    // eslint-disable-next-line default-case
     switch (item.type) {
       case "artist":
         newArray = [...tempFavArtists]
@@ -416,7 +420,7 @@ const Settings = props => {
             <DialogContent>
               <Grid container justify="center">
                 <Grid item>
-                  <SpotifySearch onClick={selectItem} type={type} />
+                   <SpotifySearch onClose={() => setDialog(false)} aria-labelledby="customized-dialog-title" open={dialog} maxWidth="md" fullWidth specifier={type}/>
                 </Grid>
               </Grid>
             </DialogContent>

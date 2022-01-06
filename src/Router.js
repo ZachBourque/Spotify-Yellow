@@ -32,6 +32,8 @@ import EditPostDialog from "./components/EditPostDialog"
 import DeletePostDialog from "./components/DeletePostDialog"
 import LoginRNDialog from "./components/LoginRNDialog"
 import Logout from "./pages/Logout"
+import PostHeader from "./components/PostHeader"
+import BigPostSkeleton from "./Skeletons/BigPostSkeleton"
 
 $("body").css("margin", 0)
 axios.defaults.baseURL = "https://us-central1-spotify-yellow-282e0.cloudfunctions.net/api"
@@ -68,9 +70,26 @@ class Router extends React.Component {
     }
   }
 
+  makePostObjectIsEmpty = (makePostObject) => {
+    console.log("\n\n\nprops: ", this.props.ui.makePost.element, "\n\n\n\n")
+    console.log("\n\nparam: ", makePostObject, "\n\n\n\n")
+    return makePostObject.artistName ? false : true
+  }
+
   theme = createMuiTheme({
     palette: {
       type: "dark"
+    },
+    typography: {
+      h4: {
+        fontFamily: [
+          'Noto Sans',
+          'sans-serif',
+        ].join(',')
+      }
+    },
+    PostHeader:{
+      backgroundColor: "#88858e"
     }
   })
 
@@ -103,7 +122,7 @@ class Router extends React.Component {
               </Button>
             </DialogActions>
           </Dialog>
-          <MakePostDialog element={JSON.stringify(this.props.ui.makePost.element) === "{}" ? null : this.props.ui.makePost.element} />
+          <MakePostDialog selectedTopic={this.makePostObjectIsEmpty(this.props.ui.makePost.element) ? null : this.props.ui.makePost.element} />
           <MakeCommentDialog element={this.props.ui.makeComment.element} />
           <EditPostDialog element={this.props.ui.editPost.element} />
           <DeletePostDialog element={this.props.ui.delete.element} />

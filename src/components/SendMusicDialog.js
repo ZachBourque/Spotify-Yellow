@@ -68,7 +68,6 @@ class SearchUsers extends Component {
             Send
           </Button>
         </DialogActions>
-        <DialogContent></DialogContent>
       </Dialog>
     )
   }
