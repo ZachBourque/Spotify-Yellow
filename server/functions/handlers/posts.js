@@ -40,7 +40,6 @@ exports.createPost = (req, res) => {
 }
 
 exports.getAllPosts = (req, res) => {
-  console.log("/getAllPosts")
   db.collection("posts")
     .orderBy("createdAt", "desc")
     .limit(1000)
@@ -63,7 +62,6 @@ exports.getAllPosts = (req, res) => {
 }
 
 exports.getPostsByUser = (req, res) => {
-  console.log("/postsByUser")
   const id = req.params.user
   db.collection("posts")
     .where("id", "==", id)
@@ -82,7 +80,6 @@ exports.getPostsByUser = (req, res) => {
 }
 
 exports.getPost = (req, res) => {
-  console.log("/getPost")
   let postData = {}
   db.doc(`/posts/${req.params.postId}`)
     .get()
@@ -217,7 +214,6 @@ exports.createComment = (req, res) => {
 }
 
 exports.editComment = (req, res) => {
-  console.log(req.params.postId)
   db.doc(`/comments/${req.params.postId}`)
     .get()
     .then(doc => {

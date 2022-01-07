@@ -17,11 +17,12 @@ import CommentSkeleton from "./CommentSkeleton"
 import CommentIcon from "@material-ui/icons/Comment"
 import ThumbUp from "@material-ui/icons/ThumbUp"
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore"
+import {Fragment} from "react"
 
 const BigPostSkeleton = () => {
   return (
-    <>
-      <Card style={{ backgroundColor: "#4d4d4d" }} align="center">
+    <Fragment>
+      <Card style={{backgroundColor: "#4d4d4d"}} align="center">
         <CardHeader
           avatar={
             <Grid container alignItems="center" spacing={2}>
@@ -31,7 +32,7 @@ const BigPostSkeleton = () => {
                 </Avatar>
               </Grid>
               <Grid item>
-                <div style={{ backgroundColor: "gray", width: 200, height: 15, marginBottom: 5 }} />
+                <div style={{backgroundColor: "gray", width: 200, height: 15, marginBottom: 5}} />
               </Grid>
             </Grid>
           }
@@ -42,22 +43,22 @@ const BigPostSkeleton = () => {
           }
         />
         {/* Main Content */}
-        <CardContent >
+        <CardContent>
           <Grid container alignItems="center" justify="space-between" direction="row">
             <Grid item xs={4}>
-              <div style={{ backgroundColor: "gray", width: 275, height: 275, marginBottom: 5 }} />
+              <div style={{backgroundColor: "gray", width: 275, height: 275, marginBottom: 5}} />
             </Grid>
-            <Grid item xs={4} >
-              <div style={{ backgroundColor: "gray", width: 350, height: 25, marginBottom: 5 }} />
+            <Grid item xs={4}>
+              <div style={{backgroundColor: "gray", width: 350, height: 25, marginBottom: 5}} />
               <Grid item xs={12}>
-                <div style={{ backgroundColor: "gray", width: 350, height: 25, marginBottom: 5 }} />
+                <div style={{backgroundColor: "gray", width: 350, height: 25, marginBottom: 5}} />
               </Grid>
               <Grid item xs={12}>
-                <div style={{ backgroundColor: "gray", width: 350, height: 25, marginBottom: 5 }} />
+                <div style={{backgroundColor: "gray", width: 350, height: 25, marginBottom: 5}} />
               </Grid>
             </Grid>
             <Grid item xs={4}>
-              <div style={{ backgroundColor: "gray", width: 200, height: 200, marginBottom: 5 }} />
+              <div style={{backgroundColor: "gray", width: 200, height: 200, marginBottom: 5}} />
             </Grid>
           </Grid>
         </CardContent>
@@ -74,42 +75,38 @@ const BigPostSkeleton = () => {
         </CardActions>
 
         <CardContent>
-        <Grid container justify="center" direction="row" alignItems="center">
-          <Grid item>
-          <div style={{ backgroundColor: "gray", width: 800, height: 50, marginBottom: 5 }} />
-
+          <Grid container justify="center" direction="row" alignItems="center">
+            <Grid item>
+              <div style={{backgroundColor: "gray", width: 800, height: 50, marginBottom: 5}} />
             </Grid>
 
-          <Grid item xs={12}>
-            <Divider style={{ marginTop: "10px", marginBottom: "10px" }} />
-            <div style={{ backgroundColor: "gray", width: 800, height: 50, marginBottom: 5 }} />
-
+            <Grid item xs={12}>
+              <Divider style={{marginTop: "10px", marginBottom: "10px"}} />
+              <div style={{backgroundColor: "gray", width: 800, height: 50, marginBottom: 5}} />
+            </Grid>
           </Grid>
-        </Grid>
-        <CardActions disableSpacing>
-          <ThumbUp  />
-          <IconButton>
-            <CommentIcon />
-          </IconButton>
-          <IconButton>
-            <ExpandMoreIcon />
-          </IconButton>
-        </CardActions>
-      </CardContent>
+          <CardActions disableSpacing>
+            <ThumbUp />
+            <IconButton>
+              <CommentIcon />
+            </IconButton>
+            <IconButton>
+              <ExpandMoreIcon />
+            </IconButton>
+          </CardActions>
+        </CardContent>
       </Card>
       <div>
-        
-      <Grid container justify="center" alignItems="center">
+        <Grid container justify="center" alignItems="center">
           <Grid item xs={6}>
-          {Array.from({ length: 5 }).map((e, i) => {
-          return <CommentSkeleton key={i} />
-        })}
+            {Array.from({length: 5}).map((e, i) => {
+              return <CommentSkeleton key={i} />
+            })}
           </Grid>
         </Grid>
         {/*comment skeletons*/}
-
       </div>
-    </>
+    </Fragment>
   )
 }
 

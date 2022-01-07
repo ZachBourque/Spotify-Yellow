@@ -23,6 +23,8 @@ import NotificationsIcon from "@material-ui/icons/Notifications"
 import Badge from "@material-ui/core/Badge"
 import Avatar from "@material-ui/core/Avatar"
 import Notification from "./Notification"
+import Box from "@material-ui/core/Box"
+import MoreIcon from "@material-ui/icons/MoreVert"
 
 const useStyles = makeStyles(theme => ({
   grow: {
@@ -85,8 +87,8 @@ const useStyles = makeStyles(theme => ({
 
 function NavBar(props) {
   let {user, auth} = props
-  //const redirect_uri = "https://us-central1-spotify-yellow-282e0.cloudfunctions.net/api/callback"
-  const redirect_uri = "http://localhost:5000/spotify-yellow-282e0/us-central1/api/callback"
+  const redirect_uri = "https://us-central1-spotify-yellow-282e0.cloudfunctions.net/api/callback"
+  //const redirect_uri = "http://localhost:5000/spotify-yellow-282e0/us-central1/api/callback"
   const profileRe = () => {
     handleMenuClose()
     props.history.push("/profile")
@@ -107,6 +109,17 @@ function NavBar(props) {
     })
   const [anchorEl, setAnchorEl] = useState(null)
   const isMenuOpen = Boolean(anchorEl)
+
+  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null)
+  const isMobileMenuOpen = Boolean(mobileMoreAnchorEl)
+
+  const handleMobileMenuOpen = event => {
+    setMobileMoreAnchorEl(event.currentTarget)
+  }
+  const handleMobileMenuClose = () => {
+    setMobileMoreAnchorEl(null)
+  }
+
   const handleProfileMenuOpen = event => {
     setAnchorEl(event.currentTarget)
   }
@@ -160,6 +173,43 @@ function NavBar(props) {
     </Menu>
   )
 
+  const mobileMenuId = "primary-search-account-menu-mobile"
+  const renderMobileMenu = (
+    <Menu
+      anchorEl={mobileMoreAnchorEl}
+      anchorOrigin={{
+        vertical: "top",
+        horizontal: "right"
+      }}
+      id={mobileMenuId}
+      keepMounted
+      transformOrigin={{
+        vertical: "top",
+        horizontal: "right"
+      }}
+      open={isMobileMenuOpen}
+      onClose={handleMobileMenuClose}
+    >
+      <MenuItem>
+        <IconButton aria-label="show new notifications" color="inherit" aria-controls={notificationId} aria-haspopup="true" onClick={handleNotiMenuOpen}>
+          <Badge badgeContent={props?.user?.notifications?.filter(notification => !notification.read).length} color="secondary">
+            <NotificationsIcon />
+          </Badge>
+        </IconButton>
+      </MenuItem>
+      <MenuItem onClick={handleProfileMenuOpen}>
+        {auth.loggedIn ? (
+          <IconButton edge="end" aria-label="account of current user" aria-controls={menuId} aria-haspopup="true" onClick={handleProfileMenuOpen} color="inherit">
+            <p>Profile</p>
+          </IconButton>
+        ) : (
+          <Button variant="contained" type="button">
+            Login
+          </Button>
+        )}
+      </MenuItem>
+    </Menu>
+  )
   const [search, setSearch] = useState(0)
   const [searchTerm, setSearchTerm] = useState("")
 
@@ -226,7 +276,7 @@ function NavBar(props) {
             </Select>
           </FormControl>
           <div className={classes.grow} />
-          <div className={classes.sectionMobile}>
+          <Box sx={{display: {xs: "none", md: "none"}}}>
             {auth.loggedIn ? (
               <Fragment>
                 <IconButton aria-label="show new notifications" color="inherit" aria-controls={notificationId} aria-haspopup="true" onClick={handleNotiMenuOpen}>
@@ -245,11 +295,17 @@ function NavBar(props) {
                 </Button>
               </a>
             )}
-          </div>
+          </Box>
+          <Box display={{xs: "flex", md: "none"}}>
+            <IconButton size="large" aria-label="show more" aria-controls={mobileMenuId} aria-haspopup="true" onClick={handleMobileMenuOpen} color="inherit">
+              <MoreIcon />
+            </IconButton>
+          </Box>
         </Toolbar>
       </AppBar>
       {renderMenu}
       {renderNotificationMenu}
+      {renderMobileMenu}
     </div>
   )
 }

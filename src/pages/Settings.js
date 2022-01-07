@@ -452,7 +452,6 @@ const Settings = props => {
             id="confirmbox"
             onChange={text => {
               setBtnDisabled(text.target.value !== "confirm")
-              console.log(text.target.value)
             }}
           />
         </DialogContent>
