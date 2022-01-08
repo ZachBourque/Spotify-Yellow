@@ -199,7 +199,7 @@ class Profile extends Component {
                   this.props.data.loaded &&
                   this.props.data.posts.map(post => {
                     return (
-                      <Grid item xs={12} sm={8} md={6}>
+                      <Grid item xs={12} sm={8} md={7}>
                         <SmallPost element={post} history={this.props.history} key={post.postId} />
                       </Grid>
                     )

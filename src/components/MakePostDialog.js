@@ -281,49 +281,49 @@ const MakePostDialog = props => {
   const handleBackButton = e => {
     setScene(0)
   }
-    return (
-      <Dialog onClose={props.closeMakePostDialog} aria-labelledby="customized-dialog-title" open={props.ui.makePost.open} maxWidth="md" fullWidth >
-        <DialogContent>
-          <Card style={{ backgroundColor: "#4d4d4d", "height": "100%" }} align="center">
-            <CardHeader title={<Typography variant="h4">Make Post</Typography>} style={{ backgroundColor: "#D99E2A" }} />
-            <CardContent>
-              {scene === 0 && (
-                <FormControl component="fieldset">
-                  <Grid container justify="center" alignItems="center">
-                    <RadioGroup aria-label="gender" name="gender1" value={value} onChange={radioChanged}>
-                      <FormControlLabel value="artist" control={<Radio />} label="Artist" />
-                      <FormControlLabel value="album" control={<Radio />} label="Album/EP" />
-                      <FormControlLabel value="track" control={<Radio />} label="Track" />
-                    </RadioGroup>
-                    <TextField variant="filled" id="searchText" value={searchValue} onChange={handleSearchValueChange} autoFocus />
-                  </Grid>
-                  <Divider style={{ margin: "10px" }} />
-                  <Grid container justify="center" >
-                    {searchError ? (
-                      <Alert severity="error">{searchError}</Alert>
-                    ) : (
-                      dataArray?.map((element, index) => {
-                        return (
-                          <Grid item>
-                            <DisplayData
-                              element={element}
-                              id={index}
-                              maxWidth={225}
-                              onClick={() => {
-                                setSelectedTopic(dataArray[index])
-                                setScene(1)
-                              }}
-                            />
-                          </Grid>
-                        )
-                      })
-                    )}
-                  </Grid>
-                </FormControl>
-              )}
+  return (
+    <Dialog onClose={props.closeMakePostDialog} aria-labelledby="customized-dialog-title" open={props.ui.makePost.open} maxWidth="md" fullWidth>
+      <DialogContent>
+        <Card style={{backgroundColor: "#4d4d4d", height: "100%"}} align="center">
+          <CardHeader title={<Typography variant="h4">Make Post</Typography>} style={{backgroundColor: "#D99E2A"}} />
+          <CardContent>
+            {scene === 0 && (
+              <FormControl component="fieldset">
+                <Grid container justify="center" alignItems="center">
+                  <RadioGroup aria-label="gender" name="gender1" value={value} onChange={radioChanged}>
+                    <FormControlLabel value="artist" control={<Radio />} label="Artist" />
+                    <FormControlLabel value="album" control={<Radio />} label="Album/EP" />
+                    <FormControlLabel value="track" control={<Radio />} label="Track" />
+                  </RadioGroup>
+                  <TextField variant="filled" id="searchText" value={searchValue} onChange={handleSearchValueChange} autoFocus />
+                </Grid>
+                <Divider style={{margin: "10px"}} />
+                <Grid container justify="center">
+                  {searchError ? (
+                    <Alert severity="error">{searchError}</Alert>
+                  ) : (
+                    dataArray?.map((element, index) => {
+                      return (
+                        <Grid item>
+                          <DisplayData
+                            element={element}
+                            id={index}
+                            maxWidth={225}
+                            onClick={() => {
+                              setSelectedTopic(dataArray[index])
+                              setScene(1)
+                            }}
+                          />
+                        </Grid>
+                      )
+                    })
+                  )}
+                </Grid>
+              </FormControl>
+            )}
             {scene === 1 && (
               <div>
-                <DisplayData element={selectedTopic} maxHeight={200} />
+                <DisplayData element={selectedTopic} height={200} />
                 <form id="contactForm">
                   <div>
                     <Switch checked={switchState} onChange={handleSwitchChange} name="useNumber" inputProps={{"aria-label": "secondary checkbox"}} />
