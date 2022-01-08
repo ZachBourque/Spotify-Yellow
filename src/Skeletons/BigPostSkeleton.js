@@ -104,7 +104,6 @@ const BigPostSkeleton = () => {
             })}
           </Grid>
         </Grid>
-        {/*comment skeletons*/}
       </div>
     </Fragment>
   )

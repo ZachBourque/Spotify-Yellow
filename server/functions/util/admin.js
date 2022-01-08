@@ -25,9 +25,13 @@ const validateUser = (req, res, next) => {
           .limit(1)
           .get()
           .then(snap => {
-            req.userRef = snap.docs[0].ref
-            req.user = {...snap.docs[0].data()}
-            return next()
+            if (snap.size === 1) {
+              req.userRef = snap.docs[0].ref
+              req.user = {...snap.docs[0].data()}
+              return next()
+            } else {
+              return res.status(401).json({error: "No account attached to id."})
+            }
           })
           .catch(err => {
             console.error(err)

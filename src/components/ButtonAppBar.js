@@ -76,11 +76,17 @@ const useStyles = makeStyles(theme => ({
       width: "50ch"
     }
   },
+  sectionDesktop: {
+    display: "none",
+    [theme.breakpoints.up("md")]: {
+      display: "flex"
+    }
+  },
   sectionMobile: {
     display: "flex",
     marginLeft: 50,
     [theme.breakpoints.up("md")]: {
-      display: "flex"
+      display: "none"
     }
   }
 }))
@@ -91,10 +97,12 @@ function NavBar(props) {
   //const redirect_uri = "http://localhost:5000/spotify-yellow-282e0/us-central1/api/callback"
   const profileRe = () => {
     handleMenuClose()
+    handleMobileMenuClose()
     props.history.push("/profile")
   }
   const settingsRe = () => {
     handleMenuClose()
+    handleMobileMenuClose()
     props.history.push("/settings")
   }
 
@@ -190,22 +198,35 @@ function NavBar(props) {
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
     >
-      <MenuItem>
+      <MenuItem style={{justifyContent: "center"}}>
+        <Button
+          type="button"
+          onClick={() => {
+            handleMobileMenuClose()
+            props.history.push("/")
+          }}
+        >
+          Home
+        </Button>
+      </MenuItem>
+      <MenuItem style={{justifyContent: "center"}}>
         <IconButton aria-label="show new notifications" color="inherit" aria-controls={notificationId} aria-haspopup="true" onClick={handleNotiMenuOpen}>
           <Badge badgeContent={props?.user?.notifications?.filter(notification => !notification.read).length} color="secondary">
             <NotificationsIcon />
           </Badge>
         </IconButton>
       </MenuItem>
-      <MenuItem onClick={handleProfileMenuOpen}>
+      <MenuItem style={{justifyContent: "center"}}>
         {auth.loggedIn ? (
-          <IconButton edge="end" aria-label="account of current user" aria-controls={menuId} aria-haspopup="true" onClick={handleProfileMenuOpen} color="inherit">
-            <p>Profile</p>
+          <IconButton aria-label="account of current user" aria-controls={menuId} aria-haspopup="true" onClick={handleProfileMenuOpen} color="inherit" style={{width: 48, height: 48}}>
+            {!user.loaded ? <Avatar src={localStorage.getItem("cachepfp")} /> : <Avatar src={user.profilepic} />}
           </IconButton>
         ) : (
-          <Button variant="contained" type="button">
-            Login
-          </Button>
+          <a href={url}>
+            <Button variant="contained" type="button">
+              Login
+            </Button>
+          </a>
         )}
       </MenuItem>
     </Menu>
@@ -261,9 +282,8 @@ function NavBar(props) {
               />
             </div>
           </form>
-          <FormControl variant="filled" className={classes.formControl}>
-            <InputLabel id="demo-simple-select-filled-label">Search</InputLabel>
-            <Select labelId="demo-simple-select-filled-label" id="demo-simple-select-filled" value={search} onChange={handleChange}>
+          <FormControl>
+            <Select variant="outlined" value={search} onChange={handleChange} style={{width: 70}}>
               <MenuItem value={0}>
                 <CreateIcon />
               </MenuItem>
@@ -276,7 +296,7 @@ function NavBar(props) {
             </Select>
           </FormControl>
           <div className={classes.grow} />
-          <Box sx={{display: {xs: "none", md: "none"}}}>
+          <div className={classes.sectionDesktop}>
             {auth.loggedIn ? (
               <Fragment>
                 <IconButton aria-label="show new notifications" color="inherit" aria-controls={notificationId} aria-haspopup="true" onClick={handleNotiMenuOpen}>
@@ -284,7 +304,7 @@ function NavBar(props) {
                     <NotificationsIcon />
                   </Badge>
                 </IconButton>
-                <IconButton edge="end" aria-label="account of current user" aria-controls={menuId} aria-haspopup="true" onClick={handleProfileMenuOpen} color="inherit">
+                <IconButton aria-label="account of current user" aria-controls={menuId} aria-haspopup="true" onClick={handleProfileMenuOpen} color="inherit">
                   {!user.loaded ? <Avatar src={localStorage.getItem("cachepfp")} width="50" /> : <Avatar src={user.profilepic} width="50" />}
                 </IconButton>
               </Fragment>
@@ -295,17 +315,17 @@ function NavBar(props) {
                 </Button>
               </a>
             )}
-          </Box>
-          <Box display={{xs: "flex", md: "none"}}>
+          </div>
+          <div className={classes.sectionMobile}>
             <IconButton size="large" aria-label="show more" aria-controls={mobileMenuId} aria-haspopup="true" onClick={handleMobileMenuOpen} color="inherit">
               <MoreIcon />
             </IconButton>
-          </Box>
+          </div>
         </Toolbar>
       </AppBar>
+      {renderMobileMenu}
       {renderMenu}
       {renderNotificationMenu}
-      {renderMobileMenu}
     </div>
   )
 }

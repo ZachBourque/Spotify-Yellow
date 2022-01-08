@@ -1,4 +1,4 @@
-import React, {Component} from "react"
+import {Component, Fragment} from "react"
 import Typography from "@material-ui/core/Typography"
 import {connect} from "react-redux"
 import {Dialog, DialogTitle, DialogContent, TextField, Grid, Switch, IconButton, DialogActions, Button} from "@material-ui/core"
@@ -19,6 +19,7 @@ import Ten from "../assets/10.png"
 import {deletePost, editPost} from "../redux/actions/dataActions"
 import {reloadUserProfile} from "../redux/actions/userActions"
 import {closeEditPostDialog} from "../redux/actions/UIActions"
+import Alert from "@material-ui/lab/Alert"
 
 class EditPostDialog extends Component {
   imagesArray = [Zero, One, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten]
@@ -81,7 +82,7 @@ class EditPostDialog extends Component {
           {!this.state.switchState ? (
             ""
           ) : (
-            <>
+            <Fragment>
               <Grid container direction="row" justify="center">
                 <Grid item>
                   <img src={this.imagesArray[this.state.newRating]} style={{width: "200px", height: "200px"}} />
@@ -99,10 +100,11 @@ class EditPostDialog extends Component {
                   </IconButton>
                 </Grid>
               </Grid>
-            </>
+            </Fragment>
           )}
         </DialogContent>
         <DialogActions>
+          {this.props.ui.errors.editPost && <Alert severity="error">{this.props.ui.errors.editPost}</Alert>}
           <Button onClick={this.props.closeEditPostDialog} variant="outlined">
             Cancel
           </Button>

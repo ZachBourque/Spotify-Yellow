@@ -4,6 +4,7 @@ import {Dialog, DialogTitle, DialogContent, DialogActions, Button, DialogContent
 import Delete from "@material-ui/icons/Delete"
 import {deletePost, deleteComment} from "../redux/actions/dataActions"
 import {closeDeleteDialog} from "../redux/actions/UIActions"
+import Alert from "@material-ui/lab/Alert"
 
 class DeletePostDialog extends Component {
   type = this.props.element.comment ? "comment" : "post"
@@ -34,7 +35,7 @@ class DeletePostDialog extends Component {
           >
             Delete
           </Button>
-          {this.props.ui.errors.delete && <Typography variant="body1">{this.props.ui.errors.delete}</Typography>}
+          {this.props.ui.errors.delete && <Alert severity="error">{this.props.ui.errors.delete}</Alert>}
         </DialogActions>
       </Dialog>
     )
