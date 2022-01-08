@@ -63,6 +63,7 @@ const MakePostDialog = (props) => {
   //Scene 0:
   //Radio Button Value
   const [value, setValue] = useState("artist")
+  const [searchValue, setSearchValue] = useState("")
   //Data returned from the Spotify API
   const [returnedData, setReturnedData] = useState(null)
   //Parsed data that is displayed to the user
@@ -94,32 +95,40 @@ const MakePostDialog = (props) => {
     }
   }, [props.selectedTopic])
 
-  useEffect(() => {
-    searchTextChanged($("#searchText").val())
-  }, [value])
+   useEffect(() => {
+     searchTextChanged(searchValue)
+   }, [value, searchValue])
 
-  const searchTextChanged = event => {
+  const handleSearchValueChange = event => {
+    setSearchValue(event.target.value);
+
+  }
+  
+  const radioChanged = event => {
+    setValue(event.target.value)
+
+
+  }
+
+  const searchTextChanged = (event, radioValue = value) => {
+    //rather a string or an event is passed in, this just makes temp = the string
+    let temp = typeof event == "string" ? event : event?.target?.value
     //if the event is empty, dont display anything for search results
-    if (!event || !event?.target?.value) {
+    if (!temp) {
       setDataArray(null)
       setReturnedData(null)
       return
     }
-    //rather a string or an event is passed in, this just makes temp = the string
-    let temp = typeof event == "string" ? event : event?.target?.value
-
-    if (value == "artist") {
+    
+    if (radioValue == "artist") {
       searchArtists(temp)
-    } else if (value == "album") {
+    } else if (radioValue == "album") {
       searchAlbums(temp)
-    } else if (value == "track") {
+    } else if (radioValue == "track") {
       searchSongs(temp)
     }
   }
 
-  const radioChanged = event => {
-    setValue(event.target.value)
-  }
 
   //Searches Spotify API for Artist
   const searchArtists = query => {
@@ -255,7 +264,7 @@ const MakePostDialog = (props) => {
                       <FormControlLabel value="album" control={<Radio />} label="Album/EP" />
                       <FormControlLabel value="track" control={<Radio />} label="Track" />
                     </RadioGroup>
-                    <TextField variant="filled" id="searchText" onChange={searchTextChanged} />
+                    <TextField variant="filled" id="searchText" value={searchValue} onChange={handleSearchValueChange} autoFocus />
                   </Grid>
                   <Divider style={{ margin: "10px" }} />
                   <Grid container justify="center" >

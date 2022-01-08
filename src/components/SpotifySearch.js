@@ -172,7 +172,7 @@ const SpotifySearch = props => {
                     <FormControlLabel value="track" disabled={radioDisabledStatus[2]} control={<Radio />} label="Track" />
                   </RadioGroup>
                 ) : null}
-                <TextField variant="filled" id="searchText" onChange={searchTextChanged} />
+                <TextField variant="filled" id="searchText" onChange={searchTextChanged} autoFocus />
                 <br />
                 <Grid item xs={12}>
                   <Divider></Divider>

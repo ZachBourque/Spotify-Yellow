@@ -31,6 +31,7 @@ import MakeCommentDialog from "./components/MakeCommentDialog"
 import EditPostDialog from "./components/EditPostDialog"
 import DeletePostDialog from "./components/DeletePostDialog"
 import LoginRNDialog from "./components/LoginRNDialog"
+import PageNotFound from "./pages/PageNotFound"
 import Logout from "./pages/Logout"
 import PostHeader from "./components/PostHeader"
 import BigPostSkeleton from "./Skeletons/BigPostSkeleton"
@@ -107,6 +108,7 @@ class Router extends React.Component {
               <Route path="/settings" component={Settings} />
               <Route path="/search" component={SearchPage} />
               <Route path="/logout" component={Logout} />
+              <Route path="/" component={PageNotFound} />
             </Switch>
           </BrowserRouter>
           <Dialog open={this.state.open} onClose={this.handleClose} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
