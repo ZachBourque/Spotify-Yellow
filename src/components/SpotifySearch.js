@@ -1,6 +1,20 @@
-import React, {Component, useState, useEffect} from "react"
+import React, {useState, useEffect} from "react"
 import {connect} from "react-redux"
 import {TextField, Radio, RadioGroup, FormControlLabel, FormControl, Grid, Dialog, DialogContent, Typography, CardHeader, Card, DialogActions, Button, Divider} from "@material-ui/core"
+import TextField from "@material-ui/core/TextField"
+import Radio from "@material-ui/core/Radio"
+import RadioGroup from "@material-ui/core/RadioGroup"
+import FormControlLabel from "@material-ui/core/FormControlLabel"
+import FormControl from "@material-ui/core/FormControl"
+import Grid from "@material-ui/core/Grid"
+import Dialog from "@material-ui/core/Dialog"
+import DialogContent from "@material-ui/core/DialogContent"
+import Typography from "@material-ui/core/Typography"
+import CardHeader from "@material-ui/core/CardHeader"
+import Card from "@material-ui/core/Card"
+import DialogActions from "@material-ui/core/DialogActions"
+import Button from "@material-ui/core/Button"
+import Divider from "@material-ui/core/Divider"
 import DisplayData from "./DisplayData"
 import Spotify from "spotify-web-api-js"
 import $ from "jquery"
@@ -70,11 +84,11 @@ const SpotifySearch = props => {
     //rather a string or an event is passed in, this just makes temp = the string
     let temp = typeof event == "string" ? event : event?.target?.value
 
-    if (value == "artist") {
+    if (value === "artist") {
       searchArtists(temp)
-    } else if (value == "album") {
+    } else if (value === "album") {
       searchAlbums(temp)
-    } else if (value == "track") {
+    } else if (value === "track") {
       searchSongs(temp)
     }
   }
@@ -174,30 +188,39 @@ const SpotifySearch = props => {
 
   return (
     <Dialog open={props.open} onClose={props.onClose} maxWidth="md" fullWidth>
-      <DialogContent>
+      <DialogContent style={{overflowY: "scroll"}}>
         <Grid container>
           <Grid xs={12}>
-            <Card align="center">
-              <CardHeader title={<Typography variant="h4">Search Artists</Typography>} style={{backgroundColor: "#D99E2A"}} />
-              <FormControl component="fieldset">
+            <Card align="center" style={{minHeight: "85vh"}}>
+              <CardHeader title={<Typography variant="h4">SEARCH {value.toUpperCase()}S</Typography>} style={{backgroundColor: "#D99E2A"}} />
+              <FormControl component="fieldset" style={{minWidth: "50%"}}>
+                =======
                 {!props.type ? (
                   <RadioGroup aria-label="gender" name="gender1" value={value} onChange={radioChanged}>
-                    <FormControlLabel value={"artist"} disabled={radioDisabledStatus[0]} control={<Radio />} label="Artist" />
+                    <FormControlLabel value="artist" disabled={radioDisabledStatus[0]} control={<Radio />} label="Artist" />
                     <FormControlLabel value="album" disabled={radioDisabledStatus[1]} control={<Radio />} label="Album/EP" />
                     <FormControlLabel value="track" disabled={radioDisabledStatus[2]} control={<Radio />} label="Track" />
                   </RadioGroup>
                 ) : null}
-                <TextField variant="filled" id="searchText" onChange={searchTextChanged} />
+                <TextField variant="filled" id="searchText" onChange={searchTextChanged} autoFocus />
                 <br />
                 <Grid item xs={12}>
                   <Divider></Divider>
                 </Grid>
                 <br />
-                {dataArray?.map((element, index) => (
-                  <DisplayData element={element} id={index} maxHeight={"200px"} maxWidth={"200px"} onClick={props.onClick} />
-                ))}
               </FormControl>
-              {error && <Alert severity="error">{error}</Alert>}
+              <Grid container alignItems="center" justify="center" direction="column">
+                {dataArray?.map((element, index) => {
+                  return (
+                    <>
+                      <Grid item xs={6}>
+                        <DisplayData element={element} id={index} maxHeight={"200px"} maxWidth={"200px"} onClick={props.onClick} />
+                      </Grid>
+                    </>
+                  )
+                })}
+                {error && <Alert severity="error">{error}</Alert>}
+              </Grid>
             </Card>
           </Grid>
         </Grid>

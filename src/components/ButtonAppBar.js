@@ -1,5 +1,6 @@
 import {Fragment, useState} from "react"
 import {connect} from "react-redux"
+
 import {fade, makeStyles} from "@material-ui/core/styles"
 import AppBar from "@material-ui/core/AppBar"
 import Toolbar from "@material-ui/core/Toolbar"
@@ -262,7 +263,7 @@ function NavBar(props) {
         <Toolbar>
           <Typography className={classes.title} variant="h6" noWrap>
             <a onClick={() => props.history.push("/")} style={{cursor: "pointer"}}>
-              <span>Spotify Yellow</span>
+              <span>Spotlight</span>
             </a>
           </Typography>
           <div className={classes.grow} />
@@ -288,7 +289,7 @@ function NavBar(props) {
                 <CreateIcon />
               </MenuItem>
               <MenuItem value={1}>
-                <img src={logo} />
+                <img src={logo} alt="SpotifyIcon" />
               </MenuItem>
               <MenuItem value={2}>
                 <PersonIcon />

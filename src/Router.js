@@ -1,11 +1,11 @@
 import React from "react"
-import {Switch, Route, Redirect, BrowserRouter} from "react-router-dom"
+import {Switch, Route, BrowserRouter} from "react-router-dom"
 import Homepage from "./pages/Homepage"
 import ButtonAppBar from "./components/ButtonAppBar"
 import Temp from "./pages/temp"
 import Profile from "./pages/Profile"
 import {ThemeProvider, createMuiTheme} from "@material-ui/core/styles"
-import {Container, Paper} from "@material-ui/core"
+import {Paper} from "@material-ui/core"
 import SignUp from "./pages/SignUp"
 import {connect} from "react-redux"
 import {loadDataIntoState} from "./redux/actions/authActions"
@@ -31,9 +31,8 @@ import MakeCommentDialog from "./components/MakeCommentDialog"
 import EditPostDialog from "./components/EditPostDialog"
 import DeletePostDialog from "./components/DeletePostDialog"
 import LoginRNDialog from "./components/LoginRNDialog"
+import PageNotFound from "./pages/PageNotFound"
 import Logout from "./pages/Logout"
-import PostHeader from "./components/PostHeader"
-import BigPostSkeleton from "./Skeletons/BigPostSkeleton"
 
 $("body").css("margin", 0)
 axios.defaults.baseURL = "https://us-central1-spotify-yellow-282e0.cloudfunctions.net/api"
@@ -71,8 +70,6 @@ class Router extends React.Component {
   }
 
   makePostObjectIsEmpty = (makePostObject) => {
-    console.log("\n\n\nprops: ", this.props.ui.makePost.element, "\n\n\n\n")
-    console.log("\n\nparam: ", makePostObject, "\n\n\n\n")
     return makePostObject.artistName ? false : true
   }
 
@@ -109,6 +106,7 @@ class Router extends React.Component {
               <Route path="/settings" component={Settings} />
               <Route path="/search" component={SearchPage} />
               <Route path="/logout" component={Logout} />
+              <Route path="/" component={PageNotFound} />
             </Switch>
           </BrowserRouter>
           <Dialog open={this.state.open} onClose={this.handleClose} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">

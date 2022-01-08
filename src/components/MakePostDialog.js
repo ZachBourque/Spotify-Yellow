@@ -1,13 +1,27 @@
-import {Dialog, DialogActions, DialogContent, Grid, Button, IconButton} from "@material-ui/core"
+import Dialog from "@material-ui/core"
+import DialogActions from "@material-ui/core"
+import DialogContent from "@material-ui/core"
+import Grid from "@material-ui/core"
+import Button from "@material-ui/core"
+import IconButton from "@material-ui/core"
 import {ArrowLeft} from "@material-ui/icons"
 import {connect} from "react-redux"
 import {closeMakePostDialog} from "../redux/actions/UIActions"
 import {useState, useEffect} from "react"
-import {TextField, Radio, RadioGroup, FormControlLabel, FormControl, FormLabel, makeStyles, Switch, TextareaAutosize} from "@material-ui/core"
+import TextField from "@material-ui/core/TextField"
+import Radio from "@material-ui/core/Radio"
+import RadioGroup from "@material-ui/core/RadioGroup"
+import FormControlLabel from "@material-ui/core/FormControlLabel"
+import FormControl from "@material-ui/core/FormControl"
+import {makeStyles} from "@material-ui/core"
+import Switch from "@material-ui/core/Switch"
 import Spotify from "spotify-web-api-js"
-import {Container, Avatar, Paper, Typography, Card, CardHeader, CardContent, Divider, Box} from "@material-ui/core"
+import Typography from "@material-ui/core/Typography"
+import Card from "@material-ui/core/Card"
+import CardHeader from "@material-ui/core/CardHeader"
+import CardContent from "@material-ui/core/CardContent"
+import Divider from "@material-ui/core/Divider"
 import DisplayData from "./DisplayData"
-import $ from "jquery"
 import Zero from "../assets/0.png"
 import One from "../assets/1.png"
 import Two from "../assets/2.png"
@@ -60,6 +74,7 @@ const MakePostDialog = props => {
   //Scene 0:
   //Radio Button Value
   const [value, setValue] = useState("artist")
+  const [searchValue, setSearchValue] = useState("")
   //Data returned from the Spotify API
   const [returnedData, setReturnedData] = useState(null)
   //Parsed data that is displayed to the user
@@ -85,8 +100,6 @@ const MakePostDialog = props => {
   s.setAccessToken(token)
 
   useEffect(() => {
-    console.log("selected topic:", props.selectedTopic)
-    console.log("selected topic bool:", Boolean(props.selectedTopic))
     if (props.selectedTopic) {
       setSelectedTopic(props.selectedTopic)
       setScene(1)
@@ -94,38 +107,40 @@ const MakePostDialog = props => {
   }, [props.selectedTopic])
 
   useEffect(() => {
+    searchTextChanged(searchValue)
+  }, [value, searchValue])
+
+  const handleSearchValueChange = event => {
+    setSearchValue(event.target.value)
+  }
+  useEffect(() => {
     setGettingToken(false)
     if (callback[0] && callback[1]) {
       callback[0](...callback[1])
       setCallback([])
     }
   }, [props.auth.token])
+  const radioChanged = event => {
+    setValue(event.target.value)
+  }
 
-  useEffect(() => {
-    searchTextChanged($("#searchText").val())
-  }, [value])
-
-  const searchTextChanged = event => {
+  const searchTextChanged = (event, radioValue = value) => {
+    //rather a string or an event is passed in, this just makes temp = the string
+    let temp = typeof event == "string" ? event : event?.target?.value
     //if the event is empty, dont display anything for search results
-    if (!event || !event?.target?.value) {
+    if (!temp) {
       setDataArray(null)
       setReturnedData(null)
       return
     }
-    //rather a string or an event is passed in, this just makes temp = the string
-    let temp = typeof event == "string" ? event : event?.target?.value
 
-    if (value == "artist") {
+    if (radioValue === "artist") {
       searchArtists(temp)
-    } else if (value == "album") {
+    } else if (radioValue === "album") {
       searchAlbums(temp)
-    } else if (value == "track") {
+    } else if (radioValue === "track") {
       searchSongs(temp)
     }
-  }
-
-  const radioChanged = event => {
-    setValue(event.target.value)
   }
 
   //Searches Spotify API for Artist
@@ -266,15 +281,13 @@ const MakePostDialog = props => {
   const handleBackButton = e => {
     setScene(0)
   }
-
-  const element = props.selectedTopic
   return (
-    <Dialog onClose={props.closeMakePostDialog} aria-labelledby="customized-dialog-title" open={props.ui.makePost.open} maxWidth="sm" fullWidth>
+    <Dialog onClose={props.closeMakePostDialog} aria-labelledby="customized-dialog-title" open={props.ui.makePost.open} maxWidth="md" fullWidth>
       <DialogContent>
-        <Card style={{backgroundColor: "#4d4d4d"}} align="center" style={{height: "100%"}}>
+        <Card style={{backgroundColor: "#4d4d4d", height: "100%"}} align="center">
           <CardHeader title={<Typography variant="h4">Make Post</Typography>} style={{backgroundColor: "#D99E2A"}} />
           <CardContent>
-            {scene == 0 && (
+            {scene === 0 && (
               <FormControl component="fieldset">
                 <Grid container justify="center" alignItems="center">
                   <RadioGroup aria-label="gender" name="gender1" value={value} onChange={radioChanged}>
@@ -282,33 +295,27 @@ const MakePostDialog = props => {
                     <FormControlLabel value="album" control={<Radio />} label="Album/EP" />
                     <FormControlLabel value="track" control={<Radio />} label="Track" />
                   </RadioGroup>
-                  <TextField variant="filled" id="searchText" onChange={searchTextChanged} />
+                  <TextField variant="filled" id="searchText" value={searchValue} onChange={handleSearchValueChange} autoFocus />
                 </Grid>
                 <Divider style={{margin: "10px"}} />
                 <Grid container justify="center">
                   {searchError ? (
                     <Alert severity="error">{searchError}</Alert>
                   ) : (
-                    dataArray?.map((element, index) => {
-                      return (
-                        <Grid item>
-                          <DisplayData
-                            element={element}
-                            id={index}
-                            maxWidth={225}
-                            onClick={() => {
-                              setSelectedTopic(dataArray[index])
-                              setScene(1)
-                            }}
-                          />
-                        </Grid>
-                      )
-                    })
+                    <div>
+                      <img className={classes.rating} src={imagesArray[postRating]} />
+                      <IconButton aria-label="minus" onClick={() => setRating(!(postRating == 0) ? postRating - 1 : postRating)}>
+                        <RemoveIcon />
+                      </IconButton>
+                      <IconButton aria-label="plus" onClick={() => setRating(!(postRating == 10) ? postRating + 1 : postRating)}>
+                        <AddIcon />
+                      </IconButton>
+                    </div>
                   )}
                 </Grid>
               </FormControl>
             )}
-            {scene == 1 && (
+            {scene === 1 && (
               <div>
                 <DisplayData element={selectedTopic} maxHeight={200} />
                 <form id="contactForm">
@@ -318,11 +325,11 @@ const MakePostDialog = props => {
                       ""
                     ) : (
                       <div>
-                        <img className={classes.rating} src={imagesArray[postRating]} />
-                        <IconButton aria-label="minus" onClick={() => setRating(!(postRating == 0) ? postRating - 1 : postRating)}>
+                        <img className={classes.rating} src={imagesArray[postRating]} alt="rating" />
+                        <IconButton aria-label="minus" onClick={() => setRating(!(postRating === 0) ? postRating - 1 : postRating)}>
                           <RemoveIcon />
                         </IconButton>
-                        <IconButton aria-label="plus" onClick={() => setRating(!(postRating == 10) ? postRating + 1 : postRating)}>
+                        <IconButton aria-label="plus" onClick={() => setRating(!(postRating === 10) ? postRating + 1 : postRating)}>
                           <AddIcon />
                         </IconButton>
                       </div>
@@ -358,6 +365,7 @@ const MakePostDialog = props => {
     </Dialog>
   )
 }
+
 const mapStateToProps = state => ({
   auth: state.auth,
   ui: state.ui

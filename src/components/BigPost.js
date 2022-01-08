@@ -1,6 +1,7 @@
 import {Component} from "react"
 import {connect} from "react-redux"
-import {Grid, Card} from "@material-ui/core"
+import Grid from "@material-ui/core/Grid"
+import Card from "@material-ui/core/Card"
 import withStyles from "@material-ui/core/styles/withStyles"
 import {setCurrentPost} from "../redux/actions/dataActions"
 import {reloadUserProfile} from "../redux/actions/userActions"
@@ -46,7 +47,7 @@ export class Post extends Component {
       <BigPostSkeleton />
     ) : (
       <Grid container justify="center">
-        <Grid item xs={10}>
+        <Grid item xs={12} sm={10}>
           <Card align="center">
             <PostHeader {...this.props} />
             <PostBody {...this.props} />

@@ -28,10 +28,17 @@ class EditPostDialog extends Component {
     newRating: this.props.element.rating,
     newTitle: this.props.element.title,
     newBody: this.props.element.body,
-    switchState: this.props.element.rating ? true : false
+    switchState: Boolean(this.props.element.rating === 0 || this.props.element.rating)
   }
 
-  componentDidMount() {}
+  componentWillReceiveProps = prop => {
+    this.setState({
+      newRating: prop.element.rating,
+      newTitle: prop.element.title,
+      newBody: prop.element.body,
+      switchState: Boolean(prop.element.rating === 0 || prop.element.rating)
+    })
+  }
 
   handleSwitchChange = event => {
     this.setState({switchState: !this.state.switchState})
@@ -63,6 +70,7 @@ class EditPostDialog extends Component {
     }
 
     this.props.editPost(postId, {update: changes})
+    this.props.closeEditPostDialog()
   }
 
   render() {
@@ -71,7 +79,7 @@ class EditPostDialog extends Component {
       <Dialog open={this.props.ui.editPost.open} onClose={this.props.closeEditPostDialog} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description" maxWidth="sm" fullWidth>
         <DialogTitle id="alert-dialog-title">Edit Post:</DialogTitle>
         <DialogContent>
-          <TextField id="newTitle" label="Post Title" rows={1} fullWidth variant="outlined" defaultValue={element.title} onChange={this.handleTitleChange} />
+          <TextField id="newTitle" label="Post Title" rows={1} fullWidth variant="outlined" defaultValue={this.state.newTitle} onChange={this.handleTitleChange} />
 
           <TextField id="newBody" label="Post Body" multiline rows={6} fullWidth variant="outlined" defaultValue={element.body} onChange={this.handleBodyChange} margin="dense" />
           <Grid container direction="row" justify="center">

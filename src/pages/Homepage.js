@@ -1,9 +1,9 @@
 import {Component, useState, useEffect, Fragment} from "react"
 import {connect} from "react-redux"
 import SmallPost from "../components/SmallPost"
-import {Grid} from "@material-ui/core"
+import Grid from "@material-ui/core/Grid"
 import {getFeedData} from "../redux/actions/dataActions"
-import {IconButton} from "@material-ui/core"
+import IconButton from "@material-ui/core/IconButton"
 import PostAddIcon from "@material-ui/icons/PostAdd"
 import Typography from "@material-ui/core/Typography"
 import Button from "@material-ui/core/Button"
@@ -73,7 +73,7 @@ export class Homepage extends Component {
           <Fragment>
             <Grid container spacing={3} justify="center" align="center">
               <Grid item xs={12}>
-                <Grid item xs={6}>
+                <Grid item xs={12} sm={8} md={6}>
                   {this.props.data.loaded ? (
                     <Fragment>
                       {this.props.data.posts.slice(0, this.state.numOfPosts).map((post, idx) => {

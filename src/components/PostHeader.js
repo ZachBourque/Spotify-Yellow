@@ -1,9 +1,6 @@
 import { Component, Fragment } from "react"
 import { connect } from "react-redux"
-import { Menu, MenuItem, Avatar, Grid, Typography, Divider, Box, CardHeader, CardMedia, CardContent, CardActions, IconButton, Card, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from "@material-ui/core"
-import clsx from "clsx"
-import ThumbUpIcon from "@material-ui/icons/ThumbUp"
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore"
+import { Menu, MenuItem, Avatar, Grid, Typography, CardHeader, CardMedia, CardContent, IconButton } from "@material-ui/core"
 import MoreVert from "@material-ui/icons/MoreVert"
 import Delete from "@material-ui/icons/Delete"
 import Create from "@material-ui/icons/Create"
@@ -19,16 +16,9 @@ import Eight from "../assets/8.png"
 import Nine from "../assets/9.png"
 import Ten from "../assets/10.png"
 import withStyles from "@material-ui/core/styles/withStyles"
-import { makeStyles, createMuiTheme } from "@material-ui/core/styles"
-import axios from "axios"
-import Comment from "./Comment"
-import CommentIcon from "@material-ui/icons/Comment"
-import $ from "jquery"
 import { deletePost, editPost, setCurrentPost } from "../redux/actions/dataActions"
 import { reloadUserProfile } from "../redux/actions/userActions"
-import LikeButton from "./LikeButton"
 import { openMakeCommentDialog, openMakePostDialog, openEditPostDialog, openDeleteDialog, openSendMusicDialog, openLoginDialog } from "../redux/actions/UIActions"
-import BigPostSkeleton from "../Skeletons/BigPostSkeleton"
 
 
 
@@ -102,7 +92,19 @@ export class Post extends Component {
     }
 
     sharePost() {
-        //TODO
+        console.log(window.location.href)
+        if (navigator.share) {
+            let title = this.props.data.posts[0].title;
+            let url = window.location.href
+            navigator.share({
+                title,
+                url
+            }).then(() => {
+                console.log("NICE!")
+            }).catch(() => {
+                alert("Sorry, an error occurred while trying to share 😞")
+            })
+        }
     }
     userRe = id => {
         this.props.history.push(`/profile=${id}`)
@@ -123,10 +125,10 @@ export class Post extends Component {
                         avatar={
                             <Grid container alignItems="center" spacing={2}>
                                 <Grid item>
-                                <Avatar src={element.pfp} style={{ cursor: "pointer" }} onClick={() => this.userRe(element.authorid)} />
+                                    <Avatar src={element.pfp} style={{ cursor: "pointer" }} onClick={() => this.userRe(element.authorid)} />
                                 </Grid>
                                 <Grid item>
-                                <Typography style={{ cursor: "pointer" }} onClick={() => this.userRe(element.authorid)}>{element.username}</Typography>
+                                    <Typography style={{ cursor: "pointer" }} onClick={() => this.userRe(element.authorid)}>{element.username}</Typography>
                                 </Grid>
                             </Grid>}
                         action={
@@ -147,6 +149,7 @@ export class Post extends Component {
                                         Share
                                     </MenuItem>
                                     {element.authorid === this.props.user.id && (
+
                                         <MenuItem onClick={() => this.props.openEditPostDialog(element)}>
                                             <Create />
                                             Edit Post
@@ -164,36 +167,37 @@ export class Post extends Component {
                     />
                     <CardContent >
                         <Grid container alignItems="center" justify="center" direction="row">
-                            <Grid item xs={3}>
+                            <Grid item xs={6} md={3}>
                                 <a href={`https://open.spotify.com/${element.type}/${element.spotifyid}`}>
                                     <CardMedia image={element.pic} component="img" style={{ maxWidth: "275px" }} />
                                 </a>
                             </Grid>
-
-                            <Grid item xs={3} >
-                                <Typography variant="h4" align="center" style={{ width: "fit-content", borderRadius: "5%" }}>
-                                    {element.artist.map?.((e, i) => {
-                                        return (
-                                            <Fragment>
-                                                {e}
-                                                {i === element.artist.length - 1 ? "" : ", "}
-                                            </Fragment>
-                                        )
-                                    }) || element.artist}
-                                </Typography>
-                                <Grid item xs={12}>
+                            <Grid item xs={6} sm={12} md={6}>
+                                <Grid item xs={12} sm={12} md={6}>
+                                    <Typography variant="h4" align="center" style={{ width: "fit-content", borderRadius: "5%" }}>
+                                        {element.artist.map?.((e, i) => {
+                                            return (
+                                                <Fragment>
+                                                    {e}
+                                                    {i === element.artist.length - 1 ? "" : ", "}
+                                                </Fragment>
+                                            )
+                                        }) || element.artist}
+                                    </Typography>
+                                </Grid>
+                                <Grid item xs={12} sm={12} md={6}>
                                     <Typography variant="h4" align="center" style={{ width: "fit-content", borderRadius: "5%" }}>
                                         {element.album}
                                     </Typography>
                                 </Grid>
-                                <Grid item xs={12}>
+                                <Grid item xs={12} sm={12} md={6}>
                                     <Typography variant="h4" align="center" style={{ width: "fit-content", borderRadius: "5%" }}>
                                         {element.track}
                                     </Typography>
                                 </Grid>
                             </Grid>
-                            <Grid item xs={3}>
-                                <CardMedia image={this.imagesArray[element.rating]} component="img" style={{ maxWidth: "200px" }} />
+                            <Grid item xs={4} sm={12} md={3}>
+                                <CardMedia image={this.imagesArray[element.rating]} component="img" style={{ maxWidth: "200px", paddingTop: "25px" }} />
                             </Grid>
                         </Grid>
                     </CardContent>
