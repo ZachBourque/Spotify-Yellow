@@ -11,7 +11,7 @@ import MoreVert from "@material-ui/icons/MoreVert"
 import {connect} from "react-redux"
 import Grid from "@material-ui/core/Grid"
 import Box from "@material-ui/core/Box"
-import {openMakePostDialog, closeMakePostDialog, openSendMusicDialog, closeSendMusicDialog} from "../redux/actions/UIActions"
+import {openMakePostDialog, openSendMusicDialog, openLoginDialog} from "../redux/actions/UIActions"
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -39,25 +39,45 @@ const DisplayData = props => {
     })
   }
 
+  const checkOpenMakePost = () => {
+    if (props.auth.loggedIn) {
+      let {element} = props
+
+      console.log(element)
+      props.openMakePostDialog({type: element.type, id: element.id, artistName: element.artistName, albumName: element.albumName, songName: element.songName, image: element.image})
+    } else {
+      props.openLoginDialog()
+    }
+  }
+
+  const checkOpenSendMusic = () => {
+    if (props.auth.loggedIn) {
+      let {element} = props
+      props.openSendMusicDialog({
+        type: element.type,
+        id: element.id,
+        artistName: element.artistName,
+        albumName: element.albumName,
+        songName: element.songName,
+        image: element.image,
+        url: `https://open.spotify.com/${element.type}/${element.spotifyid}`
+      })
+    } else {
+      props.openLoginDialog()
+    }
+  }
+
   const renderMenu = (
     <Menu id="simple-menu" anchorEl={anchorEl} keepMounted open={Boolean(anchorEl)} onClose={handleClose}>
       <MenuItem onClick={copyLink}>Copy Link</MenuItem>
       <MenuItem
         onClick={() => {
-          props.openSendMusicDialog({
-            type: element.type,
-            id: element.id,
-            artistName: element.artistName,
-            albumName: element.albumName,
-            songName: element.songName,
-            image: element.image,
-            url: `https://open.spotify.com/${element.type}/${element.spotifyid}`
-          })
+          checkOpenSendMusic()
         }}
       >
         Send to user
       </MenuItem>
-      <MenuItem onClick={() => props.openMakePostDialog({type: element.type, id: element.spotifyid, artistName: element.artist, albumName: element.album, songName: element.track, image: element.pic})}>Make post on topic</MenuItem>
+      <MenuItem onClick={() => checkOpenMakePost()}>Make post on topic</MenuItem>
     </Menu>
   )
 
@@ -143,12 +163,14 @@ const DisplayData = props => {
 }
 
 const mapStateToProps = state => ({
-  ui: state.ui
+  ui: state.ui,
+  auth: state.auth
 })
 
 const mapActionsToProps = {
   openMakePostDialog,
-  openSendMusicDialog
+  openSendMusicDialog,
+  openLoginDialog
 }
 
 export default connect(mapStateToProps, mapActionsToProps)(DisplayData)

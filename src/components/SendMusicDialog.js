@@ -1,11 +1,18 @@
 import React, {Component} from "react"
 import {connect} from "react-redux"
-import {Dialog, DialogTitle, DialogContent, DialogActions, Button, DialogContentText, Typography, TextField, Card} from "@material-ui/core"
+import Dialog from "@material-ui/core/Dialog"
+import DialogTitle from "@material-ui/core/DialogTitle"
+import DialogContent from "@material-ui/core/DialogContent"
+import DialogActions from "@material-ui/core/DialogActions"
+import Button from "@material-ui/core/Button"
+import TextField from "@material-ui/core/TextField"
+import Card from "@material-ui/core/Card"
 import {sendMusic} from "../redux/actions/userActions"
 import UserCard from "./UserCard"
 import DisplayData from "./DisplayData"
 import {closeSendMusicDialog} from "../redux/actions/UIActions"
 import Alert from "@material-ui/lab/Alert"
+import Grid from "@material-ui/core/Grid"
 
 class SearchUsers extends Component {
   state = {
@@ -52,9 +59,15 @@ class SearchUsers extends Component {
           <TextField autoFocus id="commentBody" fullWidth variant="outlined" value={this.state.searchText} onChange={this.searchTextChanged} autoComplete="off" />
           {this.state.searchText && (
             <Card>
-              {this.state.filteredUsers.map(user => {
-                return <UserCard user={user} onClick={() => this.setSelectedUser(user)} selected={this.state.selectedUser?.id == user.id} />
-              })}
+              <Grid container row>
+                {this.state.filteredUsers.map(user => {
+                  return (
+                    <Grid item xs={12} md={6}>
+                      <UserCard user={user} onClick={() => this.setSelectedUser(user)} selected={this.state.selectedUser?.id == user.id} />
+                    </Grid>
+                  )
+                })}
+              </Grid>
             </Card>
           )}
         </DialogContent>

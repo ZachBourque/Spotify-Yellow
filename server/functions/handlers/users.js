@@ -5,7 +5,7 @@ const querystring = require("querystring")
 const {validateUser, validateBio, validateFavorites, validateUsername} = require("../util/validators")
 var client_id = "e5f1276d07b74135956c8b3130f79f3f" // Your client id
 
-let url = "https://spotify-yellow-282e0.web.app/"
+let url = "https://spotlightapp.ca/"
 //let url = "http://localhost:3000/"
 var redirect_uri = "https://us-central1-spotify-yellow-282e0.cloudfunctions.net/api/callback" // Your redirect uri
 //var redirect_uri = "http://localhost:5000/spotify-yellow-282e0/us-central1/api/callback"
@@ -377,7 +377,7 @@ exports.sendNotification = (req, res) => {
     receiver: req.body.receiveId
   }
   var options = {
-    url: `https://api.spotify.com/v1/${req.body.type}s/${req.body.id}`,
+    url: `https://open.spotify.com/${req.body.type}/${req.body.id}`,
     headers: {Authorization: "Bearer " + req.auth.token},
     json: true
   }
