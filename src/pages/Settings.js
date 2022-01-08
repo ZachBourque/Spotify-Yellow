@@ -22,6 +22,7 @@ import DialogTitle from "@material-ui/core/DialogTitle"
 import ClickAwayListener from "@material-ui/core/ClickAwayListener"
 import TextField from "@material-ui/core/TextField"
 import Avatar from "@material-ui/core/Avatar"
+import Alert from "@material-ui/lab/Alert"
 
 const styles = makeStyles(theme => ({
   root: {
@@ -31,7 +32,7 @@ const styles = makeStyles(theme => ({
     width: 325
   },
   favoriteHeight: {
-    height: 200
+    minHeight: 200
   }
 }))
 
@@ -148,17 +149,17 @@ const Settings = props => {
     $("#pfpInput").val("")
   }
   const searchArtist = () => {
-    type !== "artist" ? setType("artist") : setDialog(true);
+    type !== "artist" ? setType("artist") : setDialog(true)
   }
   const searchAlbum = () => {
-    type !== "album" ? setType("album") : setDialog(true);
+    type !== "album" ? setType("album") : setDialog(true)
   }
   const searchSong = () => {
-    type !== "track" ? setType("track") : setDialog(true);
+    type !== "track" ? setType("track") : setDialog(true)
   }
 
   useEffect(() => {
-    if(type !== ""){
+    if (type !== "") {
       setDialog(true)
     }
   }, [type])
@@ -294,7 +295,7 @@ const Settings = props => {
               </Grid>
             </ClickAwayListener>
           </Grid>
-          {props.ui.errors.username && <Typography variant="body1">{props.ui.errors.username}</Typography>}
+          {props.ui.errors.username && <Alert severity="error">{props.ui.errors.username}</Alert>}
           <Grid container direction="row" alignItems="center">
             <Grid item>
               <h4 style={{marginRight: 5}}>Bio:</h4>
@@ -324,10 +325,10 @@ const Settings = props => {
               </Grid>
             </ClickAwayListener>
           </Grid>
-          {props.ui.errors.bio && <Typography variant="body1">{props.ui.errors.bio}</Typography>}
+          {props.ui.errors.bio && <Alert severity="error">{props.ui.errors.bio}</Alert>}
           <Grid container direction="row" alignItems="center" spacing={3} className={classes.favoriteHeight}>
             <Grid container justify="center">
-              {props.ui.errors.favorites && <Typography variant="body1">{props.ui.errors.favorites}</Typography>}
+              {props.ui.errors.favorites && <Alert severity="error">{props.ui.errors.favorites}</Alert>}
             </Grid>
             <Grid item className={classes.favoriteText}>
               <Typography variant="h4">Favourite Artists:</Typography>
@@ -419,7 +420,7 @@ const Settings = props => {
             <DialogContent>
               <Grid container justify="center">
                 <Grid item>
-                   <SpotifySearch onClose={() => setDialog(false)} aria-labelledby="customized-dialog-title" open={dialog} maxWidth="md" fullWidth specifier={type} onClick={selectItem}/>
+                  <SpotifySearch onClose={() => setDialog(false)} aria-labelledby="customized-dialog-title" open={dialog} maxWidth="md" fullWidth specifier={type} onClick={selectItem} />
                 </Grid>
               </Grid>
             </DialogContent>
@@ -451,7 +452,6 @@ const Settings = props => {
             id="confirmbox"
             onChange={text => {
               setBtnDisabled(text.target.value !== "confirm")
-              console.log(text.target.value)
             }}
           />
         </DialogContent>

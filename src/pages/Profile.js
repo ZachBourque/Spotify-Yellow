@@ -11,6 +11,7 @@ import SmallPost from "../components/SmallPost"
 import {setCurrent} from "../redux/actions/dataActions"
 import axios from "axios"
 import FavoriteCard from "../components/FavoriteCard"
+import Alert from "@material-ui/lab/Alert"
 
 const styles = theme => ({
   root: {
@@ -127,7 +128,9 @@ class Profile extends Component {
         {this.state.loading ? (
           <ProfileSkeleton />
         ) : this.state.error ? (
-          <Typography variant="body1">{this.state.error}</Typography>
+          <Alert severity="error" style={{justifyContent: "center"}}>
+            {this.state.error}
+          </Alert>
         ) : (
           <Grid container spacing={1} alignItems="center" justify="center">
             <div style={{marginTop: 15}}>

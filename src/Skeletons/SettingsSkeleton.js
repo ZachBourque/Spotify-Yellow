@@ -36,8 +36,8 @@ function SettingsSkeleton() {
         </Grid>
         <div style={{backgroundColor: "gray", height: 25, width: 177}} />
       </Grid>
-      <Grid container direction="row" alignItems="center" spacing={3}>
-        <Grid item>
+      <Grid container direction="row" alignItems="center" spacing={3} style={{minHeight: 200}}>
+        <Grid item style={{width: 325}}>
           <Typography variant="h4">Favourite Artists:</Typography>
         </Grid>
         <Grid item>
@@ -53,8 +53,8 @@ function SettingsSkeleton() {
           })}
         </Grid>
       </Grid>
-      <Grid container direction="row" alignItems="center" spacing={3}>
-        <Grid item>
+      <Grid container direction="row" alignItems="center" spacing={3} style={{minHeight: 200}}>
+        <Grid item style={{width: 325}}>
           <Typography variant="h4">Favourite Albums:</Typography>
         </Grid>
         <Grid item>
@@ -70,8 +70,8 @@ function SettingsSkeleton() {
           })}
         </Grid>
       </Grid>
-      <Grid container direction="row" alignItems="center" spacing={3}>
-        <Grid item>
+      <Grid container direction="row" alignItems="center" spacing={3} style={{minHeight: 200}}>
+        <Grid item style={{width: 325}}>
           <Typography variant="h4">Favourite Songs:</Typography>
         </Grid>
         <Grid item>

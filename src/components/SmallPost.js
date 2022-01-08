@@ -1,3 +1,4 @@
+
 import { Component, Fragment } from "react"
 import { connect } from "react-redux"
 import Avatar from "@material-ui/core/Avatar"
@@ -32,64 +33,64 @@ import Delete from "@material-ui/icons/Delete"
 import { deletePost, editPost } from "../redux/actions/dataActions"
 import { reloadUserProfile } from "../redux/actions/userActions"
 import LikeButton from "../components/LikeButton"
-import { openSendMusicDialog, openMakePostDialog, openEditPostDialog, openDeleteDialog, openLoginDialog } from "../redux/actions/UIActions"
+import {openSendMusicDialog, openMakePostDialog, openEditPostDialog, openDeleteDialog, openLoginDialog} from "../redux/actions/UIActions"
 
 const styles = theme => ({
-    header: {
-        backgroundColor: "#FFBB35"
-    }
+  header: {
+    backgroundColor: "#FFBB35"
+  }
 })
 
 export class Post extends Component {
-    state = {
-        element: this.props.element,
-        menuOpen: null,
-        makePostStatus: false,
-        deletePostStatus: false,
-        editPostStatus: false,
-        newRating: this.props.element.rating,
-        newTitle: this.props.element.title,
-        newBody: this.props.element.body,
-        switchState: this.props.element.rating > -1 ? true : false
-    }
+  state = {
+    element: this.props.element,
+    menuOpen: null,
+    makePostStatus: false,
+    deletePostStatus: false,
+    editPostStatus: false,
+    newRating: this.props.element.rating,
+    newTitle: this.props.element.title,
+    newBody: this.props.element.body,
+    switchState: this.props.element.rating > -1 ? true : false
+  }
 
-    imagesArray = [Zero, One, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten]
+  imagesArray = [Zero, One, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten]
 
-    componentDidMount() {
-        this.setState({ element: this.props.element })
-    }
+  componentDidMount() {
+    this.setState({element: this.props.element})
+  }
 
-    handleClick = event => {
-        this.setState({ menuOpen: event.currentTarget })
-    }
+  handleClick = event => {
+    this.setState({menuOpen: event.currentTarget})
+  }
 
-    handleClose = () => {
-        this.setState({ menuOpen: null })
-    }
+  handleClose = () => {
+    this.setState({menuOpen: null})
+  }
 
-    handleSwitchChange = event => {
-        this.setState({ switchState: !this.state.switchState })
-    }
+  handleSwitchChange = event => {
+    this.setState({switchState: !this.state.switchState})
+  }
 
-    handleTitleChange = e => {
-        this.setState({ newTitle: e.target.value })
-    }
+  handleTitleChange = e => {
+    this.setState({newTitle: e.target.value})
+  }
 
-    handleBodyChange = e => {
-        this.setState({ newBody: e.target.value })
-    }
+  handleBodyChange = e => {
+    this.setState({newBody: e.target.value})
+  }
 
-    userRe = id => {
-        this.props.history.push(`/profile=${id}`)
-    }
+  userRe = id => {
+    this.props.history.push(`/profile=${id}`)
+  }
 
-    postRe = (id, comment) => {
-        if (comment) {
-            this.props.history.push(`/post/${id}#comment`)
-        } else {
-            this.props.history.push(`/post/${id}`)
-        }
+  postRe = (id, comment) => {
+    if (comment) {
+      this.props.history.push(`/post/${id}#comment`)
+    } else {
+      this.props.history.push(`/post/${id}`)
     }
+  }
 
     sharePost() {
         console.log(window.location.href)
@@ -123,44 +124,34 @@ export class Post extends Component {
         if (JSON.stringify(changes) === "{}") {
             return
         }
+      }
 
-        this.props.editPost(postId, { update: changes }, token, expires, rtoken)
-        this.setState({ element: { ...this.state.element, ...changes } })
-        this.closeEditPost()
+  editPost(postId, newTitle, newBody, newRating) {
+    const {title, body, rating} = this.props.element
+    const {token, expires, rtoken} = this.props.auth
+    let changes = {}
+    if (title !== newTitle) {
+      changes.title = newTitle
+    }
+    if (body !== newBody) {
+      changes.body = newBody
+    }
+    if (rating !== newRating) {
+      changes.rating = newRating
+    }
+    if (JSON.stringify(changes) === "{}") {
+      return
     }
 
-    deletePost(postId) {
-        const { token, expires, rtoken } = this.props.auth
-        this.props.deletePost(postId, token, expires, rtoken)
-    }
+    this.props.editPost(postId, {update: changes}, token, expires, rtoken)
+    this.setState({element: {...this.state.element, ...changes}})
+    this.closeEditPost()
+  }
 
-    checkOpenMakePost = () => {
-        if (this.props.auth.loggedIn) {
-            let { element } = this.props
-            this.props.openMakePostDialog({ type: element.type, id: element.spotifyid, artistName: element.artist, albumName: element.album, songName: element.track, image: element.pic })
-        } else {
-            this.props.openLoginDialog()
-        }
-    }
-
-    checkOpenSendMusic = () => {
-        if (this.props.auth.loggedIn) {
-            let { element } = this.props
-            this.props.openSendMusicDialog({
-                type: element.type,
-                id: element.spotifyid,
-                artistName: element.artist,
-                albumName: element.album,
-                songName: element.track,
-                image: element.pic,
-                url: `https://open.spotify.com/${element.type}/${element.spotifyid}`
-            })
-        } else {
-            this.props.openLoginDialog()
-        }
-    }
-
-
+  deletePost(postId) {
+    const {token, expires, rtoken} = this.props.auth
+    this.props.deletePost(postId, token, expires, rtoken)
+  }
 
     render() {
         let { element } = this.props
@@ -293,23 +284,23 @@ export class Post extends Component {
             </Card>
         )
     }
-}
+  }
 
 const mapStateToProps = state => ({
-    user: state.user,
-    auth: state.auth,
-    ui: state.ui
+  user: state.user,
+  auth: state.auth,
+  ui: state.ui
 })
 
 const mapActionsToProps = {
-    reloadUserProfile,
-    deletePost,
-    editPost,
-    openMakePostDialog,
-    openEditPostDialog,
-    openSendMusicDialog,
-    openDeleteDialog,
-    openLoginDialog
+  reloadUserProfile,
+  deletePost,
+  editPost,
+  openMakePostDialog,
+  openEditPostDialog,
+  openSendMusicDialog,
+  openDeleteDialog,
+  openLoginDialog
 }
 
-export default connect(mapStateToProps, mapActionsToProps)(withStyles(styles, { withTheme: true })(Post))
+export default connect(mapStateToProps, mapActionsToProps)(withStyles(styles, {withTheme: true})(Post))

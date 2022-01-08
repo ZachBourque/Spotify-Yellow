@@ -137,7 +137,6 @@ exports.onUserImageChange = functions.firestore.document("users/{id}").onUpdate(
       .where("authorid", "==", id)
       .get()
       .then(data => {
-        console.log(data.size)
         data.forEach(doc => {
           batch.update(db.doc(`/posts/${doc.id}`), {pfp})
         })
@@ -145,22 +144,18 @@ exports.onUserImageChange = functions.firestore.document("users/{id}").onUpdate(
           .where("authorid", "==", id)
           .get()
           .then(data2 => {
-            console.log(data2.size)
             data2.forEach(doc => {
               batch.update(db.doc(`/comments/${doc.id}`), {pfp})
             })
-            console.log("committing")
             batch.commit()
           })
       })
   } else {
-    console.log("no change " + pfp, change.before.data().profilepic)
   }
 })
 
 exports.onUserDelete = functions.firestore.document("users/{id}").onDelete((snapshot, context) => {
   let userId = snapshot.data().id
-  console.log(userId)
   let batch = db.batch()
   db.collection("posts")
     .where("authorid", "==", userId)

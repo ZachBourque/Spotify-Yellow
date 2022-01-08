@@ -17,6 +17,7 @@ import FormControlLabel from "@material-ui/core/FormControlLabel"
 import Radio from "@material-ui/core/Radio"
 import {setCurrent, setDataLoading, getFeedData} from "../redux/actions/dataActions"
 import SmallPostSkeleton from "../Skeletons/SmallPostSkeleton"
+import Alert from "@material-ui/lab/Alert"
 
 class SearchPage extends Component {
   state = {
@@ -31,7 +32,9 @@ class SearchPage extends Component {
     posts: null,
     items: null,
     searched: false,
-    s: new Spotify().setAccessToken(this.props.auth.token)
+    s: new Spotify().setAccessToken(this.props.auth.token),
+    callback: [],
+    gettingToken: false
   }
 
   handleRadioChange = event => {
@@ -50,12 +53,10 @@ class SearchPage extends Component {
           this.setState({error: "Cannot search spotify when not logged in.", loading: false})
           return
         }
-        let now = new Date().getTime()
-        if (now > expires) {
-          console.log(now, expires, "now > expires")
-          this.props.getNewToken(rtoken, this.search, [query, id, filter])
-          this.props.auth.expires = 10000000000000000000000000000000000000
-          return
+        if (this.state.gettingToken) return
+        if (new Date().getTime() > expires) {
+          this.setState({gettingToken: true, callback: [this.search, [query, id, filter]]})
+          this.props.getNewToken(rtoken)
         }
         let s = new Spotify()
         s.setAccessToken(token)
@@ -163,6 +164,14 @@ class SearchPage extends Component {
     }
   }
 
+  componentWillReceiveProps(prevProps) {
+    if (prevProps.auth.token !== this.props.auth.token) {
+      this.state.gettingToken = false
+      this.setState({gettingToken: false})
+      this.state.callback[0](...this.state.callback[1])
+    }
+  }
+
   componentDidMount = () => {
     this.props.setCurrent([])
     this.props.getFeedData()
@@ -202,7 +211,9 @@ class SearchPage extends Component {
             </Tabs>
           </AppBar>
           {this.state.error ? (
-            <h2 style={{textAlign: "center"}}>{this.state.error}</h2>
+            <Alert severity="error" style={{justifyContent: "center"}}>
+              {this.state.error}
+            </Alert>
           ) : this.state.loading === false && this.state.data.length === 0 ? (
             <h2 style={{textAlign: "center"}}>No Results</h2>
           ) : (

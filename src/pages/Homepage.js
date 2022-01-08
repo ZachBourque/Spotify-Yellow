@@ -10,6 +10,7 @@ import Button from "@material-ui/core/Button"
 import withStyles from "@material-ui/core/styles/withStyles"
 import SmallPostSkeleton from "../Skeletons/SmallPostSkeleton"
 import {openMakePostDialog, closeMakePostDialog, openLoginDialog} from "../redux/actions/UIActions"
+import Alert from "@material-ui/lab/Alert"
 
 const defaultNumOfPosts = 25
 
@@ -65,9 +66,9 @@ export class Homepage extends Component {
     return (
       <Fragment>
         {this.props.ui.errors.feed ? (
-          <Typography className={`${classes.message} ${classes.error}`} variant="h2">
+          <Alert severity="error" style={{justifyContent: "center"}}>
             {this.props.ui.errors.feed}
-          </Typography>
+          </Alert>
         ) : (
           <Fragment>
             <Grid container spacing={3} justify="center" align="center">
