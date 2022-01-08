@@ -1,6 +1,5 @@
 import React, {useState, useEffect} from "react"
 import {connect} from "react-redux"
-import {TextField, Radio, RadioGroup, FormControlLabel, FormControl, Grid, Dialog, DialogContent, Typography, CardHeader, Card, DialogActions, Button, Divider} from "@material-ui/core"
 import TextField from "@material-ui/core/TextField"
 import Radio from "@material-ui/core/Radio"
 import RadioGroup from "@material-ui/core/RadioGroup"
@@ -19,6 +18,7 @@ import DisplayData from "./DisplayData"
 import Spotify from "spotify-web-api-js"
 import $ from "jquery"
 import {getNewToken} from "../redux/actions/authActions"
+import Alert from "@material-ui/lab/Alert"
 
 const SpotifySearch = props => {
   const [value, setValue] = useState(props.type ? props.type : "artist")

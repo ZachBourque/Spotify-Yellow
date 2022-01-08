@@ -22,6 +22,7 @@ import DialogTitle from "@material-ui/core/DialogTitle"
 import ClickAwayListener from "@material-ui/core/ClickAwayListener"
 import TextField from "@material-ui/core/TextField"
 import Avatar from "@material-ui/core/Avatar"
+import Alert from "@material-ui/lab/Alert"
 
 const styles = makeStyles(theme => ({
   root: {

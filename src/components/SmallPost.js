@@ -1,12 +1,17 @@
-<<<<<<< HEAD
-import { Component, Fragment } from "react"
-import { connect } from "react-redux"
-import { Avatar, Grid, Typography, Divider, CardHeader, CardMedia, CardContent, CardActions, IconButton, Card, Menu, MenuItem } from "@material-ui/core"
-=======
 import {Component, Fragment} from "react"
 import {connect} from "react-redux"
-import {Container, Avatar, Grid, Paper, Typography, Divider, Box, CardHeader, CardMedia, CardContent, CardActions, Collapse, IconButton, Card, Menu, MenuItem, Button} from "@material-ui/core"
->>>>>>> the-thomas-branch
+import Avatar from "@material-ui/core/Avatar"
+import Grid from "@material-ui/core/Grid"
+import Typography from "@material-ui/core/Typography"
+import Divider from "@material-ui/core/Divider"
+import CardHeader from "@material-ui/core/CardHeader"
+import CardMedia from "@material-ui/core/CardMedia"
+import CardContent from "@material-ui/core/CardContent"
+import CardActions from "@material-ui/core/CardActions"
+import IconButton from "@material-ui/core/IconButton"
+import Card from "@material-ui/core/Card"
+import Menu from "@material-ui/core/Menu"
+import MenuItem from "@material-ui/core/MenuItem"
 import Zero from "../assets/0.png"
 import One from "../assets/1.png"
 import Two from "../assets/2.png"
@@ -19,16 +24,9 @@ import Eight from "../assets/8.png"
 import Nine from "../assets/9.png"
 import Ten from "../assets/10.png"
 import withStyles from "@material-ui/core/styles/withStyles"
-<<<<<<< HEAD
-import { Comment, Share, MoreVert, Create, Delete } from "@material-ui/icons"
-import { deletePost, editPost } from "../redux/actions/dataActions"
-import { reloadUserProfile } from "../redux/actions/userActions"
-=======
-import {makeStyles, createMuiTheme} from "@material-ui/core/styles"
-import {ThumbUp, Comment, Share, MoreVert, Create, Delete, PostAddOutlined, Remove, Add, Send} from "@material-ui/icons"
 import {deletePost, editPost} from "../redux/actions/dataActions"
 import {reloadUserProfile} from "../redux/actions/userActions"
->>>>>>> the-thomas-branch
+import {Comment, Share, MoreVert, Create, Delete} from "@material-ui/icons"
 import LikeButton from "../components/LikeButton"
 import {openSendMusicDialog, openMakePostDialog, openEditPostDialog, openDeleteDialog, openLoginDialog} from "../redux/actions/UIActions"
 
@@ -89,44 +87,42 @@ export class Post extends Component {
     }
   }
 
-<<<<<<< HEAD
-    sharePost() {
-        console.log(window.location.href)
-        if (navigator.share) {
-            let title = this.props.element.title;
-            let url = window.location.href
-            navigator.share({
-                title,
-                url
-            }).then(() => {
-                console.log("NICE!")
-            }).catch(() => {
-                alert("Sorry, an error occurred while trying to share 😞")
-            })
-        }
+  sharePost = () => {
+    console.log(window.location.href)
+    if (navigator.share) {
+      let title = this.props.element.title
+      let url = window.location.href
+      navigator
+        .share({
+          title,
+          url
+        })
+        .then(() => {
+          console.log("NICE!")
+        })
+        .catch(() => {
+          alert("Sorry, an error occurred while trying to share 😞")
+        })
     }
-
-    editPost(postId, newTitle, newBody, newRating) {
-        const { title, body, rating } = this.props.element
-        const { token, expires, rtoken } = this.props.auth
-        let changes = {}
-        if (title !== newTitle) {
-            changes.title = newTitle
-        }
-        if (body !== newBody) {
-            changes.body = newBody
-        }
-        if (rating !== newRating) {
-            changes.rating = newRating
-        }
-        if (JSON.stringify(changes) === "{}") {
-            return
-        }
-=======
-  sharePost() {
-    //TODO
   }
->>>>>>> the-thomas-branch
+
+  editPost(postId, newTitle, newBody, newRating) {
+    const {title, body, rating} = this.props.element
+    const {token, expires, rtoken} = this.props.auth
+    let changes = {}
+    if (title !== newTitle) {
+      changes.title = newTitle
+    }
+    if (body !== newBody) {
+      changes.body = newBody
+    }
+    if (rating !== newRating) {
+      changes.rating = newRating
+    }
+    if (JSON.stringify(changes) === "{}") {
+      return
+    }
+  }
 
   editPost(postId, newTitle, newBody, newRating) {
     const {title, body, rating} = this.props.element
@@ -153,165 +149,6 @@ export class Post extends Component {
   deletePost(postId) {
     const {token, expires, rtoken} = this.props.auth
     this.props.deletePost(postId, token, expires, rtoken)
-  }
-
-<<<<<<< HEAD
-    render() {
-        let { element } = this.props
-        return (
-            <Card style={{ backgroundColor: "#4d4d4d" }} align="center">
-                <CardHeader
-                    avatar={<Avatar src={element.pfp} style={{ cursor: "pointer" }} onClick={() => this.userRe(element.authorid)} />}
-                    action={
-                        <Fragment>
-                            <IconButton aria-label="settings" aria-controls="simple-menu" aria-haspopup="true" onClick={this.handleClick}>
-                                <MoreVert />
-                            </IconButton>
-                            <Menu id="simple-menu" anchorEl={this.state.menuOpen} keepMounted open={Boolean(this.state.menuOpen)} onClose={this.handleClose}>
-                                <MenuItem onClick={() => this.checkOpenMakePost({ type: element.type, id: element.spotifyid, artistName: element.artist, albumName: element.album, songName: element.track, image: element.pic })}>Make Post On Topic</MenuItem>
-                                <MenuItem
-                                    onClick={() =>
-                                        this.props.openSendMusicDialog({
-                                            type: element.type,
-                                            id: element.spotifyid,
-                                            artistName: element.artist,
-                                            albumName: element.album,
-                                            songName: element.track,
-                                            image: element.pic,
-                                            url: `https://open.spotify.com/${element.type}/${element.spotifyid}`
-                                        })
-                                    }
-                                >
-                                    Recommend Topic To Someone
-                                </MenuItem>
-                                <MenuItem
-                                    onClick={() => {
-                                        this.handleClose()
-                                        this.sharePost()
-                                    }}
-                                >
-                                    Share
-                                </MenuItem>
-                                {element.authorid === this.props.user.id && (
-                                    <MenuItem onClick={() => this.props.openEditPostDialog(element)}>
-                                        <Create />
-                                        Edit Post
-                                    </MenuItem>
-                                )}
-                                {element.authorid === this.props.user.id && (
-                                    <MenuItem onClick={() => this.props.openDeleteDialog(element)} style={{ color: "red" }}>
-                                        <Delete />
-                                        Delete Post
-                                    </MenuItem>
-                                )}
-                            </Menu>
-                        </Fragment>
-                    }
-                    title={
-                        <Typography variant="body1" style={{ cursor: "pointer", width: "fit-content" }} onClick={() => this.userRe(element.authorid)}>
-                            {element.username}
-                        </Typography>
-                    }
-                    style={{ backgroundColor: "#D99E2A" }}
-                />
-                {/* Main Content */}
-                <CardContent>
-                    <div onClick={() => this.postRe(element.postId)} style={{ cursor: "pointer" }}>
-                        <Grid container alignItems="center" justify="center" direction="row">
-                            {/* Left Half */}
-                            <Grid item xs={6} md={2}>
-                                <CardMedia id="theImage" image={element.pic} component="img" />
-                            </Grid>
-                            {element.rating > -1 && (
-                                <Grid item xs={6} md={2}>
-                                    <CardMedia image={this.imagesArray[element.rating]} component="img" />
-                                </Grid>
-                            )}
-                            <Grid item md={2}>
-                                <Grid container direction="column" justify="space-between" alignItems="center">
-                                    <Grid item>
-                                        <Typography variant="body1">
-                                            {element.artist.map?.((e, i) => {
-                                                return (
-                                                    <Fragment key={i}>
-                                                        {e}
-                                                        {i === element.artist.length - 1 ? "" : ", "}
-                                                    </Fragment>
-                                                )
-                                            }) || element.artist}
-                                        </Typography>
-                                    </Grid>
-                                    <Grid item>
-                                        <Typography variant="body1">{element.album}</Typography>
-                                    </Grid>
-                                    <Grid item>
-                                        <Typography variant="body1">{element.track}</Typography>
-                                    </Grid>
-                                </Grid>
-                            </Grid>
-
-                            {/* Right Half */}
-                            <Grid xs={12} md={6} item style={{ backgroundColor: "#2f2f2f", borderRadius: "5%" }}>
-                                <Grid item xs={12}>
-                                    <Typography variant="h5" style={{ maxWidth: "75%" }}>
-                                        {element.title}
-                                    </Typography>
-                                </Grid>
-                                <Grid item align="center"  >
-                                    <Typography variant="body1" style={{
-                                        "display": "-webkit-box",
-                                        "max-width": "400px",
-                                        "-webkit-line-clamp": "2",
-                                        "-webkit-box-orient": "vertical",
-                                        "overflow": "hidden"
-                                    }}>
-                                        {element.body}
-                                    </Typography>
-                                </Grid>
-                            </Grid>
-                        </Grid>
-                    </div>
-                    <Divider style={{ margin: 10 }} />
-                    <CardActions disableSpacing>
-                        <LikeButton postId={element.postId} />
-                        {element.likeCount}
-                        <IconButton onClick={() => this.postRe(element.postId)}>
-                            <Comment />
-                        </IconButton>
-                        <Typography variant="body2">{element.commentCount}</Typography>
-                        <IconButton onClick={() => {this.sharePost()}}>
-                            <Share />
-                        </IconButton>
-                    </CardActions>
-                </CardContent>
-            </Card>
-        )
-=======
-  checkOpenMakePost = () => {
-    if (this.props.auth.loggedIn) {
-      let {element} = this.props
-      this.props.openMakePostDialog({type: element.type, id: element.spotifyid, artistName: element.artist, albumName: element.album, songName: element.track, image: element.pic})
-    } else {
-      this.props.openLoginDialog()
-    }
-  }
-
-  checkOpenSendMusic = () => {
-    if (this.props.auth.loggedIn) {
-      let {element} = this.props
-      this.props.openSendMusicDialog({
-        type: element.type,
-        id: element.spotifyid,
-        artistName: element.artist,
-        albumName: element.album,
-        songName: element.track,
-        image: element.pic,
-        url: `https://open.spotify.com/${element.type}/${element.spotifyid}`
-      })
-    } else {
-      this.props.openLoginDialog()
->>>>>>> the-thomas-branch
-    }
   }
 
   render() {
@@ -377,12 +214,12 @@ export class Post extends Component {
           <div onClick={() => this.postRe(element.postId)} style={{cursor: "pointer"}}>
             <Grid container alignItems="center" justify="center" direction="row">
               {/* Left Half */}
-              <Grid item md={2}>
-                <CardMedia id="theImage" image={element.pic} component="img" style={{maxWidth: 200}} />
+              <Grid item xs={6} md={2}>
+                <CardMedia id="theImage" image={element.pic} component="img" />
               </Grid>
               {element.rating > -1 && (
-                <Grid item md={2}>
-                  <CardMedia image={this.imagesArray[element.rating]} component="img" style={{maxWidth: 200}} />
+                <Grid item xs={6} md={2}>
+                  <CardMedia image={this.imagesArray[element.rating]} component="img" />
                 </Grid>
               )}
               <Grid item md={2}>
@@ -409,8 +246,8 @@ export class Post extends Component {
               </Grid>
 
               {/* Right Half */}
-              <Grid md={6} item style={{backgroundColor: "#2f2f2f", borderRadius: "5%"}}>
-                <Grid item>
+              <Grid xs={12} md={6} item style={{backgroundColor: "#2f2f2f", borderRadius: "5%"}}>
+                <Grid item xs={12}>
                   <Typography variant="h5" style={{maxWidth: "75%"}}>
                     {element.title}
                   </Typography>
@@ -440,7 +277,11 @@ export class Post extends Component {
               <Comment />
             </IconButton>
             <Typography variant="body2">{element.commentCount}</Typography>
-            <IconButton>
+            <IconButton
+              onClick={() => {
+                this.sharePost()
+              }}
+            >
               <Share />
             </IconButton>
           </CardActions>

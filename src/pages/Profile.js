@@ -135,13 +135,13 @@ class Profile extends Component {
           <Grid container spacing={1} alignItems="center" justify="center">
             <div style={{marginTop: 15}}>
               <Grid container alignItems="center" justify="center" spacing={3}>
-                <Grid item >
-                  <Avatar alt="nope" src={this.state.profilepic} style={{ width: 64, height: 64 }}/>
+                <Grid item>
+                  <Avatar alt="nope" src={this.state.profilepic} style={{width: 64, height: 64}} />
                 </Grid>
                 <Grid item>
-                <Typography gutterBottom variant="h3">
-                  {this.state.username}
-                </Typography>
+                  <Typography gutterBottom variant="h3">
+                    {this.state.username}
+                  </Typography>
                 </Grid>
               </Grid>
               {this.state.bio.length > 0 && (
@@ -153,8 +153,10 @@ class Profile extends Component {
               )}
               {this.state.favArtists.length > 0 && (
                 <Fragment>
-                  <Typography variant="h4">Favourite Artists:</Typography>
-                  <Grid container direction="row" align="center" justify="center" >
+                  <Typography variant="h4" style={{textAlign: "center"}}>
+                    Favourite Artists:
+                  </Typography>
+                  <Grid container direction="row" align="center" justify="center">
                     <Grid item xs={8} sm={12}>
                       {this.state.favArtists.map((artist, idx) => {
                         return <FavoriteCard key={idx} name={artist.name} url={artist.url} pic={artist.pic} />
@@ -165,8 +167,10 @@ class Profile extends Component {
               )}
               {this.state.favAlbums.length > 0 && (
                 <Fragment>
-                  <Typography variant="h4">Favourite Albums:</Typography>
-                  <Grid container direction="row" alignItems="center" justify="center" >
+                  <Typography variant="h4" style={{textAlign: "center"}}>
+                    Favourite Albums:
+                  </Typography>
+                  <Grid container direction="row" align="center" justify="center">
                     <Grid item xs={8} sm={12}>
                       {this.state.favAlbums.map((album, idx) => {
                         return <FavoriteCard key={idx} name={album.name} url={album.url} pic={album.pic} />
@@ -177,8 +181,10 @@ class Profile extends Component {
               )}
               {this.state.favSongs.length > 0 && (
                 <Fragment>
-                  <Typography variant="h4">Favourite Songs:</Typography>
-                  <Grid container direction="row" alignItems="center" justify="center" >
+                  <Typography variant="h4" style={{textAlign: "center"}}>
+                    Favourite Songs:
+                  </Typography>
+                  <Grid container direction="row" align="center" justify="center">
                     <Grid item xs={8} sm={12}>
                       {this.state.favSongs.map((song, idx) => {
                         return <FavoriteCard key={idx} name={song.name} url={song.url} pic={song.pic} />
@@ -188,15 +194,13 @@ class Profile extends Component {
                 </Fragment>
               )}
               {/*User's Posts container*/}
-              <Grid container spacing={3} align="center" style={{marginBottom: 30}}>
+              <Grid container spacing={3} align="center" justify="center" style={{marginBottom: 30}}>
                 {!this.props.data.loading &&
                   this.props.data.loaded &&
                   this.props.data.posts.map(post => {
                     return (
-                      <Grid item xs={12}>
-                        <Grid item xs={6}>
-                          <SmallPost element={post} history={this.props.history} key={post.postId} />
-                        </Grid>
+                      <Grid item xs={12} sm={8} md={6}>
+                        <SmallPost element={post} history={this.props.history} key={post.postId} />
                       </Grid>
                     )
                   })}

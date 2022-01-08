@@ -72,22 +72,20 @@ export class Homepage extends Component {
         ) : (
           <Fragment>
             <Grid container spacing={3} justify="center" align="center">
-              <Grid item xs={12}>
-                <Grid item xs={12} sm={8} md={6}>
-                  {this.props.data.loaded ? (
-                    <Fragment>
-                      {this.props.data.posts.slice(0, this.state.numOfPosts).map((post, idx) => {
-                        return <SmallPost element={post} history={this.props.history} key={post.postId} postId={post.postId} key={idx} />
-                      })}
-                    </Fragment>
-                  ) : (
-                    <Fragment>
-                      {Array.from({length: 5}).map((element, idx) => {
-                        return <SmallPostSkeleton key={idx} />
-                      })}
-                    </Fragment>
-                  )}
-                </Grid>
+              <Grid item xs={12} sm={8} md={6}>
+                {this.props.data.loaded ? (
+                  <Fragment>
+                    {this.props.data.posts.slice(0, this.state.numOfPosts).map((post, idx) => {
+                      return <SmallPost element={post} history={this.props.history} key={post.postId} postId={post.postId} key={idx} />
+                    })}
+                  </Fragment>
+                ) : (
+                  <Fragment>
+                    {Array.from({length: 5}).map((element, idx) => {
+                      return <SmallPostSkeleton key={idx} />
+                    })}
+                  </Fragment>
+                )}
               </Grid>
               {this.props.data.loaded && this.state.numOfPosts < 1000 && this.props.data.posts.length > this.state.numOfPosts && <Button onClick={() => this.setState({numOfPosts: this.state.numOfPosts + defaultNumOfPosts})}>Show more.</Button>}
             </Grid>
