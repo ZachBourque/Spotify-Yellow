@@ -9,6 +9,7 @@ import Typography from "@material-ui/core/Typography"
 import TextField from "@material-ui/core/TextField"
 import {makeComment} from "../redux/actions/dataActions"
 import {getNewToken} from "../redux/actions/authActions"
+import Alert from "@material-ui/lab/Alert"
 import {closeMakeCommentDialog} from "../redux/actions/UIActions"
 
 class MakeCommentDialog extends Component {
@@ -64,7 +65,7 @@ class MakeCommentDialog extends Component {
         )}
         <DialogContent>
           <TextField autoFocus id="commentBody" type="email" multiline rows={6} fullWidth variant="outlined" value={this.state.commentBody} onChange={this.commentTextChanged} />
-          {this.props.ui.errors.makeComment && <Typography variant="body1">{this.props.ui.errors.makeComment}</Typography>}
+          {this.props.ui.errors.makeComment && <Alert severity="error">{this.props.ui.errors.makeComment}</Alert>}
         </DialogContent>
         <DialogActions>
           <Button onClick={this.props.closeMakeCommentDialog} color="default">

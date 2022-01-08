@@ -5,10 +5,10 @@ const querystring = require("querystring")
 const {validateUser, validateBio, validateFavorites, validateUsername} = require("../util/validators")
 var client_id = "e5f1276d07b74135956c8b3130f79f3f" // Your client id
 
-//let url = "https://spotify-yellow-282e0.web.app/"
-let url = "http://localhost:3000/"
-//var redirect_uri = "https://us-central1-spotify-yellow-282e0.cloudfunctions.net/api/callback" // Your redirect uri
-var redirect_uri = "http://localhost:5000/spotify-yellow-282e0/us-central1/api/callback"
+let url = "https://spotify-yellow-282e0.web.app/"
+//let url = "http://localhost:3000/"
+var redirect_uri = "https://us-central1-spotify-yellow-282e0.cloudfunctions.net/api/callback" // Your redirect uri
+//var redirect_uri = "http://localhost:5000/spotify-yellow-282e0/us-central1/api/callback"
 
 const defaultPic = "https://media.pitchfork.com/photos/5c7d4c1b4101df3df85c41e5/1:1/w_600/Dababy_BabyOnBaby.jpg"
 
@@ -27,7 +27,6 @@ exports.login = (req, res) => {
   var state = generateRandomString(16)
   var client_id = "e5f1276d07b74135956c8b3130f79f3f"
 
-  console.log(redirect_uri)
   // your application requests authorization
   var scope = "user-read-private user-read-email user-read-playback-state"
   return res.json({
@@ -45,7 +44,6 @@ exports.login = (req, res) => {
 }
 
 exports.callback = (req, res) => {
-  console.log("/callback")
   // your application requests refresh and access tokens
   // after checking the state parameter
 
@@ -95,12 +93,11 @@ exports.callback = (req, res) => {
                 websitedata.p = snapshot.data().profilepic
               })
             }
-            console.log(url)
             return res.redirect(url + "temp?" + querystring.stringify(websitedata))
           })
       })
     } else {
-      console.log(error)
+      console.error(error)
       return res.redirect(url + "temp?" + querystring.stringify({error}))
     }
   })
@@ -150,7 +147,6 @@ exports.createUser = (req, res) => {
 }
 
 exports.getUser = (req, res) => {
-  console.log("/getUser")
   db.collection("users")
     .where("id", "==", req.params.id)
     .orderBy("createdAt", "desc")
@@ -182,7 +178,6 @@ exports.getUser = (req, res) => {
 }
 
 exports.getSelf = (req, res) => {
-  console.log("/getSelf")
   db.collection("posts")
     .where("authorid", "==", req.user.id)
     .orderBy("createdAt", "desc")
@@ -324,7 +319,6 @@ exports.updatePfp = (req, res) => {
 }
 
 exports.getToken = (req, res) => {
-  console.log("/getToken")
   var authOptions = {
     url: "https://accounts.spotify.com/api/token",
     headers: {Authorization: "Basic " + new Buffer(client_id + ":" + client_secret).toString("base64")},
@@ -345,7 +339,6 @@ exports.getToken = (req, res) => {
 }
 
 exports.getUsers = (req, res) => {
-  console.log("/getUsers")
   db.collection("users")
     .get()
     .then(snap => {
@@ -358,7 +351,6 @@ exports.getUsers = (req, res) => {
 }
 
 exports.markNotificationsRead = (req, res) => {
-  console.log("/markNotiRead")
   let batch = db.batch()
   req.body.forEach(id => {
     const notification = db.doc(`/notifications/${id}`)
@@ -384,7 +376,6 @@ exports.sendNotification = (req, res) => {
     senderName: req.user.username,
     receiver: req.body.receiveId
   }
-  console.log(req.body.type, req.body.id)
   var options = {
     url: `https://api.spotify.com/v1/${req.body.type}s/${req.body.id}`,
     headers: {Authorization: "Bearer " + req.auth.token},

@@ -1,9 +1,12 @@
-import { Dialog, DialogActions, DialogContent, Grid, Button, IconButton } from "@material-ui/core"
-import { ArrowLeft } from "@material-ui/icons"
-
-import React from "react"
-import { connect } from "react-redux"
-import { closeMakePostDialog } from "../redux/actions/UIActions"
+import Dialog from "@material-ui/core"
+import DialogActions from "@material-ui/core"
+import DialogContent from "@material-ui/core"
+import Grid from "@material-ui/core"
+import Button from "@material-ui/core"
+import IconButton from "@material-ui/core"
+import {ArrowLeft} from "@material-ui/icons"
+import {connect} from "react-redux"
+import {closeMakePostDialog} from "../redux/actions/UIActions"
 import {useState, useEffect} from "react"
 import TextField from "@material-ui/core/TextField"
 import Radio from "@material-ui/core/Radio"
@@ -32,7 +35,9 @@ import Nine from "../assets/9.png"
 import Ten from "../assets/10.png"
 import AddIcon from "@material-ui/icons/Add"
 import RemoveIcon from "@material-ui/icons/Remove"
+import {getNewToken} from "../redux/actions/authActions"
 import {makePost} from "../redux/actions/dataActions"
+import Alert from "@material-ui/lab/Alert"
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -62,10 +67,10 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-const MakePostDialog = (props) => {
-  
-
+const MakePostDialog = props => {
   const classes = useStyles()
+  const [gettingToken, setGettingToken] = useState(false)
+  const [callback, setCallback] = useState([])
   //Scene 0:
   //Radio Button Value
   const [value, setValue] = useState("artist")
@@ -95,25 +100,28 @@ const MakePostDialog = (props) => {
   s.setAccessToken(token)
 
   useEffect(() => {
-    if (props.selectedTopic){
-      setSelectedTopic(props.selectedTopic);
-      setScene(1);
+    if (props.selectedTopic) {
+      setSelectedTopic(props.selectedTopic)
+      setScene(1)
     }
   }, [props.selectedTopic])
 
-   useEffect(() => {
-     searchTextChanged(searchValue)
-   }, [value, searchValue])
+  useEffect(() => {
+    searchTextChanged(searchValue)
+  }, [value, searchValue])
 
   const handleSearchValueChange = event => {
-    setSearchValue(event.target.value);
-
+    setSearchValue(event.target.value)
   }
-  
+  useEffect(() => {
+    setGettingToken(false)
+    if (callback[0] && callback[1]) {
+      callback[0](...callback[1])
+      setCallback([])
+    }
+  }, [props.auth.token])
   const radioChanged = event => {
     setValue(event.target.value)
-
-
   }
 
   const searchTextChanged = (event, radioValue = value) => {
@@ -125,7 +133,7 @@ const MakePostDialog = (props) => {
       setReturnedData(null)
       return
     }
-    
+
     if (radioValue === "artist") {
       searchArtists(temp)
     } else if (radioValue === "album") {
@@ -135,11 +143,17 @@ const MakePostDialog = (props) => {
     }
   }
 
-
   //Searches Spotify API for Artist
   const searchArtists = query => {
     setSearchError(null)
-    s.searchArtists(query, { limit: 5 })
+    if (gettingToken) return
+    if (new Date().getTime() > props.auth.expires) {
+      setGettingToken(true)
+      setCallback([searchArtists, [query]])
+      props.getNewToken(props.auth.rtoken)
+    }
+    s.setAccessToken(props.auth.token)
+    s.searchArtists(query, {limit: 5})
       .then(data => {
         if (data) {
           setReturnedData(data.artists.items)
@@ -169,10 +183,16 @@ const MakePostDialog = (props) => {
   //Searches Spotify API for album
   const searchAlbums = query => {
     setSearchError(null)
+    if (gettingToken) return
+    if (new Date().getTime() > props.auth.expires) {
+      setGettingToken(true)
+      setCallback([searchAlbums, [query]])
+      props.getNewToken(props.auth.rtoken)
+    }
     const limit = 5
     fetch(`https://api.spotify.com/v1/search?q=${query}&type=album&market=US&limit=${limit}`, {
       method: "GET",
-      headers: { Authorization: "Bearer " + token }
+      headers: {Authorization: "Bearer " + props.auth.token}
     })
       .then(res => {
         return res.json()
@@ -206,7 +226,14 @@ const MakePostDialog = (props) => {
   //Searches Spotify API for song
   const searchSongs = query => {
     setSearchError(null)
-    s.searchTracks(query, { limit: 5 })
+    if (gettingToken) return
+    if (new Date().getTime() > props.auth.expires) {
+      setGettingToken(true)
+      setCallback([searchSongs, [query]])
+      props.getNewToken(props.auth.rtoken)
+    }
+    s.setAccessToken(props.auth.token)
+    s.searchTracks(query, {limit: 5})
       .then(data => {
         if (data) {
           setReturnedData(data.tracks.items)
@@ -254,94 +281,91 @@ const MakePostDialog = (props) => {
   const handleBackButton = e => {
     setScene(0)
   }
-    return (
-      <Dialog onClose={props.closeMakePostDialog} aria-labelledby="customized-dialog-title" open={props.ui.makePost.open} maxWidth="md" fullWidth >
-        <DialogContent>
-          <Card style={{ backgroundColor: "#4d4d4d", "height": "100%" }} align="center">
-            <CardHeader title={<Typography variant="h4">Make Post</Typography>} style={{ backgroundColor: "#D99E2A" }} />
-            <CardContent>
-              {scene === 0 && (
-                <FormControl component="fieldset">
-                  <Grid container justify="center" alignItems="center">
-                    <RadioGroup aria-label="gender" name="gender1" value={value} onChange={radioChanged}>
-                      <FormControlLabel value="artist" control={<Radio />} label="Artist" />
-                      <FormControlLabel value="album" control={<Radio />} label="Album/EP" />
-                      <FormControlLabel value="track" control={<Radio />} label="Track" />
-                    </RadioGroup>
-                    <TextField variant="filled" id="searchText" value={searchValue} onChange={handleSearchValueChange} autoFocus />
-                  </Grid>
-                  <Divider style={{ margin: "10px" }} />
-                  <Grid container justify="center" >
-                    {searchError ? (
-                      <Typography variant="body1">{searchError}</Typography>
-                    ) : (
-                      dataArray?.map((element, index) => {
-                        return (
-                          <Grid item>
-                            <DisplayData
-                              element={element}
-                              id={index}
-                              maxWidth={225}
-                              onClick={() => {
-                                setSelectedTopic(dataArray[index])
-                                setScene(1)
-                              }}
-                            />
-                          </Grid>
-                        )
-                      })
-                    )}
-                  </Grid>
-                </FormControl>
-              )}
-              {scene === 1 && (
-                <div>
-                  <DisplayData element={selectedTopic} maxHeight={200} />
-                  <form id="contactForm">
+  return (
+    <Dialog onClose={props.closeMakePostDialog} aria-labelledby="customized-dialog-title" open={props.ui.makePost.open} maxWidth="md" fullWidth>
+      <DialogContent>
+        <Card style={{backgroundColor: "#4d4d4d", height: "100%"}} align="center">
+          <CardHeader title={<Typography variant="h4">Make Post</Typography>} style={{backgroundColor: "#D99E2A"}} />
+          <CardContent>
+            {scene === 0 && (
+              <FormControl component="fieldset">
+                <Grid container justify="center" alignItems="center">
+                  <RadioGroup aria-label="gender" name="gender1" value={value} onChange={radioChanged}>
+                    <FormControlLabel value="artist" control={<Radio />} label="Artist" />
+                    <FormControlLabel value="album" control={<Radio />} label="Album/EP" />
+                    <FormControlLabel value="track" control={<Radio />} label="Track" />
+                  </RadioGroup>
+                  <TextField variant="filled" id="searchText" value={searchValue} onChange={handleSearchValueChange} autoFocus />
+                </Grid>
+                <Divider style={{margin: "10px"}} />
+                <Grid container justify="center">
+                  {searchError ? (
+                    <Alert severity="error">{searchError}</Alert>
+                  ) : (
                     <div>
-                      <Switch checked={switchState} onChange={handleSwitchChange} name="useNumber" inputProps={{ "aria-label": "secondary checkbox" }} />
-                      {!switchState ? (
-                        ""
-                      ) : (
-                        <div>
-                          <img className={classes.rating} src={imagesArray[postRating]} alt="rating" />
-                          <IconButton aria-label="minus" onClick={() => setRating(!(postRating === 0) ? postRating - 1 : postRating)}>
-                            <RemoveIcon />
-                          </IconButton>
-                          <IconButton aria-label="plus" onClick={() => setRating(!(postRating === 10) ? postRating + 1 : postRating)}>
-                            <AddIcon />
-                          </IconButton>
-                        </div>
-                      )}
+                      <img className={classes.rating} src={imagesArray[postRating]} />
+                      <IconButton aria-label="minus" onClick={() => setRating(!(postRating == 0) ? postRating - 1 : postRating)}>
+                        <RemoveIcon />
+                      </IconButton>
+                      <IconButton aria-label="plus" onClick={() => setRating(!(postRating == 10) ? postRating + 1 : postRating)}>
+                        <AddIcon />
+                      </IconButton>
                     </div>
-                    <TextField id="postTitle" label="Post Title" rows={1} fullWidth variant="outlined" value={postTitle} onChange={e => setTitle(e.target.value)} />
-                    <br />
-                    <TextField id="postBody" label="Post Body" multiline rows={6} fullWidth variant="outlined" value={postBody} margin="dense" onChange={e => setBody(e.target.value)} />
-                  </form>
-                  <Button color="primary" variant="contained" onClick={() => sendPost()}>
-                    Make Post
-                  </Button>
-                  {props.ui.errors.makePost && <Typography variant="body1">{props.ui.errors.makePost}</Typography>}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-          
-        </DialogContent>
-        <DialogActions>
-          {scene === 1 && (
-            <Grid container justify="left">
-              <Grid item>
-                <IconButton onClick={handleBackButton}><ArrowLeft /></IconButton>
-              </Grid>
-            </Grid>)}
-          <Button onClick={props.closeMakePostDialog} color="default">
-            Cancel
-          </Button>
-        </DialogActions>
-      </Dialog>
-    )
-          }
+                  )}
+                </Grid>
+              </FormControl>
+            )}
+            {scene === 1 && (
+              <div>
+                <DisplayData element={selectedTopic} maxHeight={200} />
+                <form id="contactForm">
+                  <div>
+                    <Switch checked={switchState} onChange={handleSwitchChange} name="useNumber" inputProps={{"aria-label": "secondary checkbox"}} />
+                    {!switchState ? (
+                      ""
+                    ) : (
+                      <div>
+                        <img className={classes.rating} src={imagesArray[postRating]} alt="rating" />
+                        <IconButton aria-label="minus" onClick={() => setRating(!(postRating === 0) ? postRating - 1 : postRating)}>
+                          <RemoveIcon />
+                        </IconButton>
+                        <IconButton aria-label="plus" onClick={() => setRating(!(postRating === 10) ? postRating + 1 : postRating)}>
+                          <AddIcon />
+                        </IconButton>
+                      </div>
+                    )}
+                  </div>
+                  <TextField id="postTitle" label="Post Title" rows={1} fullWidth variant="outlined" value={postTitle} onChange={e => setTitle(e.target.value)} />
+                  <br />
+                  <TextField id="postBody" label="Post Body" multiline rows={6} fullWidth variant="outlined" value={postBody} margin="dense" onChange={e => setBody(e.target.value)} />
+                </form>
+                <Button color="primary" variant="contained" onClick={() => sendPost()}>
+                  Make Post
+                </Button>
+                {props.ui.errors.makePost && <Alert severity="error">{props.ui.errors.makePost}</Alert>}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </DialogContent>
+      <DialogActions>
+        {scene === 1 && (
+          <Grid container justify="left">
+            <Grid item>
+              <IconButton onClick={handleBackButton}>
+                <ArrowLeft />
+              </IconButton>
+            </Grid>
+          </Grid>
+        )}
+        <Button onClick={props.closeMakePostDialog} color="default">
+          Cancel
+        </Button>
+      </DialogActions>
+    </Dialog>
+  )
+}
+
 const mapStateToProps = state => ({
   auth: state.auth,
   ui: state.ui
@@ -349,7 +373,8 @@ const mapStateToProps = state => ({
 
 const mapActionsToProps = {
   closeMakePostDialog,
-  makePost
+  makePost,
+  getNewToken
 }
 
 export default connect(mapStateToProps, mapActionsToProps)(MakePostDialog)

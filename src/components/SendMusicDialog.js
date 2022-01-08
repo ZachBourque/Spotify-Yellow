@@ -1,13 +1,11 @@
 import React, {Component} from "react"
 import {connect} from "react-redux"
 import {Dialog, DialogTitle, DialogContent, DialogActions, Button, DialogContentText, Typography, TextField, Card} from "@material-ui/core"
-import {makeComment} from "../redux/actions/dataActions"
-import {getNewToken} from "../redux/actions/authActions"
 import {sendMusic} from "../redux/actions/userActions"
 import UserCard from "./UserCard"
-import axios from "axios"
 import DisplayData from "./DisplayData"
 import {closeSendMusicDialog} from "../redux/actions/UIActions"
+import Alert from "@material-ui/lab/Alert"
 
 class SearchUsers extends Component {
   state = {
@@ -50,7 +48,7 @@ class SearchUsers extends Component {
         <DialogTitle id="">Send Music:</DialogTitle>
         <DisplayData element={this.props.ui.sendMusic.element} maxWidth="300px" height="300px" />
         <DialogContent>
-          {this.props.ui.errors.sendMusic && <Typography variant="body">{this.props.ui.errors.sendMusic}</Typography>}
+          {this.props.ui.errors.sendMusic && <Alert severity="error">{this.props.ui.errors.sendMusic}</Alert>}
           <TextField autoFocus id="commentBody" fullWidth variant="outlined" value={this.state.searchText} onChange={this.searchTextChanged} autoComplete="off" />
           {this.state.searchText && (
             <Card>
