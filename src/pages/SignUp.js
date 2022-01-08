@@ -13,6 +13,7 @@ import $ from "jquery"
 import {connect} from "react-redux"
 import {signUpUser} from "../redux/actions/authActions"
 import withStyles from "@material-ui/core/styles/withStyles"
+import Alert from "@material-ui/lab/Alert"
 
 const styles = theme => ({
   root: {
@@ -132,17 +133,8 @@ class SignUp extends React.Component {
               Make Profile
             </Button>
           </form>
-          {this.props.ui.errors.signup && <Typography variant="body1">{this.props.ui.errors.signup}</Typography>}
+          {this.props.ui.errors.signup && <Alert severity="error">{this.props.ui.errors.signup}</Alert>}
         </div>
-        <Box mt={5}>
-          <Typography variant="body2" color="textSecondary" align="center">
-            {"Copyright © "}
-            <Link color="inherit" href="https://material-ui.com/">
-              Your Website
-            </Link>
-            {new Date().getFullYear()}
-          </Typography>
-        </Box>
       </Container>
     )
   }

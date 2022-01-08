@@ -1,15 +1,16 @@
-import { Component } from "react"
-import { connect } from "react-redux"
+import {Component} from "react"
+import {connect} from "react-redux"
 import Grid from "@material-ui/core/Grid"
 import Card from "@material-ui/core/Card"
 import withStyles from "@material-ui/core/styles/withStyles"
-import { setCurrentPost } from "../redux/actions/dataActions"
-import { reloadUserProfile } from "../redux/actions/userActions"
-import { openMakeCommentDialog, openMakePostDialog, openEditPostDialog, openDeleteDialog, openSendMusicDialog, openLoginDialog } from "../redux/actions/UIActions"
+import {setCurrentPost} from "../redux/actions/dataActions"
+import {reloadUserProfile} from "../redux/actions/userActions"
+import {openMakeCommentDialog, openMakePostDialog, openEditPostDialog, openDeleteDialog, openSendMusicDialog, openLoginDialog} from "../redux/actions/UIActions"
 import BigPostSkeleton from "../Skeletons/BigPostSkeleton"
 import PostHeader from "../components/PostHeader"
 import PostBody from "../components/PostBody"
 import CommentList from "../components/CommentList"
+import Alert from "@material-ui/lab/Alert"
 
 const styles = theme => ({
   header: {
@@ -18,7 +19,6 @@ const styles = theme => ({
 })
 
 export class Post extends Component {
-
   state = {
     isLoading: true,
     error: null
@@ -29,36 +29,36 @@ export class Post extends Component {
     this.props
       .setCurrentPost(id)
       .then(() => {
-        this.setState({ isLoading: false })
+        this.setState({isLoading: false})
       })
       .catch(() => {
-        this.setState({ error: "Could not get post." })
+        this.setState({error: "Could not get post."})
       })
   }
 
   render() {
-    const { classes } = this.props
+    const {classes} = this.props
     const element = this.props.data.posts[0]
     return this.state.error ? (
-      <h2 style={{ textAlign: "center" }}>{this.state.error}</h2>
+      <Alert severity="error" style={{textAlign: "center", justifyContent: "center"}}>
+        {this.state.error}
+      </Alert>
     ) : this.state.isLoading ? (
       <BigPostSkeleton />
     ) : (
       <Grid container justify="center">
         <Grid item xs={12} sm={10}>
-        <Card align="center">
-          <PostHeader {...this.props} />
-          <PostBody {...this.props} />
-        </Card>
+          <Card align="center">
+            <PostHeader {...this.props} />
+            <PostBody {...this.props} />
+          </Card>
         </Grid>
         <Grid container justify="center" alignItems="center">
           <Grid item xs={6}>
             <CommentList comments={this.props.data.posts[0].comments} history={this.props.history} />
           </Grid>
-        
         </Grid>
       </Grid>
-
     )
   }
 }
@@ -81,4 +81,4 @@ const mapActionsToProps = {
   openLoginDialog
 }
 
-export default connect(mapStateToProps, mapActionsToProps)(withStyles(styles, { withTheme: true })(Post))
+export default connect(mapStateToProps, mapActionsToProps)(withStyles(styles, {withTheme: true})(Post))

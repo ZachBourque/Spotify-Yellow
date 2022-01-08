@@ -44,7 +44,6 @@ const DisplayData = props => {
       <MenuItem onClick={copyLink}>Copy Link</MenuItem>
       <MenuItem
         onClick={() => {
-          console.log(element)
           props.openSendMusicDialog({
             type: element.type,
             id: element.id,

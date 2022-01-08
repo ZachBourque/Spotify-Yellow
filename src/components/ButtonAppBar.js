@@ -24,6 +24,8 @@ import NotificationsIcon from "@material-ui/icons/Notifications"
 import Badge from "@material-ui/core/Badge"
 import Avatar from "@material-ui/core/Avatar"
 import Notification from "./Notification"
+import Box from "@material-ui/core/Box"
+import MoreIcon from "@material-ui/icons/MoreVert"
 
 const useStyles = makeStyles(theme => ({
   grow: {
@@ -75,25 +77,33 @@ const useStyles = makeStyles(theme => ({
       width: "50ch"
     }
   },
+  sectionDesktop: {
+    display: "none",
+    [theme.breakpoints.up("md")]: {
+      display: "flex"
+    }
+  },
   sectionMobile: {
     display: "flex",
     marginLeft: 50,
     [theme.breakpoints.up("md")]: {
-      display: "flex"
+      display: "none"
     }
   }
 }))
 
 function NavBar(props) {
   let {user, auth} = props
-  //const redirect_uri = "https://us-central1-spotify-yellow-282e0.cloudfunctions.net/api/callback"
-  const redirect_uri = "http://localhost:5000/spotify-yellow-282e0/us-central1/api/callback"
+  const redirect_uri = "https://us-central1-spotify-yellow-282e0.cloudfunctions.net/api/callback"
+  //const redirect_uri = "http://localhost:5000/spotify-yellow-282e0/us-central1/api/callback"
   const profileRe = () => {
     handleMenuClose()
+    handleMobileMenuClose()
     props.history.push("/profile")
   }
   const settingsRe = () => {
     handleMenuClose()
+    handleMobileMenuClose()
     props.history.push("/settings")
   }
 
@@ -108,6 +118,17 @@ function NavBar(props) {
     })
   const [anchorEl, setAnchorEl] = useState(null)
   const isMenuOpen = Boolean(anchorEl)
+
+  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState(null)
+  const isMobileMenuOpen = Boolean(mobileMoreAnchorEl)
+
+  const handleMobileMenuOpen = event => {
+    setMobileMoreAnchorEl(event.currentTarget)
+  }
+  const handleMobileMenuClose = () => {
+    setMobileMoreAnchorEl(null)
+  }
+
   const handleProfileMenuOpen = event => {
     setAnchorEl(event.currentTarget)
   }
@@ -161,6 +182,56 @@ function NavBar(props) {
     </Menu>
   )
 
+  const mobileMenuId = "primary-search-account-menu-mobile"
+  const renderMobileMenu = (
+    <Menu
+      anchorEl={mobileMoreAnchorEl}
+      anchorOrigin={{
+        vertical: "top",
+        horizontal: "right"
+      }}
+      id={mobileMenuId}
+      keepMounted
+      transformOrigin={{
+        vertical: "top",
+        horizontal: "right"
+      }}
+      open={isMobileMenuOpen}
+      onClose={handleMobileMenuClose}
+    >
+      <MenuItem style={{justifyContent: "center"}}>
+        <Button
+          type="button"
+          onClick={() => {
+            handleMobileMenuClose()
+            props.history.push("/")
+          }}
+        >
+          Home
+        </Button>
+      </MenuItem>
+      <MenuItem style={{justifyContent: "center"}}>
+        <IconButton aria-label="show new notifications" color="inherit" aria-controls={notificationId} aria-haspopup="true" onClick={handleNotiMenuOpen}>
+          <Badge badgeContent={props?.user?.notifications?.filter(notification => !notification.read).length} color="secondary">
+            <NotificationsIcon />
+          </Badge>
+        </IconButton>
+      </MenuItem>
+      <MenuItem style={{justifyContent: "center"}}>
+        {auth.loggedIn ? (
+          <IconButton aria-label="account of current user" aria-controls={menuId} aria-haspopup="true" onClick={handleProfileMenuOpen} color="inherit" style={{width: 48, height: 48}}>
+            {!user.loaded ? <Avatar src={localStorage.getItem("cachepfp")} /> : <Avatar src={user.profilepic} />}
+          </IconButton>
+        ) : (
+          <a href={url}>
+            <Button variant="contained" type="button">
+              Login
+            </Button>
+          </a>
+        )}
+      </MenuItem>
+    </Menu>
+  )
   const [search, setSearch] = useState(0)
   const [searchTerm, setSearchTerm] = useState("")
 
@@ -212,9 +283,8 @@ function NavBar(props) {
               />
             </div>
           </form>
-          <FormControl variant="filled" className={classes.formControl}>
-            <InputLabel id="demo-simple-select-filled-label">Search</InputLabel>
-            <Select labelId="demo-simple-select-filled-label" id="demo-simple-select-filled" value={search} onChange={handleChange}>
+          <FormControl>
+            <Select variant="outlined" value={search} onChange={handleChange} style={{width: 70}}>
               <MenuItem value={0}>
                 <CreateIcon />
               </MenuItem>
@@ -227,7 +297,7 @@ function NavBar(props) {
             </Select>
           </FormControl>
           <div className={classes.grow} />
-          <div className={classes.sectionMobile}>
+          <div className={classes.sectionDesktop}>
             {auth.loggedIn ? (
               <Fragment>
                 <IconButton aria-label="show new notifications" color="inherit" aria-controls={notificationId} aria-haspopup="true" onClick={handleNotiMenuOpen}>
@@ -235,7 +305,7 @@ function NavBar(props) {
                     <NotificationsIcon />
                   </Badge>
                 </IconButton>
-                <IconButton edge="end" aria-label="account of current user" aria-controls={menuId} aria-haspopup="true" onClick={handleProfileMenuOpen} color="inherit">
+                <IconButton aria-label="account of current user" aria-controls={menuId} aria-haspopup="true" onClick={handleProfileMenuOpen} color="inherit">
                   {!user.loaded ? <Avatar src={localStorage.getItem("cachepfp")} width="50" /> : <Avatar src={user.profilepic} width="50" />}
                 </IconButton>
               </Fragment>
@@ -247,8 +317,14 @@ function NavBar(props) {
               </a>
             )}
           </div>
+          <div className={classes.sectionMobile}>
+            <IconButton size="large" aria-label="show more" aria-controls={mobileMenuId} aria-haspopup="true" onClick={handleMobileMenuOpen} color="inherit">
+              <MoreIcon />
+            </IconButton>
+          </div>
         </Toolbar>
       </AppBar>
+      {renderMobileMenu}
       {renderMenu}
       {renderNotificationMenu}
     </div>
