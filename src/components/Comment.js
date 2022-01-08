@@ -1,8 +1,17 @@
 import React, {Component} from "react"
 import {connect} from "react-redux"
-import {Avatar, Card, CardContent, CardHeader, IconButton, Typography, Grid, CardActions, Menu, MenuItem} from "@material-ui/core/"
-import {MoreVert, Create, Delete} from "@material-ui/icons/"
-import DeletePostDialog from "./DeletePostDialog"
+import Avatar from "@material-ui/core/Avatar" 
+import Card from "@material-ui/core/Card" 
+import CardContent from "@material-ui/core/CardContent" 
+import CardHeader from "@material-ui/core/CardHeader" 
+import IconButton from "@material-ui/core/IconButton" 
+import Typography from "@material-ui/core/Typography" 
+import Grid from "@material-ui/core/Grid" 
+import CardActions from "@material-ui/core/CardActions" 
+import Menu from "@material-ui/core/Menu" 
+import MenuItem from "@material-ui/core/MenuItem" 
+import MoreVert from "@material-ui/icons/MoreVert"
+import Delete from "@material-ui/icons/Delete"
 import {openDeleteDialog} from "../redux/actions/UIActions"
 
 export class Comment extends Component {
@@ -34,7 +43,7 @@ export class Comment extends Component {
             </Typography>
           }
           action={
-            element.authorid == this.props.user.id && (
+            element.authorid === this.props.user.id && (
               <>
                 <IconButton aria-label="settings" aria-controls="simple-menu" aria-haspopup="true" onClick={this.handleClick}>
                   <MoreVert />

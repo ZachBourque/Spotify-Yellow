@@ -1,4 +1,5 @@
-import { Grid, Typography } from '@material-ui/core'
+import Typography from '@material-ui/core/Typography'
+import Grid from '@material-ui/core/Grid'
 import React from 'react'
 import { connect } from 'react-redux'
 import fantano from "../assets/404.gif"

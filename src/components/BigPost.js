@@ -1,6 +1,7 @@
 import { Component } from "react"
 import { connect } from "react-redux"
-import { Grid, Card, } from "@material-ui/core"
+import Grid from "@material-ui/core/Grid"
+import Card from "@material-ui/core/Card"
 import withStyles from "@material-ui/core/styles/withStyles"
 import { setCurrentPost } from "../redux/actions/dataActions"
 import { reloadUserProfile } from "../redux/actions/userActions"

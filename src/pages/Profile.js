@@ -1,19 +1,13 @@
 import React, {Component, Fragment} from "react"
-import {Container, Avatar, Grid, Paper, Typography} from "@material-ui/core"
-import {makeStyles} from "@material-ui/core/styles"
-import Button from "@material-ui/core/ButtonBase"
+import Avatar from "@material-ui/core/Avatar"
+import Grid from "@material-ui/core/Grid"
+import Typography from "@material-ui/core/Typography"
 import ProfileSkeleton from "../Skeletons/ProfileSkeleton"
 import {connect} from "react-redux"
 import withStyles from "@material-ui/core/styles/withStyles"
 import queryString from "query-string"
-import {AlbumOutlined, TimerSharp} from "@material-ui/icons"
 import PropTypes from "prop-types"
 import SmallPost from "../components/SmallPost"
-import MakePost from "../components/MakePost"
-import Card from "@material-ui/core/Card"
-import CardMedia from "@material-ui/core/CardMedia"
-import CardContent from "@material-ui/core/CardContent"
-import {sizing} from "@material-ui/system"
 import {setCurrent} from "../redux/actions/dataActions"
 import axios from "axios"
 import FavoriteCard from "../components/FavoriteCard"
@@ -128,7 +122,6 @@ class Profile extends Component {
   }
 
   render() {
-    const {classes} = this.props
     return (
       <Fragment>
         {this.state.loading ? (

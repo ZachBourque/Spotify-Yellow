@@ -1,10 +1,14 @@
 import React, {Component} from "react"
 import {connect} from "react-redux"
-import {Dialog, DialogTitle, DialogContent, DialogActions, Button, DialogContentText, Typography, TextField} from "@material-ui/core"
+import Dialog from "@material-ui/core/Dialog"
+import DialogTitle from "@material-ui/core/DialogTitle"
+import DialogContent from "@material-ui/core/DialogContent"
+import DialogActions from "@material-ui/core/DialogActions"
+import Button from "@material-ui/core/Button"
+import Typography from "@material-ui/core/Typography"
+import TextField from "@material-ui/core/TextField"
 import {makeComment} from "../redux/actions/dataActions"
 import {getNewToken} from "../redux/actions/authActions"
-import Delete from "@material-ui/icons/Delete"
-import axios from "axios"
 import {closeMakeCommentDialog} from "../redux/actions/UIActions"
 
 class MakeCommentDialog extends Component {
