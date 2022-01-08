@@ -289,7 +289,7 @@ function NavBar(props) {
                 <CreateIcon />
               </MenuItem>
               <MenuItem value={1}>
-                <img src={logo} alt="SpotifyIcon" />
+                <img src={logo} alt="SpotifyIcon" width="24px" height="24px" />
               </MenuItem>
               <MenuItem value={2}>
                 <PersonIcon />

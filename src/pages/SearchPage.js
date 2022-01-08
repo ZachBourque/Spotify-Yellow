@@ -55,7 +55,7 @@ class SearchPage extends Component {
         }
         if (this.state.gettingToken) return
         if (new Date().getTime() > expires) {
-          this.setState({gettingToken: true, callback: [search, [query, id, filter]]})
+          this.setState({gettingToken: true, callback: [this.search, [query, id, filter]]})
           this.props.getNewToken(rtoken)
         }
         let s = new Spotify()
