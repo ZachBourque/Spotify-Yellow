@@ -136,15 +136,17 @@ class Profile extends Component {
         ) : this.state.error ? (
           <Typography variant="body1">{this.state.error}</Typography>
         ) : (
-          <Grid container spacing={3} align="center" alignItems="center">
+          <Grid container spacing={1} alignItems="center" justify="center">
             <div style={{marginTop: 15}}>
-              <Grid container direction="row" alignItems="center" justify="center" spacing={3}>
-                <Grid item>
-                  <Avatar alt="nope" src={this.state.profilepic} style={{width: "100%", height: 100}} />
+              <Grid container alignItems="center" justify="center" spacing={3}>
+                <Grid item >
+                  <Avatar alt="nope" src={this.state.profilepic} style={{ width: 64, height: 64 }}/>
                 </Grid>
+                <Grid item>
                 <Typography gutterBottom variant="h3">
                   {this.state.username}
                 </Typography>
+                </Grid>
               </Grid>
               {this.state.bio.length > 0 && (
                 <Grid container alignItems="center" justify="center">
@@ -156,8 +158,8 @@ class Profile extends Component {
               {this.state.favArtists.length > 0 && (
                 <Fragment>
                   <Typography variant="h4">Favourite Artists:</Typography>
-                  <Grid container direction="row" align="center" justify="center" spacing={3} xs={8} sm={12}>
-                    <Grid item>
+                  <Grid container direction="row" align="center" justify="center" >
+                    <Grid item xs={8} sm={12}>
                       {this.state.favArtists.map((artist, idx) => {
                         return <FavoriteCard key={idx} name={artist.name} url={artist.url} pic={artist.pic} />
                       })}
@@ -168,8 +170,8 @@ class Profile extends Component {
               {this.state.favAlbums.length > 0 && (
                 <Fragment>
                   <Typography variant="h4">Favourite Albums:</Typography>
-                  <Grid container direction="row" alignItems="center" justify="center" spacing={3} xs={8} sm={12}>
-                    <Grid item>
+                  <Grid container direction="row" alignItems="center" justify="center" >
+                    <Grid item xs={8} sm={12}>
                       {this.state.favAlbums.map((album, idx) => {
                         return <FavoriteCard key={idx} name={album.name} url={album.url} pic={album.pic} />
                       })}
@@ -180,8 +182,8 @@ class Profile extends Component {
               {this.state.favSongs.length > 0 && (
                 <Fragment>
                   <Typography variant="h4">Favourite Songs:</Typography>
-                  <Grid container direction="row" alignItems="center" justify="center" spacing={3} xs={8} sm={12}>
-                    <Grid item>
+                  <Grid container direction="row" alignItems="center" justify="center" >
+                    <Grid item xs={8} sm={12}>
                       {this.state.favSongs.map((song, idx) => {
                         return <FavoriteCard key={idx} name={song.name} url={song.url} pic={song.pic} />
                       })}

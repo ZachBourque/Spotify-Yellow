@@ -78,7 +78,19 @@ export class Post extends Component {
     }
 
     sharePost() {
-        //TODO
+        console.log(window.location.href)
+        if (navigator.share) {
+            let title = this.props.element.title;
+            let url = window.location.href
+            navigator.share({
+                title,
+                url
+            }).then(() => {
+                console.log("NICE!")
+            }).catch(() => {
+                alert("Sorry, an error occurred while trying to share 😞")
+            })
+        }
     }
 
     editPost(postId, newTitle, newBody, newRating) {
@@ -197,13 +209,13 @@ export class Post extends Component {
                 {/* Main Content */}
                 <CardContent>
                     <div onClick={() => this.postRe(element.postId)} style={{ cursor: "pointer" }}>
-                        <Grid container alignItems="center" justify="flex-start" direction="row">
+                        <Grid container alignItems="center" justify="center" direction="row">
                             {/* Left Half */}
-                            <Grid item md={2}>
+                            <Grid item xs={6} md={2}>
                                 <CardMedia id="theImage" image={element.pic} component="img" />
                             </Grid>
                             {element.rating > -1 && (
-                                <Grid item md={2}>
+                                <Grid item xs={6} md={2}>
                                     <CardMedia image={this.imagesArray[element.rating]} component="img" />
                                 </Grid>
                             )}
@@ -231,13 +243,13 @@ export class Post extends Component {
                             </Grid>
 
                             {/* Right Half */}
-                            <Grid md={6} item style={{ backgroundColor: "#2f2f2f", borderRadius: "5%" }}>
-                                <Grid item>
+                            <Grid xs={12} md={6} item style={{ backgroundColor: "#2f2f2f", borderRadius: "5%" }}>
+                                <Grid item xs={12}>
                                     <Typography variant="h5" style={{ maxWidth: "75%" }}>
                                         {element.title}
                                     </Typography>
                                 </Grid>
-                                <Grid item align="center">
+                                <Grid item align="center"  >
                                     <Typography variant="body1" style={{
                                         "display": "-webkit-box",
                                         "max-width": "400px",
@@ -259,7 +271,7 @@ export class Post extends Component {
                             <Comment />
                         </IconButton>
                         <Typography variant="body2">{element.commentCount}</Typography>
-                        <IconButton>
+                        <IconButton onClick={() => {this.sharePost()}}>
                             <Share />
                         </IconButton>
                     </CardActions>

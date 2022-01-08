@@ -72,7 +72,7 @@ export class Homepage extends Component {
           <Fragment>
             <Grid container spacing={3} justify="center" align="center">
               <Grid item xs={12}>
-                <Grid item xs={6}>
+                <Grid item xs={12} sm={8} md={6}>
                   {this.props.data.loaded ? (
                     <Fragment>
                       {this.props.data.posts.slice(0, this.state.numOfPosts).map((post, idx) => {
