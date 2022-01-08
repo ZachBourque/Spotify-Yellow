@@ -296,7 +296,7 @@ const MakePostDialog = (props) => {
               )}
               {scene === 1 && (
                 <div>
-                  <DisplayData element={selectedTopic} maxHeight={200} />
+                  <DisplayData element={selectedTopic} height={250} />
                   <form id="contactForm">
                     <div>
                       <Switch checked={switchState} onChange={handleSwitchChange} name="useNumber" inputProps={{ "aria-label": "secondary checkbox" }} />
