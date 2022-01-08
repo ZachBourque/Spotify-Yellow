@@ -1,6 +1,5 @@
-
-import { Component, Fragment } from "react"
-import { connect } from "react-redux"
+import {Component, Fragment} from "react"
+import {connect} from "react-redux"
 import Avatar from "@material-ui/core/Avatar"
 import Grid from "@material-ui/core/Grid"
 import Typography from "@material-ui/core/Typography"
@@ -108,23 +107,23 @@ export class Post extends Component {
         }
     }
 
-    editPost(postId, newTitle, newBody, newRating) {
-        const { title, body, rating } = this.props.element
-        const { token, expires, rtoken } = this.props.auth
-        let changes = {}
-        if (title !== newTitle) {
-            changes.title = newTitle
-        }
-        if (body !== newBody) {
-            changes.body = newBody
-        }
-        if (rating !== newRating) {
-            changes.rating = newRating
-        }
-        if (JSON.stringify(changes) === "{}") {
-            return
-        }
-      }
+  editPost(postId, newTitle, newBody, newRating) {
+    const {title, body, rating} = this.props.element
+    const {token, expires, rtoken} = this.props.auth
+    let changes = {}
+    if (title !== newTitle) {
+      changes.title = newTitle
+    }
+    if (body !== newBody) {
+      changes.body = newBody
+    }
+    if (rating !== newRating) {
+      changes.rating = newRating
+    }
+    if (JSON.stringify(changes) === "{}") {
+      return
+    }
+  }
 
   editPost(postId, newTitle, newBody, newRating) {
     const {title, body, rating} = this.props.element
@@ -152,7 +151,6 @@ export class Post extends Component {
     const {token, expires, rtoken} = this.props.auth
     this.props.deletePost(postId, token, expires, rtoken)
   }
-
     render() {
         let { element } = this.props
         return (
@@ -285,6 +283,7 @@ export class Post extends Component {
         )
     }
   }
+
 
 const mapStateToProps = state => ({
   user: state.user,
