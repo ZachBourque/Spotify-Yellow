@@ -1,7 +1,19 @@
-import React, {Component, useState, useEffect} from "react"
-import {TextField, Radio, RadioGroup, FormControlLabel, FormControl, FormLabel, makeStyles, Switch, TextareaAutosize} from "@material-ui/core"
+import React, {useState, useEffect} from "react"
+import TextField from "@material-ui/core/TextField"
+import Radio from "@material-ui/core/Radio"
+import RadioGroup from "@material-ui/core/RadioGroup"
+import FormControlLabel from "@material-ui/core/FormControlLabel"
+import FormControl from "@material-ui/core/FormControl"
+import makeStyles from "@material-ui/core/makeStyles"
+import Switch from "@material-ui/core/Switch"
+import Grid from "@material-ui/core/Grid"
+import Typography from "@material-ui/core/Typography"
+import Card from "@material-ui/core/Card"
+import CardHeader from "@material-ui/core/CardHeader"
+import CardContent from "@material-ui/core/CardContent"
+import Button from "@material-ui/core/Button"
+import Divider from "@material-ui/core/Divider"
 import Spotify from "spotify-web-api-js"
-import {Container, Avatar, Grid, Paper, Typography, Card, CardHeader, CardContent, Button, Divider, Box} from "@material-ui/core"
 import DisplayData from "./DisplayData"
 import $ from "jquery"
 import {connect} from "react-redux"
@@ -19,8 +31,6 @@ import Ten from "../assets/10.png"
 import AddIcon from "@material-ui/icons/Add"
 import RemoveIcon from "@material-ui/icons/Remove"
 import IconButton from "@material-ui/core/IconButton"
-import {refreshToken} from "../redux/actions/authActions"
-import axios from "axios"
 import {makePost} from "../redux/actions/dataActions"
 
 const useStyles = makeStyles(theme => ({
@@ -85,20 +95,20 @@ const MakePost = props => {
   }, [value])
   
   const searchTextChanged = event => {
+    let temp = typeof event == "string" ? event : event?.target?.value
     //if the event is empty, dont display anything for search results
-    if (event == "" || event?.target?.value == "") {
+    if (!temp) {
       setDataArray(null)
       setReturnedData(null)
       return
     }
     //rather a string or an event is passed in, this just makes temp = the string
-    let temp = typeof event == "string" ? event : event?.target?.value
-
-    if (value == "artist") {
+  
+    if (value === "artist") {
       searchArtists(temp)
-    } else if (value == "album") {
+    } else if (value === "album") {
       searchAlbums(temp)
-    } else if (value == "track") {
+    } else if (value === "track") {
       searchSongs(temp)
     }
   }
@@ -226,7 +236,7 @@ const MakePost = props => {
     <Card style={{backgroundColor: "#4d4d4d"}} align="center" style={{"height": "100%"}}>
       <CardHeader title={<Typography variant="h4">Make Post</Typography>} style={{backgroundColor: "#D99E2A"}} />
       <CardContent>
-        {scene == 0 && (
+        {scene === 0 && (
           <FormControl component="fieldset">
             <Grid container justify="center" alignItems="center">
               <RadioGroup aria-label="gender" name="gender1" value={value} onChange={radioChanged}>
@@ -261,7 +271,7 @@ const MakePost = props => {
             </Grid>
           </FormControl>
         )}
-        {scene == 1 && (
+        {scene === 1 && (
           <div>
             <DisplayData element={selectedTopic} maxHeight={200} />
             <form id="contactForm">
@@ -271,11 +281,11 @@ const MakePost = props => {
                   ""
                 ) : (
                   <div>
-                    <img className={classes.rating} src={imagesArray[postRating]} />
-                    <IconButton aria-label="minus" onClick={() => setRating(!(postRating == 0) ? postRating - 1 : postRating)}>
+                    <img className={classes.rating} src={imagesArray[postRating]} alt="" />
+                    <IconButton aria-label="minus" onClick={() => setRating(!(postRating === 0) ? postRating - 1 : postRating)}>
                       <RemoveIcon />
                     </IconButton>
-                    <IconButton aria-label="plus" onClick={() => setRating(!(postRating == 10) ? postRating + 1 : postRating)}>
+                    <IconButton aria-label="plus" onClick={() => setRating(!(postRating === 10) ? postRating + 1 : postRating)}>
                       <AddIcon />
                     </IconButton>
                   </div>

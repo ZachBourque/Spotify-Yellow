@@ -1,5 +1,6 @@
 import {Fragment, useState} from "react"
 import {connect} from "react-redux"
+
 import {fade, makeStyles} from "@material-ui/core/styles"
 import AppBar from "@material-ui/core/AppBar"
 import Toolbar from "@material-ui/core/Toolbar"
@@ -218,7 +219,7 @@ function NavBar(props) {
                 <CreateIcon />
               </MenuItem>
               <MenuItem value={1}>
-                <img src={logo} />
+                <img src={logo} alt="SpotifyIcon" />
               </MenuItem>
               <MenuItem value={2}>
                 <PersonIcon />

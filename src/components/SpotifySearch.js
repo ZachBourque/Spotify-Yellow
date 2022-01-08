@@ -1,4 +1,4 @@
-import React, { Component, useState, useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import { connect } from "react-redux"
 import { TextField, Radio, RadioGroup, FormControlLabel, FormControl, Grid, Dialog, DialogContent, Typography, CardHeader, Card, DialogActions, Button, Divider } from "@material-ui/core"
 import DisplayData from "./DisplayData"
@@ -61,11 +61,11 @@ const SpotifySearch = props => {
     //rather a string or an event is passed in, this just makes temp = the string
     let temp = typeof event == "string" ? event : event?.target?.value
 
-    if (value == "artist") {
+    if (value === "artist") {
       searchArtists(temp)
-    } else if (value == "album") {
+    } else if (value === "album") {
       searchAlbums(temp)
-    } else if (value == "track") {
+    } else if (value === "track") {
       searchSongs(temp)
     }
   }
@@ -172,7 +172,7 @@ const SpotifySearch = props => {
                     <FormControlLabel value="track" disabled={radioDisabledStatus[2]} control={<Radio />} label="Track" />
                   </RadioGroup>
                 ) : null}
-                <TextField variant="filled" id="searchText" onChange={searchTextChanged} />
+                <TextField variant="filled" id="searchText" onChange={searchTextChanged} autoFocus />
                 <br />
                 <Grid item xs={12}>
                   <Divider></Divider>
