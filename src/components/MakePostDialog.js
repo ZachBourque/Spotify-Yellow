@@ -159,14 +159,14 @@ const MakePostDialog = props => {
           setReturnedData(data.artists.items)
           var tempArray = []
           for (var i = 0; i < data.artists.items.length; i++) {
-            var urMom = data.artists.items[i]
+            var artist = data.artists.items[i]
             tempArray[i] = {
               type: "artist",
-              id: urMom.id,
-              artistName: [urMom.name],
+              id: artist.id,
+              artistName: [artist.name],
               albumName: null,
               songName: null,
-              image: urMom.images[0]?.url
+              image: artist.images[0]?.url
             }
           }
           setDataArray(tempArray)
@@ -202,14 +202,14 @@ const MakePostDialog = props => {
           setReturnedData(data.albums.items)
           var tempArray = []
           for (var i = 0; i < data.albums.items.length; i++) {
-            var urMom = data.albums.items[i]
+            var album = data.albums.items[i]
             tempArray[i] = {
               type: "album",
-              id: urMom.id,
-              artistName: urMom.artists.map(e => e.name),
-              albumName: urMom.name,
+              id: album.id,
+              artistName: album.artists.map(e => e.name),
+              albumName: album.name,
               songName: null,
-              image: urMom.images[0]?.url
+              image: album.images[0]?.url
             }
           }
           setDataArray(tempArray)
@@ -239,14 +239,14 @@ const MakePostDialog = props => {
           setReturnedData(data.tracks.items)
           var tempArray = []
           for (var i = 0; i < data.tracks.items.length; i++) {
-            var urMom = data.tracks.items[i]
+            var track = data.tracks.items[i]
             tempArray[i] = {
               type: "track",
-              id: urMom.id,
-              artistName: urMom.artists.map(e => e.name),
-              albumName: urMom.album.name,
-              songName: urMom.name,
-              image: urMom.album.images[0]?.url
+              id: track.id,
+              artistName: track.artists.map(e => e.name),
+              albumName: track.album.name,
+              songName: track.name,
+              image: track.album.images[0]?.url
             }
           }
           setDataArray(tempArray)
